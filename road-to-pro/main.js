@@ -1,7 +1,7 @@
 // Scroll behaviour for the athlete site: day counter, word reveal, fade-ins, story, gallery drag.
 (function () {
-  // Hero number: days since padel became Vitto's game. Change DAY_ONE if the real date differs.
-  const DAY_ONE = new Date(2026, 1, 1);
+  // Hero number: days since padel became Vitto's game. Day 1 is 14 February 2026.
+  const DAY_ONE = new Date(2026, 1, 14);   // Valentine's Day 2026
   const day = document.getElementById('day');
   if (day) day.textContent = Math.max(1, Math.floor((Date.now() - DAY_ONE.getTime()) / 86400000) + 1);
 
