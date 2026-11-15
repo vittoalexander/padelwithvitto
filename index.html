@@ -8,7 +8,7 @@
 <meta name="description" content="Vitto Alexander's Road to Pro 2027, plus short scroll-through padel guides: Padel 101, Why a padel shot breaks, and Nobody wins padel.">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500&family=DM+Serif+Display&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500&family=DM+Serif+Display&family=DM+Mono:wght@400;500&family=Anton&display=swap" rel="stylesheet">
 <style>
 :root{--bg:#121417;--panel:#1D2025;--rule:#2A2E34;--muted:#9AA3AB;--text:#F4F5F6;--coral:#EC4C47;color-scheme:dark}
 *{box-sizing:border-box}
@@ -18,7 +18,8 @@ main{max-width:980px;margin:0 auto;padding:clamp(56px,12vh,120px) clamp(16px,4vw
 h1{font-family:"DM Serif Display",Georgia,serif;font-weight:400;font-size:clamp(48px,9vw,112px);line-height:.95;margin:14px 0 18px}
 h1 em{font-style:normal;color:var(--coral)}
 p.lede{color:#C9CED3;max-width:44ch;margin:0 0 40px;font-size:19px}
-.cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:16px}
+.cards{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:16px}
+@media(max-width:640px){.cards{grid-template-columns:1fr}}
 a.card{display:flex;flex-direction:column;gap:10px;padding:24px;border:1px solid var(--rule);border-radius:6px;background:var(--panel);color:inherit;text-decoration:none;min-height:220px}
 a.card:hover,a.card:focus-visible{border-color:var(--coral);outline:none}
 a.card h2{font-family:"DM Serif Display",Georgia,serif;font-weight:400;font-size:34px;line-height:1.05;margin:0}
@@ -34,7 +35,25 @@ a.feature p{margin:0;color:#C9CED3;max-width:38ch}
 a.feature .go{margin-top:auto;padding-top:10px;color:var(--coral)}
 a.feature .new{color:var(--coral)}
 a.feature img{width:100%;height:100%;max-height:340px;object-fit:cover;object-position:50% 12%;display:block}
-@media(max-width:640px){a.feature{grid-template-columns:1fr}a.feature img{order:-1;height:230px}}
+@media(max-width:640px){a.feature{grid-template-columns:1fr}a.feature .pic{order:-1}a.feature img{height:230px}}
+/* Road to Pro card: that site's own look (white paper, black ink, orange accent, Anton) */
+a.feature{background:#fff;border-color:#fff;color:#0b0b0b}
+a.feature:hover,a.feature:focus-visible{background:#fff;border-color:#ff5a1f}
+a.feature .mono{color:#6f6f6f}
+a.feature .new,a.feature .go{color:#ff5a1f}
+a.feature h2{font-family:"Anton","Arial Narrow",Impact,sans-serif;text-transform:uppercase;letter-spacing:.005em;line-height:.95;font-size:clamp(44px,6.4vw,76px)}
+a.feature h2 em{font-style:normal;color:#ff5a1f}
+a.feature p{color:#333}
+@media(min-width:641px){a.feature img{max-height:none;position:absolute;inset:0}a.feature .pic{position:relative;min-height:340px}}
+/* Guide 03 card: PadelIQ "Signature" (midnight navy, soft blue, coral) */
+a.card.sig{background:#002941;border-color:#1d4a66}
+a.card.sig:hover,a.card.sig:focus-visible{border-color:#fd6e6e}
+a.card.sig .mono{color:#8fb3c4}
+a.card.sig p{color:#b6dfed}
+a.card.sig .go{color:#fd6e6e}
+a.card.sig h2 em{font-style:italic;color:#fd6e6e}
+.card.soon{display:flex;flex-direction:column;gap:10px;padding:24px;border:1px dashed var(--rule);border-radius:6px;min-height:220px;color:var(--muted)}
+.card.soon h2{font-family:"DM Serif Display",Georgia,serif;font-weight:400;font-size:34px;line-height:1.05;margin:0;color:#5d656d}
 </style>
 </head>
 <body>
@@ -42,11 +61,11 @@ a.feature img{width:100%;height:100%;max-height:340px;object-fit:cover;object-po
   <a class="feature" href="road-to-pro/">
     <div class="txt">
       <span class="mono new">New · The player</span>
-      <h2>Road to Pro 2027</h2>
+      <h2>Road to <em>Pro</em> 2027</h2>
       <p>Almost twenty years of tennis, one year of padel, 23 tournaments and a Gold final. Meet Vitto Alexander.</p>
       <span class="mono go">Meet the player →</span>
     </div>
-    <img src="road-to-pro/assets/hero.jpg" alt="Vitto Alexander clenching his fist after winning a point">
+    <span class="pic"><img src="road-to-pro/assets/hero.jpg" alt="Vitto Alexander clenching his fist after winning a point"></span>
   </a>
   <p class="mono">Padel with Vitto</p>
   <h1>Learn padel, <em>one scroll</em> at a time.</h1>
@@ -64,12 +83,16 @@ a.feature img{width:100%;height:100%;max-height:340px;object-fit:cover;object-po
       <p>See, Decide, Set, Hit. Four steps in every shot, and the six places it can go wrong.</p>
       <span class="mono go">Open the guide →</span>
     </a>
-    <a class="card" href="people-lose-it/">
-      <span class="mono">Guide 03</span>
-      <h2>Nobody wins padel. People lose it.</h2>
+    <a class="card sig" href="people-lose-it/">
+      <span class="mono">Guide 03 · The numbers</span>
+      <h2>Nobody wins padel. People <em>lose</em> it.</h2>
       <p>23 sets charted point by point. In this sample the pair with fewer unforced errors never lost a set.</p>
       <span class="mono go">Open the guide →</span>
     </a>
+    <div class="card soon" aria-hidden="true">
+      <span class="mono">Guide 04</span>
+      <h2>Coming next.</h2>
+    </div>
   </div>
 </main>
 <footer class="mono">Made by Vitto · <a href="https://instagram.com/padelwithvitto" rel="noopener">@padelwithvitto</a> · Last updated <time datetime="2026-11-16">16 Nov 2026</time></footer>
