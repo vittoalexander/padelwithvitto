@@ -8,6 +8,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600&family=DM+Serif+Display:ital@0;1&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<script>document.documentElement.classList.add("js")</script>
 <style>
 /* Visual direction: PadelIQ "direction A · Signature". Midnight navy ground, soft blue secondary, coral as the one accent.
    Coral = unforced errors and the key number. Soft blue = winners. Never white text on coral. */
@@ -43,7 +44,7 @@ b.w{font-weight:500;color:var(--soft)}
 .ctrl{font-family:var(--mono);font-size:11px;letter-spacing:.08em;text-transform:uppercase;background:none;border:1px solid var(--rule);color:var(--text);padding:7px 12px;min-height:40px;border-radius:6px;cursor:pointer;white-space:nowrap}
 .ctrl:hover{border-color:var(--muted)}
 .progress{position:absolute;left:0;bottom:-1px;height:2px;background:var(--coral);width:0}
-@media (max-width:1020px){.top nav{display:none}.counter{margin-left:auto}}
+@media (max-width:1180px){.top nav{display:none}.counter{margin-left:auto}}
 @media (max-width:520px){.back span{display:none}.top{gap:10px}.ctrl{padding:7px 9px}}
 @media (max-width:380px){.brand{font-size:17px}.top{padding:0 12px;gap:8px}}
 
@@ -90,15 +91,85 @@ b.w{font-weight:500;color:var(--soft)}
 @media (max-width:860px){
   .ch{padding:72px 0}
   .ch .wrap{grid-template-columns:1fr}
-  .fig{position:static}
 }
+/* pinned figure track: the figure holds still while its story plays */
+.track{align-self:stretch}
+@media (max-width:860px){
+  .track::after{content:"";display:block;height:75vh}   /* a spacer, not padding: a sticky box cannot travel into its parent's padding */
+  .track .fig{position:sticky;top:68px}
+  .track .fig svg{max-height:44vh}
+  .track.nopin::after{display:none}
+  .track.nopin .fig{position:static}
+}
+/* gentle reveal for lists */
+.js .rv{opacity:0;transform:translateY(16px);transition:opacity .8s ease,transform .8s ease;transition-delay:calc(var(--i,0)*140ms)}
+.js .rv.in,.js body.still .rv{opacity:1;transform:none}
+.js body.still .rv{transition:none}
 
-/* next + disclosure */
-.next{padding:80px 0;border-bottom:1px solid var(--rule)}
-.next h2{font-size:clamp(30px,4.4vw,44px);margin:12px 0 28px}
-.next ol{list-style:none;margin:0;padding:0;display:grid;grid-template-columns:repeat(auto-fit,minmax(230px,1fr));gap:12px}
-.next li{border:1px dashed var(--rule);border-radius:8px;padding:16px;color:var(--soft);font-size:15px;line-height:1.5}
-.next li b{display:block;font-family:var(--display);font-weight:400;font-size:22px;color:var(--text);margin:6px 0}
+/* 05: my sets + flip tool */
+.mine{width:100%;border-collapse:collapse;margin:8px 0 24px;font-size:15px}
+.mine th{font-family:var(--mono);font-size:10.5px;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);font-weight:400;text-align:right;padding:8px 6px;border-bottom:1px solid var(--rule)}
+.mine td{padding:10px 6px;border-bottom:1px solid var(--rule);color:var(--soft);text-align:right;font-variant-numeric:tabular-nums;white-space:nowrap}
+.mine th:first-child,.mine td:first-child{text-align:left;padding-left:0;color:var(--text)}
+.mine td:last-child{color:var(--coral);font-weight:600}
+.chips{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:16px}
+.chip{font-family:var(--mono);font-size:11px;letter-spacing:.04em;background:none;border:1px solid var(--rule);color:var(--soft);padding:8px 10px;min-height:36px;border-radius:6px;cursor:pointer}
+.chip:hover{border-color:var(--muted)}
+.chip[aria-pressed="true"]{background:var(--soft);border-color:var(--soft);color:var(--bg);font-weight:500}
+.steps{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:16px}
+.steps[hidden]{display:none}
+.steps>div{display:grid;grid-template-columns:36px 1fr 36px;align-items:center;gap:4px;background:var(--bg);border-radius:6px;padding:8px}
+.steps span{grid-column:1/-1;font-size:10.5px}
+.steps b{font-family:var(--display);font-weight:400;font-size:24px;text-align:center;font-variant-numeric:tabular-nums}
+.steps button{height:36px;border-radius:6px;border:1px solid var(--rule);background:none;color:var(--text);font-size:18px;cursor:pointer}
+.steps button:hover{border-color:var(--muted)}
+.rowlab{display:flex;justify-content:space-between;align-items:baseline;margin:10px 0 6px}
+.rowlab b{font-family:var(--display);font-weight:400;font-size:24px;color:var(--text);letter-spacing:0;font-variant-numeric:tabular-nums}
+.dotsrow{display:flex;flex-wrap:wrap;gap:4px;min-height:14px}
+.dotsrow i{width:13px;height:13px;border-radius:50%;background:var(--coral);border:1.5px solid var(--coral);transition:background .35s ease,border-color .35s ease,transform .35s ease}
+.dotsrow i.off{background:none;border-color:var(--muted);opacity:.7;transform:scale(.8)}
+.dotsrow.them i{background:var(--muted);border-color:var(--muted)}
+.slide{display:block;margin:18px 0 0}
+.slide b{color:var(--text);font-weight:500}
+.tool input[type=range]{width:100%;margin:10px 0 2px;height:32px;accent-color:var(--coral);cursor:pointer}
+.need{font-size:13px;color:var(--muted)}
+.verdict{margin-top:14px;border-radius:8px;padding:14px 16px;border:1px solid var(--rule);background:var(--bg);transition:border-color .35s ease}
+.verdict b{display:block;font-family:var(--display);font-weight:400;font-size:26px;line-height:1.1;margin-bottom:6px}
+.verdict span{font-size:14px;line-height:1.5;color:var(--soft);display:block}
+.verdict.lost{border-color:var(--coral)}.verdict.lost b{color:var(--coral)}
+.verdict.won{border-color:var(--soft)}.verdict.won b{color:var(--soft)}
+
+/* 06: method */
+.how{list-style:none;counter-reset:how;margin:0 0 20px;padding:0}
+.how li{counter-increment:how;position:relative;padding:0 0 16px 44px;color:var(--soft);max-width:46ch}
+.how li::before{content:counter(how);position:absolute;left:0;top:0;width:30px;height:30px;border-radius:50%;border:1px solid var(--rule);display:grid;place-items:center;font-family:var(--mono);font-size:12px;color:var(--soft)}
+.how li strong{display:block;color:var(--text);font-weight:500}
+.cap{min-height:66px;margin-top:10px}
+.cap p{margin:4px 0 0;font-size:15px;line-height:1.4;color:var(--text)}
+
+/* recap + next match */
+.recap{padding:96px 0 40px}
+.recap h2,.cta h2{font-size:clamp(34px,5vw,56px);margin:12px 0 32px}
+.lines{list-style:none;margin:0;padding:0;border-top:1px solid var(--rule)}
+.lines a{display:grid;grid-template-columns:150px minmax(0,1fr);gap:8px 24px;align-items:baseline;padding:18px 0;border-bottom:1px solid var(--rule);text-decoration:none;color:var(--soft)}
+.lines a:hover strong{color:var(--coral)}
+.lines b{font-family:var(--display);font-weight:400;font-size:38px;line-height:1;color:var(--coral);font-variant-numeric:tabular-nums;white-space:nowrap}
+.lines strong{color:var(--text);font-weight:500;transition:color .2s}
+.lines span{font-size:16.5px}
+@media (max-width:640px){.lines a{grid-template-columns:1fr;gap:6px}.lines b{font-size:32px}}
+.cta{padding:72px 0 96px;border-bottom:1px solid var(--rule)}
+.three{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:16px}
+.three article{background:var(--panel);border:1px solid var(--rule);border-radius:10px;padding:24px 22px 26px}
+.three .num{display:block;font-family:var(--display);font-size:56px;line-height:1;color:var(--coral);margin-bottom:14px}
+.three h3{font-size:26px;line-height:1.1;margin-bottom:10px}
+.three p{margin:0;color:var(--soft);font-size:16px}
+@media (max-width:860px){.three{grid-template-columns:1fr}}
+.cta .small{max-width:60ch}
+.cta .go{display:flex;flex-wrap:wrap;gap:12px 20px;align-items:center;margin-top:32px}
+.cta .go a.plain{font-family:var(--mono);font-size:12px;letter-spacing:.08em;text-transform:uppercase;text-decoration:none}
+
+
+/* disclosure */
 .disc{padding:80px 0}
 .disc h2{font-size:clamp(30px,4.4vw,44px);margin:12px 0 12px}
 .disc>.wrap>p{color:var(--soft);max-width:60ch;margin-bottom:28px}
@@ -123,7 +194,7 @@ svg .lbl{fill:var(--soft)}
   <a class="back" href="../" aria-label="Back to padelwithvitto">← <span>padelwithvitto</span></a>
   <a class="brand" href="#top">Nobody <b>wins</b></a>
   <nav aria-label="Chapters">
-    <a href="#count">00 Count</a><a href="#line">01 Line</a><a href="#bird">02 Bird</a><a href="#volley">03 Volley</a><a href="#overhead">04 Overhead</a><span>05 Stress test</span><span>06 Your turn</span>
+    <a href="#count">00 Count</a><a href="#line">01 Line</a><a href="#bird">02 Bird</a><a href="#volley">03 Volley</a><a href="#overhead">04 Overhead</a><a href="#stress">05 Stress test</a><a href="#turn">06 Your turn</a>
   </nav>
   <span class="counter" id="counter">00 / 06</span>
   <button class="ctrl" id="pause" aria-pressed="false">Pause motion</button>
@@ -160,6 +231,7 @@ svg .lbl{fill:var(--soft)}
       <div class="bigcap">of all points ended in an unforced error</div>
       <p>More than half the points in these matches were not won. They were handed over.</p>
     </div>
+    <div class="track">
     <div class="fig" data-fig="dots">
       <div class="fig-head mono"><span>100 points, how they ended</span><span>1,307 charted</span></div>
       <svg id="dots" viewBox="0 0 320 320" role="img" aria-label="A grid of 100 dots. 48 are winners and 52 are unforced errors."></svg>
@@ -168,6 +240,7 @@ svg .lbl{fill:var(--soft)}
         <div><b id="te" style="color:var(--coral)">0</b><span>unforced errors</span></div>
       </div>
       <div class="fig-foot">Scaled to 100 points. The real count is 629 winners and 678 unforced errors across 23 sets.</div>
+    </div>
     </div>
   </div>
 </section>
@@ -185,11 +258,13 @@ svg .lbl{fill:var(--soft)}
       <p>In the other 3 sets the errors were level. Only then did winners decide it: the pair with more winners took all 3.</p>
       <p class="note"><i>Think of a golf scorecard.</i><br>The club medal is rarely won by the player with the most birdies. It is won by the player with the fewest double bogeys.</p>
     </div>
+    <div class="track">
     <div class="fig" data-fig="bells">
       <div class="fig-head mono"><span>Errors per set</span><span id="bellcount">0 / 23 sets</span></div>
       <svg id="bells" viewBox="0 0 320 372" role="img" aria-label="23 sets, one per row. In 20 rows the set winner's dot sits left of the loser's dot, meaning fewer errors. In 3 rows the dots sit on top of each other."></svg>
       <div class="legend"><span><i style="background:var(--soft)"></i>Pair that won the set</span><span><i style="background:var(--coral)"></i>Pair that lost</span><span><i style="background:none;border:1.5px solid #fff"></i>Level</span></div>
       <div class="fig-foot">One row per set, widest gap at the top. The blue dot is never to the right of the coral one. The smallest gap that still lost a set was 2 errors.</div>
+    </div>
     </div>
   </div>
 </section>
@@ -212,6 +287,7 @@ svg .lbl{fill:var(--soft)}
       </div>
       <p style="margin-top:20px;font-size:14.5px;color:var(--muted)">The 1.4 comes from fitting a simple line through all 23 sets. Remove any one set and it stays between 1.3 and 1.4. It is a pattern in this sample, not a law of padel.</p>
     </div>
+    <div class="track">
     <div class="fig" data-fig="scale">
       <div class="fig-head mono"><span>One set, one pair</span><span id="scalestate">Empty scale</span></div>
       <svg id="scale" viewBox="0 0 320 300" role="img" aria-label="A balance scale. 13 extra winners on the left pan, 12 extra errors on the right pan. The scale ends almost level."></svg>
@@ -220,6 +296,7 @@ svg .lbl{fill:var(--soft)}
         <div><b id="se" style="color:var(--coral)">+0</b><span>extra errors</span></div>
       </div>
       <div class="fig-foot" id="scalefoot">Counts are this pair minus their opponents, in one set: 23 winners against 10, and 25 errors against 13.</div>
+    </div>
     </div>
   </div>
 </section>
@@ -243,6 +320,7 @@ svg .lbl{fill:var(--soft)}
       </div>
       <p class="small">A missed volley is also an unforced error, so this overlaps with chapter 01. Read it as the place where the error gap most often shows up, not as a separate law. Sets where the two pairs were level are left out of each count.</p>
     </div>
+    <div class="track">
     <div class="fig" data-fig="net">
       <div class="fig-head mono"><span>More volley errors</span><span id="netstate">0 / 19 pairs</span></div>
       <svg id="net" viewBox="0 0 320 250" role="img" aria-label="19 balls fly at a net. 18 hit the net and drop: those pairs lost the set. One clears the net: that pair won."></svg>
@@ -251,6 +329,7 @@ svg .lbl{fill:var(--soft)}
         <div><b id="nl" style="color:var(--coral)">0</b><span>lost the set</span></div>
       </div>
       <div class="fig-foot">Each ball is one pair in one set. A ball in the net is a set lost. The picture is a tally, not the flight of real shots.</div>
+    </div>
     </div>
   </div>
 </section>
@@ -275,6 +354,7 @@ svg .lbl{fill:var(--soft)}
       </div>
       <p class="small">One caution on cause and effect. A pair that is losing tends to send up weaker lobs, and weak lobs become easy overheads. So some of these overhead winners may be a result of being ahead, not the reason for it.</p>
     </div>
+    <div class="track">
     <div class="fig" data-fig="gate">
       <div class="fig-head mono"><span>More overhead winners</span><span id="gatestate">0 / 22 pairs</span></div>
       <svg id="gate" viewBox="0 0 320 250" role="img" aria-label="22 dots placed by error gap. 17 dots on or left of the error line won the set. 5 dots far to the right of it, at 7 to 12 extra errors, lost."></svg>
@@ -284,17 +364,115 @@ svg .lbl{fill:var(--soft)}
       </div>
       <div class="fig-foot">Each dot is a pair that hit more overhead winners than their opponents in a set. Its position is the error gap: their unforced errors minus the opponents'. The 3 dots at zero were level on errors.</div>
     </div>
+    </div>
   </div>
 </section>
 
-<section class="next">
+<!-- 05 -->
+<section class="ch" id="stress" data-ch="5">
   <div class="wrap">
-    <p class="mono">Still being built</p>
-    <h2>Two more chapters are on the way.</h2>
-    <ol>
-      <li><span class="mono">05</span><b>The reverse stress test</b>Start from a lost set and work backwards. Uses my own four losses.</li>
-      <li><span class="mono">06</span><b>Your turn</b>How to chart one of your own sets with a pen and a grid.</li>
+    <div class="txt">
+      <p class="mono">05 · The reverse stress test</p>
+      <h2>Start from the loss and work backwards.</h2>
+      <p>A reverse stress test is a tool from finance. A normal plan asks what could go wrong. This one starts from the thing that already went wrong and asks: <strong>what would it have taken to avoid it?</strong></p>
+      <p class="note" style="margin-bottom:24px"><i>Late for a 7 pm match.</i><br>You do not ask "was there traffic?" There is always traffic. You ask "what time should I have left?"</p>
+      <p>For a lost set the question becomes: how many fewer errors would have put us on the winning side of the line?</p>
+      <p>I ran it on my own four sets in this sample: a Padel Pro Gold final and a Gold round of 16. I lost all four.</p>
+      <table class="mine">
+        <thead><tr><th>My set</th><th>Score</th><th>Errors, us–them</th><th>To flip</th></tr></thead>
+        <tbody>
+          <tr><td>Gold final · set 1</td><td>4–6</td><td>15 – 6</td><td>10</td></tr>
+          <tr><td>Gold final · set 2</td><td>2–6</td><td>14 – 5</td><td>10</td></tr>
+          <tr><td>Gold R16 · set 1</td><td>3–6</td><td>20 – 15</td><td>6</td></tr>
+          <tr><td>Gold R16 · set 2</td><td>4–6</td><td>20 – 20</td><td>1</td></tr>
+        </tbody>
+      </table>
+      <p>The last one stings most. Errors were level at 20 each and winners were 12 against 13. <strong>One fewer miss</strong> and we are on the other side of the line.</p>
+      <p>In all four sets, at least half of my pair's errors were mine. That is my homework, not my partner's.</p>
+      <p class="small">Taking away an error does not hand you the point. It keeps the rally alive, and you still have to play it. Read the flip number as the distance to the line, not as a promise.</p>
+    </div>
+    <div class="track nopin">
+    <div class="fig tool" id="flip">
+      <div class="fig-head mono"><span>Flip the set</span><span id="fscore">Lost 4–6</span></div>
+      <div class="chips" id="fchips" role="group" aria-label="Choose a set"></div>
+      <div class="steps" id="fsteps" hidden>
+        <div><span class="mono">Our errors</span><button type="button" data-k="u" data-d="-1" aria-label="Fewer of our errors">−</button><b id="fsu">18</b><button type="button" data-k="u" data-d="1" aria-label="More of our errors">+</button></div>
+        <div><span class="mono">Their errors</span><button type="button" data-k="t" data-d="-1" aria-label="Fewer of their errors">−</button><b id="fst">14</b><button type="button" data-k="t" data-d="1" aria-label="More of their errors">+</button></div>
+        <div><span class="mono">Our winners</span><button type="button" data-k="uw" data-d="-1" aria-label="Fewer of our winners">−</button><b id="fsuw">12</b><button type="button" data-k="uw" data-d="1" aria-label="More of our winners">+</button></div>
+        <div><span class="mono">Their winners</span><button type="button" data-k="tw" data-d="-1" aria-label="Fewer of their winners">−</button><b id="fstw">12</b><button type="button" data-k="tw" data-d="1" aria-label="More of their winners">+</button></div>
+      </div>
+      <div class="rowlab mono"><span>Our errors</span><b id="fu">15</b></div>
+      <div class="dotsrow" id="fud"></div>
+      <div class="rowlab mono"><span>Their errors</span><b id="ft">6</b></div>
+      <div class="dotsrow them" id="ftd"></div>
+      <label class="slide mono" for="fr">Errors we take away: <b id="fn">0</b></label>
+      <input type="range" id="fr" min="0" max="15" value="0" step="1">
+      <div class="need" id="fneed"></div>
+      <div class="verdict lost" id="fv" aria-live="polite"><b id="fvt"></b><span id="fvs"></span></div>
+      <div class="fig-foot" id="fwin"></div>
+    </div>
+    </div>
+  </div>
+</section>
+
+<!-- 06 -->
+<section class="ch" id="turn" data-ch="6">
+  <div class="wrap">
+    <div class="txt">
+      <p class="mono">06 · Your turn</p>
+      <h2>Chart one set of your own.</h2>
+      <p>You do not need my spreadsheet. A pen, a grid and one set to watch is enough. Video helps, because you can rewind.</p>
+      <ol class="how">
+        <li><strong>Fix everyone's place.</strong>Left-side player on the left, right-side player on the right. The pair you are following on top, the opponents below. Keep it the same all match.</li>
+        <li><strong>Note who is serving.</strong>Each game, mark which pair serves and which pair returns.</li>
+        <li><strong>Watch the point to its end.</strong>Then ask the one question: was it won, or was it given away?</li>
+        <li><strong>Put one mark in one box.</strong>Whose racket, and winner or error. Add the shot type if you want more detail.</li>
+        <li><strong>Add it up, then run the stress test.</strong>Count the errors for each pair. The gap plus one is your distance to the line.</li>
+      </ol>
+      <p>When you cannot decide which box, pick a rule and keep it for the whole match. A consistent count teaches you more than a perfect one.</p>
+      <p class="note"><i>This is my system, and it is not always right.</i><br>I miss calls, and I am happy to say so. Change it, improve it, or build your own. If you find a better way, <a href="https://instagram.com/padelwithvitto" rel="noopener">tell me</a>.</p>
+    </div>
+    <div class="track">
+    <div class="fig" data-fig="sheet">
+      <div class="fig-head mono"><span>Twelve points, charted</span><span id="capn">Ready</span></div>
+      <svg id="sheet" viewBox="0 0 320 262" role="img" aria-label="A charting grid with four player boxes: your pair on top, opponents below, left player on the left, right player on the right. Tally marks appear one point at a time. Your pair ends with 2 errors, the opponents with 6."></svg>
+      <div class="cap"><p id="capt"></p></div>
+      <div class="tally">
+        <div><b id="shu" style="color:var(--coral)">0</b><span>points your pair gave away</span></div>
+        <div><b id="sht" style="color:var(--coral)">0</b><span>points they gave away</span></div>
+      </div>
+      <div class="fig-foot">A made-up run of points to show the method. W is a winner, UE is an unforced error.</div>
+    </div>
+    </div>
+  </div>
+</section>
+
+<section class="recap" id="recap">
+  <div class="wrap">
+    <p class="mono">In short</p>
+    <h2>The whole guide in six lines.</h2>
+    <ol class="lines">
+      <li class="rv" style="--i:0"><a href="#count"><b>52%</b><span><strong>Half of all points are given away.</strong> More points end in a miss nobody forced than in a winner.</span></a></li>
+      <li class="rv" style="--i:1"><a href="#line"><b>20 of 20</b><span><strong>Fewer errors won every set.</strong> Not most of them. All of them.</span></a></li>
+      <li class="rv" style="--i:2"><a href="#bird"><b>0 of 8</b><span><strong>Winners cannot buy back errors.</strong> More winners plus more errors lost every time.</span></a></li>
+      <li class="rv" style="--i:3"><a href="#volley"><b>1 of 19</b><span><strong>The missed volley costs the most.</strong> Hitting more volley winners did not make up for it.</span></a></li>
+      <li class="rv" style="--i:4"><a href="#overhead"><b>17 of 22</b><span><strong>Overheads pay, but only behind the line.</strong> They never rescued a pair that was losing on errors.</span></a></li>
+      <li class="rv" style="--i:5"><a href="#stress"><b>Gap + 1</b><span><strong>Work backwards from a loss.</strong> Your error gap plus one is how far you were from flipping the set.</span></a></li>
     </ol>
+  </div>
+</section>
+
+<section class="cta" id="next-match">
+  <div class="wrap">
+    <p class="mono">Your next match</p>
+    <h2>Three things to take on court.</h2>
+    <div class="three">
+      <article class="rv" style="--i:0"><span class="num">1</span><h3>One more ball.</h3><p>When you are not sure the winner is there, put the ball back in play. Make them hit one more.</p></article>
+      <article class="rv" style="--i:1"><span class="num">2</span><h3>Safe volley, earned smash.</h3><p>At the net, play the volley you know you will make. Keep the big swing for the high ball that is clearly yours.</p></article>
+      <article class="rv" style="--i:2"><span class="num">3</span><h3>Count after the set.</h3><p>Ask one question: who gave away more points? If it was you, that number is your next training session.</p></article>
+    </div>
+    <p class="small">These come from 23 sets at one level of play. Test them in your own game and keep what holds up.</p>
+    <div class="go"><a class="btn" href="../">More guides →</a><a class="plain" href="https://instagram.com/padelwithvitto" rel="noopener">Tell me what you found · @padelwithvitto</a></div>
   </div>
 </section>
 
@@ -317,45 +495,51 @@ svg .lbl{fill:var(--soft)}
 
 </main>
 
-<footer class="mono"><div class="wrap"><span>Guide 03 · chapters 00–04 of 06</span><span>Made by Vitto · coach · <a href="https://instagram.com/padelwithvitto" rel="noopener">@padelwithvitto</a></span></div></footer>
+<footer class="mono"><div class="wrap"><span>Guide 03 · Nobody wins padel</span><span>Made by Vitto · coach · <a href="https://instagram.com/padelwithvitto" rel="noopener">@padelwithvitto</a></span></div></footer>
 
 <script>
 (()=>{
 const NS='http://www.w3.org/2000/svg';
 const el=(p,t,a={},txt)=>{const e=document.createElementNS(NS,t);for(const k in a)e.setAttribute(k,a[k]);if(txt!=null)e.textContent=txt;p.appendChild(e);return e};
+const set=(e,a)=>{for(const k in a)e.setAttribute(k,a[k])};
 const clamp=(v,a=0,b=1)=>Math.max(a,Math.min(b,v));
-const ease=t=>1-Math.pow(1-t,3);
+const smooth=t=>t*t*(3-2*t);
+/* local progress of item i out of n, each item taking a window of w items, so neighbours overlap and nothing pops */
+const part=(p,i,n,w)=>clamp((p*(n+w-1)-i)/w);
 const C={soft:'#b6dfed',coral:'#fd6e6e',rule:'#1d4a66',muted:'#8fb3c4',dim:'#17486a'};
 const $=id=>document.getElementById(id);
 
 /* ---- 00: 100 dots ---- */
 const dots=[];{
   const s=$('dots');
-  for(let i=0;i<100;i++){const x=i%10,y=Math.floor(i/10);dots.push(el(s,'circle',{cx:16+x*32,cy:16+y*32,r:10,fill:C.dim}))}
+  for(let i=0;i<100;i++){const cx=16+(i%10)*32,cy=16+Math.floor(i/10)*32;el(s,'circle',{cx,cy,r:10,fill:C.dim});dots.push(el(s,'circle',{cx,cy,r:4,fill:i<48?C.soft:C.coral,opacity:0}))}
 }
 function drawDots(p){
-  const n=Math.round(ease(p)*100);
-  dots.forEach((d,i)=>d.setAttribute('fill',i<n?(i<48?C.soft:C.coral):C.dim));
-  $('tw').textContent=Math.min(n,48);$('te').textContent=Math.max(0,n-48);
+  let w=0,e=0;
+  dots.forEach((d,i)=>{const t=smooth(part(p,i,100,12));set(d,{opacity:t,r:4+6*t});if(t>.5)i<48?w++:e++});
+  $('tw').textContent=w;$('te').textContent=e;
 }
 
 /* ---- 01: dumbbells. [winner's UEs, loser's UEs] per set, widest gap first ---- */
 const SETS=[[13,25],[14,24],[4,14],[6,15],[5,14],[8,17],[17,26],[7,16],[6,13],[15,22],[9,16],[16,23],[9,16],[15,21],[7,13],[15,20],[14,19],[10,14],[10,14],[14,16],[20,20],[17,17],[16,16]];
-const rows=[];{
+const rows=[];let lvl;{
   const s=$('bells'),x0=14,x1=306,max=28,X=v=>x0+(x1-x0)*v/max,top=34,rh=14;
   [0,10,20].forEach(v=>{el(s,'line',{x1:X(v),x2:X(v),y1:top-8,y2:top+rh*23,stroke:C.rule,'stroke-width':1});el(s,'text',{x:X(v),y:16,'text-anchor':v?'middle':'start'},v+(v===20?' errors':''))});
   SETS.forEach(([w,l],i)=>{
     const y=top+i*rh+4,g=el(s,'g',{opacity:0});
-    if(w===l){el(g,'circle',{cx:X(w),cy:y,r:4.5,fill:'none',stroke:'#fff','stroke-width':1.5})}
-    else{el(g,'line',{x1:X(w),x2:X(l),y1:y,y2:y,stroke:C.muted,'stroke-width':1.5,opacity:.55});el(g,'circle',{cx:X(l),cy:y,r:4.5,fill:C.coral});el(g,'circle',{cx:X(w),cy:y,r:4.5,fill:C.soft})}
-    rows.push(g);
+    if(w===l){el(g,'circle',{cx:X(w),cy:y,r:4.5,fill:'none',stroke:'#fff','stroke-width':1.5});rows.push({g})}
+    else{const ln=el(g,'line',{x1:X(w),x2:X(w),y1:y,y2:y,stroke:C.muted,'stroke-width':1.5,opacity:.55}),lo=el(g,'circle',{cx:X(w),cy:y,r:4.5,fill:C.coral});el(g,'circle',{cx:X(w),cy:y,r:4.5,fill:C.soft});rows.push({g,ln,lo,a:X(w),b:X(l)})}
   });
-  el(s,'text',{x:x0+6,y:top+rh*21+8,'text-anchor':'start',class:'lbl'},'level on errors →').setAttribute('id','lvl');
+  lvl=el(s,'text',{x:x0+6,y:top+rh*21+8,'text-anchor':'start',class:'lbl',opacity:0},'level on errors →');
 }
 function drawBells(p){
-  const n=Math.round(ease(p)*23);
-  rows.forEach((g,i)=>g.setAttribute('opacity',i<n?1:0));
-  $('lvl').setAttribute('opacity',n>20?1:0);
+  let n=0;
+  rows.forEach((r,i)=>{
+    const t=smooth(part(p,i,23,4));r.g.setAttribute('opacity',clamp(t*2.5));
+    if(r.ln){const x=r.a+(r.b-r.a)*t;r.ln.setAttribute('x2',x);r.lo.setAttribute('cx',x)}   /* the gap opens: the loser's dot slides away from the winner's */
+    if(t>.5)n++;
+  });
+  lvl.setAttribute('opacity',smooth(part(p,20,23,4)));
   $('bellcount').textContent=n+' / 23 sets';
 }
 
@@ -368,33 +552,31 @@ const sc={};{
   sc.pan=[0,1].map(i=>{const g=el(s,'g');
     el(g,'path',{d:'M0 0 L-44 58 M0 0 L44 58',stroke:C.muted,'stroke-width':1.2,fill:'none'});
     el(g,'path',{d:'M-50 58 H50',stroke:'#fff','stroke-width':3,'stroke-linecap':'round'});
-    const balls=[];const n=i?12:13;
-    for(let k=0;k<n;k++){const r=Math.floor(k/5),c=k%5,inRow=Math.min(5,n-r*5);balls.push(el(g,'circle',{cx:(c-(inRow-1)/2)*17,cy:49-r*16,r:7.5,fill:i?C.coral:C.soft,opacity:0}))}
+    const balls=[],n=i?12:13;
+    for(let k=0;k<n;k++){const r=Math.floor(k/5),c=k%5,inRow=Math.min(5,n-r*5);balls.push({y:49-r*16,c:el(g,'circle',{cx:(c-(inRow-1)/2)*17,cy:49-r*16,r:7.5,fill:i?C.coral:C.soft,opacity:0})})}
     el(g,'text',{x:0,y:80,'text-anchor':'middle',class:'lbl'},i?'errors':'winners');
     return {g,balls}});
 }
 function drawScale(p){
-  const a=clamp(p/.42),b=clamp((p-.5)/.42);
-  const w=Math.round(ease(a)*13),e=Math.round(ease(b)*12);
-  sc.pan[0].balls.forEach((c,i)=>c.setAttribute('opacity',i<w?1:0));
-  sc.pan[1].balls.forEach((c,i)=>c.setAttribute('opacity',i<e?1:0));
+  const w=13*clamp(p/.44),e=12*clamp((p-.5)/.42);
+  [w,e].forEach((v,k)=>sc.pan[k].balls.forEach((b,i)=>{const t=smooth(clamp((v-i)/1.6));set(b.c,{opacity:t,cy:b.y-(1-t)*22})}));
   const th=clamp((w-e)*1.7,-22,22)*Math.PI/180,L=104,cx=160,cy=92;
   const lx=cx-L*Math.cos(th),ly=cy+L*Math.sin(th),rx=cx+L*Math.cos(th),ry=cy-L*Math.sin(th);
-  sc.beam.setAttribute('x1',lx);sc.beam.setAttribute('y1',ly);sc.beam.setAttribute('x2',rx);sc.beam.setAttribute('y2',ry);
+  set(sc.beam,{x1:lx,y1:ly,x2:rx,y2:ry});
   sc.pan[0].g.setAttribute('transform',`translate(${lx} ${ly})`);sc.pan[1].g.setAttribute('transform',`translate(${rx} ${ry})`);
-  $('sw').textContent='+'+w;$('se').textContent='+'+e;
-  $('scalestate').textContent=e===12?'Net: +1 point · lost 6–7':w===13&&e>0?'Now the errors':w>0&&e===0?'Winners pile up':'Empty scale';
+  $('sw').textContent='+'+Math.round(w);$('se').textContent='+'+Math.round(e);
+  $('scalestate').textContent=e>11.5?'Net: +1 point · lost 6–7':e>.5?'Now the errors':w>.5?'Winners pile up':'Empty scale';
 }
 
 /* ---- 03: balls into the net. 19 pairs with more volley UEs: 18 lost, 1 won ---- */
-const nb=[];{
+const nb=[];let nLost,nWon;{
   const s=$('net'),gy=222,nx=160,ny=152;
   el(s,'line',{x1:8,x2:312,y1:gy,y2:gy,stroke:C.muted,'stroke-width':2,'stroke-linecap':'round'});
   for(let y=ny+8;y<gy;y+=9)el(s,'line',{x1:nx-4,x2:nx+4,y1:y,y2:y,stroke:C.rule,'stroke-width':1.5});
   el(s,'line',{x1:nx,x2:nx,y1:ny,y2:gy,stroke:'#fff','stroke-width':3,'stroke-linecap':'round'});
   el(s,'text',{x:nx,y:ny-10,'text-anchor':'middle',class:'lbl'},'net');
-  sc_lost=el(s,'text',{x:100,y:gy+20,'text-anchor':'middle',class:'lbl',opacity:0},'lost the set');
-  sc_won=el(s,'text',{x:262,y:gy+20,'text-anchor':'middle',class:'lbl',opacity:0},'won anyway');
+  nLost=el(s,'text',{x:100,y:gy+20,'text-anchor':'middle',class:'lbl',opacity:0},'lost the set');
+  nWon=el(s,'text',{x:262,y:gy+20,'text-anchor':'middle',class:'lbl',opacity:0},'won anyway');
   let k=0;
   for(let i=0;i<19;i++){
     const over=i===11,c=el(s,'circle',{r:6,fill:over?C.soft:C.coral,opacity:0});
@@ -402,19 +584,18 @@ const nb=[];{
     else{const row=Math.floor(k/6),col=k%6;nb.push({c,over,S:[14,150],Q:[86,70+(i*29%40)],H:[nx-8,166+(i*37%44)],P:[nx-10-col*13-row*6.5,gy-7-row*12]});k++}
   }
 }
-var sc_lost,sc_won;
 function drawNet(p){
-  let won=0,lost=0,seen=0;
+  let won=0,lost=0,seen=0;const q=(a,m,z,u)=>(1-u)*(1-u)*a+2*u*(1-u)*m+u*u*z;
   nb.forEach((b,i)=>{
-    const t=clamp((p*1.12-i/19*.92)/.18);
-    b.c.setAttribute('opacity',t>0?1:0);if(t<=0)return;seen++;
-    let x,y;const q=(a,m,z,u)=>(1-u)*(1-u)*a+2*u*(1-u)*m+u*u*z;
-    if(b.over){x=q(b.S[0],b.Q[0],b.E[0],t);y=q(b.S[1],b.Q[1],b.E[1],t);if(t>=1)won++}
+    const t=part(p,i,19,3.2);
+    b.c.setAttribute('opacity',clamp(t*8));if(t<=0)return;seen++;
+    let x,y;
+    if(b.over){x=q(b.S[0],b.Q[0],b.E[0],t);y=q(b.S[1],b.Q[1],b.E[1],t);if(t>.999)won++}
     else if(t<.6){const u=t/.6;x=q(b.S[0],b.Q[0],b.H[0],u);y=q(b.S[1],b.Q[1],b.H[1],u)}
-    else{const u=ease((t-.6)/.4);x=b.H[0]+(b.P[0]-b.H[0])*u;y=b.H[1]+(b.P[1]-b.H[1])*u;if(t>=1)lost++}
-    b.c.setAttribute('cx',x);b.c.setAttribute('cy',y);
+    else{const u=smooth((t-.6)/.4);x=b.H[0]+(b.P[0]-b.H[0])*u;y=b.H[1]+(b.P[1]-b.H[1])*u;if(t>.999)lost++}
+    set(b.c,{cx:x,cy:y});
   });
-  sc_lost.setAttribute('opacity',lost?1:0);sc_won.setAttribute('opacity',won?1:0);
+  nLost.setAttribute('opacity',lost?1:0);nWon.setAttribute('opacity',won?1:0);
   $('nw').textContent=won;$('nl').textContent=lost;$('netstate').textContent=seen+' / 19 pairs';
 }
 
@@ -429,30 +610,84 @@ const gd=[];{
   el(s,'line',{x1:X(1),x2:X(1),y1:30,y2:by+10,stroke:C.coral,'stroke-width':2,'stroke-dasharray':'5 5'});
   el(s,'text',{x:X(1)+6,y:22,class:'lbl'},'the error line');
   const stack={};
-  GATE.forEach(v=>{const n=stack[v]=(stack[v]||0)+1;gd.push({won:v<=0,c:el(s,'circle',{cx:X(v),cy:by-(n-1)*12.5,r:5.2,fill:v<=0?C.soft:C.coral,opacity:0})})});
+  GATE.forEach(v=>{const n=stack[v]=(stack[v]||0)+1,y=by-(n-1)*12.5;gd.push({won:v<=0,y,c:el(s,'circle',{cx:X(v),cy:y,r:5.2,fill:v<=0?C.soft:C.coral,opacity:0})})});
 }
 function drawGate(p){
-  const n=Math.round(ease(p)*22);let w=0,l=0;
-  gd.forEach((d,i)=>{const on=i<n;d.c.setAttribute('opacity',on?1:0);if(on)d.won?w++:l++});
-  $('gw').textContent=w;$('gl').textContent=l;$('gatestate').textContent=n+' / 22 pairs';
+  let w=0,l=0;
+  gd.forEach((d,i)=>{const t=smooth(part(p,i,22,3.5));set(d.c,{opacity:t,cy:d.y-(1-t)*46});if(t>.5)d.won?w++:l++});
+  $('gw').textContent=w;$('gl').textContent=l;$('gatestate').textContent=(w+l)+' / 22 pairs';
 }
 
-/* ---- scroll driver ---- */
-const draw={dots:drawDots,bells:drawBells,scale:drawScale,net:drawNet,gate:drawGate};
-const figs=[...document.querySelectorAll('.fig')];
+/* ---- 05: flip the set (interactive, not scroll-driven) ---- */
+{
+  const F=[{n:'Final · set 1',s:'4–6',u:15,t:6,uw:17,tw:13},{n:'Final · set 2',s:'2–6',u:14,t:5,uw:10,tw:18},{n:'R16 · set 1',s:'3–6',u:20,t:15,uw:8,tw:13},{n:'R16 · set 2',s:'4–6',u:20,t:20,uw:12,tw:13},{n:'Your set',custom:true,u:18,t:14,uw:12,tw:12}];
+  let cur=0;const r=$('fr'),chips=$('fchips');
+  const fill=(host,n)=>{while(host.children.length<n)host.appendChild(document.createElement('i'));while(host.children.length>n)host.lastChild.remove()};
+  function render(){
+    const f=F[cur],rem=Math.min(+r.value,f.u),now=f.u-rem,need=Math.max(0,f.u-f.t+1);
+    fill($('fud'),f.u);[...$('fud').children].forEach((d,i)=>d.className=i<now?'':'off');
+    fill($('ftd'),f.t);
+    $('fu').textContent=now;$('ft').textContent=f.t;$('fn').textContent=rem;
+    $('fneed').textContent=need?'The line is '+need+(need===1?' error':' errors')+' away.':'Already across the line.';
+    let cls,t,sub;
+    if(now<f.t){cls='won';t=need?'Flipped.':'Already on the winning side.';sub=now+' errors against '+f.t+'. In this sample the pair with fewer errors won 20 sets out of 20.'}
+    else if(now===f.t){cls='';t='Level on errors.';sub='Now winners decide: '+f.uw+' against '+f.tw+'. '+(f.uw>f.tw?'The pair with more winners took all 3 level sets.':f.uw<f.tw?'The pair with fewer winners lost all 3 level sets.':'Level there too, so it is a coin toss.')}
+    else{cls='lost';const left=need-rem;t='Still on the losing side.';sub=now+' errors against '+f.t+'. '+left+' more to take away. No pair in this sample won from here.'}
+    $('fv').className='verdict '+cls;$('fvt').textContent=t;$('fvs').textContent=sub;
+    $('fwin').textContent=(f.custom?'Set your own numbers with the plus and minus buttons, then drag the slider. ':'Winners in this set: us '+f.uw+', them '+f.tw+'. ')+'Drag the slider to take errors away.';
+  }
+  function pick(i){
+    cur=i;const f=F[i];r.max=f.u;r.value=0;
+    [...chips.children].forEach((b,k)=>b.setAttribute('aria-pressed',k===i));
+    $('fsteps').hidden=!f.custom;$('fscore').textContent=f.custom?'Your numbers':'Lost '+f.s;render();
+  }
+  F.forEach((f,i)=>{const b=document.createElement('button');b.type='button';b.className='chip';b.textContent=f.n;b.addEventListener('click',()=>pick(i));chips.appendChild(b)});
+  document.querySelectorAll('#fsteps button').forEach(b=>b.addEventListener('click',()=>{
+    const f=F[4],k=b.dataset.k;f[k]=clamp(f[k]+(+b.dataset.d),0,k==='u'||k==='t'?30:40);
+    $('fs'+k).textContent=f[k];r.max=f.u;if(+r.value>f.u)r.value=f.u;render();
+  }));
+  r.addEventListener('input',render);pick(0);
+}
+
+/* ---- 06: a charting sheet filling in, one point at a time. [box, w|e, what happened, where it goes] ---- */
+const PTS=[[0,'w','Smash, not returned','winner, your left player'],[3,'e','Volley into the net','error, their right player'],[2,'e','Return hit long','error, their left player'],[1,'e','Lob into the back glass','error, your right player'],[2,'w','Volley into the open court','winner, their left player'],[3,'e','Bandeja into the net','error, their right player'],[1,'w','Volley that forced a miss','winner, your right player'],[0,'e','Easy forehand into the net','error, your left player'],[3,'e','Backhand off the glass, netted','error, their right player'],[2,'e','Volley hit wide','error, their left player'],[0,'w','Smash out of the court','winner, your left player'],[2,'e','Return into the net','error, their left player']];
+const sh={marks:[],boxes:[]};{
+  const s=$('sheet'),bx=k=>k%2?164:4,by=k=>k<2?22:158,cnt={};
+  el(s,'text',{x:4,y:13},'YOUR PAIR');el(s,'text',{x:4,y:149},'OPPONENTS');
+  for(let k=0;k<4;k++){
+    sh.boxes.push(el(s,'rect',{x:bx(k),y:by(k),width:152,height:100,rx:6,fill:'none',stroke:C.rule,'stroke-width':1.5}));
+    el(s,'text',{x:bx(k)+10,y:by(k)+20,class:'lbl'},k%2?'RIGHT PLAYER':'LEFT PLAYER');
+    el(s,'text',{x:bx(k)+10,y:by(k)+52},'W');el(s,'text',{x:bx(k)+10,y:by(k)+82},'UE');
+  }
+  PTS.forEach(([k,ty])=>{const n=cnt[k+ty]=(cnt[k+ty]||0)+1,x=bx(k)+30+n*10,y=by(k)+(ty==='w'?38:68);
+    sh.marks.push(el(s,'line',{x1:x,x2:x,y1:y,y2:y+18,stroke:ty==='w'?C.soft:C.coral,'stroke-width':2.5,'stroke-linecap':'round','stroke-dasharray':18,'stroke-dashoffset':18,opacity:0}))});
+}
+function drawSheet(p){
+  const q=clamp(p/.9);let cur=-1,ue=0,te=0;
+  sh.marks.forEach((m,i)=>{const t=smooth(part(q,i,12,1.5));set(m,{'stroke-dashoffset':18*(1-t),opacity:t>0?1:0});if(t>.02)cur=i;if(t>.5&&PTS[i][1]==='e')PTS[i][0]<2?ue++:te++});
+  const done=q>=1;
+  sh.boxes.forEach((b,k)=>b.setAttribute('stroke',cur>=0&&!done&&PTS[cur][0]===k?'#fff':C.rule));
+  $('capn').textContent=cur<0?'Ready':'Point '+(cur+1)+' of 12';
+  $('capt').textContent=cur<0?'Watch the point, then ask: was it won, or given away?':done?'Pen down. Your pair gave away 2 points and they gave away 6.':PTS[cur][2]+' → '+PTS[cur][3]+'.';
+  $('shu').textContent=ue;$('sht').textContent=te;
+}
+
+/* ---- scroll driver: scroll sets a target, the picture eases toward it at a capped speed ---- */
+const draw={dots:drawDots,bells:drawBells,scale:drawScale,net:drawNet,gate:drawGate,sheet:drawSheet};
+const figs=[...document.querySelectorAll('.fig[data-fig]')].map(f=>({track:f.parentNode,fn:draw[f.dataset.fig],cur:0,last:-1}));
 const chs=[...document.querySelectorAll('.ch')];
 const links=[...document.querySelectorAll('.top nav a')];
-const reduce=matchMedia('(prefers-reduced-motion: reduce)').matches;
-let paused=reduce;
-function frame(){
-  const vh=innerHeight;
-  figs.forEach(f=>{
-    const sec=f.closest('.ch').getBoundingClientRect(),r=f.getBoundingClientRect();
-    const sticky=getComputedStyle(f).position==='sticky';
-    /* desktop: progress through the chapter. phone: progress as the figure rises through the screen */
-    const p=paused?1:sticky?clamp((vh*.55-sec.top)/Math.max(1,sec.height-vh*.75)*1.25):clamp((vh*.92-r.top)/(vh*.6));
-    draw[f.dataset.fig](p);
-  });
+const desk=matchMedia('(min-width:861px)');
+let paused=matchMedia('(prefers-reduced-motion: reduce)').matches;
+const FULL=3.2;                       /* seconds: the fastest a figure may play from empty to complete */
+function target(o,vh){
+  const r=o.track.getBoundingClientRect();
+  /* laptop: the figure is pinned beside the text and plays across the whole chapter.
+     phone: the figure pins under the header for a short stretch and plays while it is pinned. */
+  const start=vh*(desk.matches?.62:.3),end=desk.matches?Math.min(vh*.95-r.height,start-vh*.5):68-vh*.65;
+  return clamp((start-r.top)/(start-end));
+}
+function chrome(vh){
   let cur=0;chs.forEach((c,i)=>{if(c.getBoundingClientRect().top<vh*.5)cur=i});
   const started=chs[0].getBoundingClientRect().top<vh*.5;
   $('counter').textContent=String(cur).padStart(2,'0')+' / 06';
@@ -460,11 +695,29 @@ function frame(){
   const max=document.documentElement.scrollHeight-vh;
   $('progress').style.width=(max>0?clamp(scrollY/max)*100:0)+'%';
 }
-let tick=false;
-const req=()=>{if(!tick){tick=true;requestAnimationFrame(()=>{tick=false;frame()})}};
-addEventListener('scroll',req,{passive:true});addEventListener('resize',req);
+let raf=0,prev=0;
+function loop(now){
+  const dt=clamp((now-prev)/1000,.001,.05);prev=now;const vh=innerHeight;let busy=false;
+  figs.forEach(o=>{
+    const tgt=paused?1:target(o,vh);
+    if(paused)o.cur=1;
+    else{const d=tgt-o.cur,cap=dt/FULL;o.cur=Math.abs(d)<.0006?tgt:o.cur+clamp(d*(1-Math.exp(-dt*4.5)),-cap*2.5,cap)}
+    if(o.cur!==o.last){o.fn(o.cur);o.last=o.cur}
+    if(o.cur!==tgt)busy=true;
+  });
+  chrome(vh);
+  raf=busy?requestAnimationFrame(loop):0;
+}
+const kick=()=>{if(!raf){prev=performance.now()-16;raf=requestAnimationFrame(loop)}};
+addEventListener('scroll',kick,{passive:true});addEventListener('resize',kick);
+
+/* lists reveal one line at a time */
+const rv=[...document.querySelectorAll('.rv')];
+if('IntersectionObserver' in window){const io=new IntersectionObserver(es=>es.forEach(e=>{if(e.isIntersecting){e.target.classList.add('in');io.unobserve(e.target)}}),{rootMargin:'0px 0px -12% 0px'});rv.forEach(e=>io.observe(e))}
+else rv.forEach(e=>e.classList.add('in'));
+
 const btn=$('pause');
-function setPaused(v){paused=v;btn.setAttribute('aria-pressed',v);btn.textContent=v?'Play motion':'Pause motion';frame()}
+function setPaused(v){paused=v;document.body.classList.toggle('still',v);btn.setAttribute('aria-pressed',v);btn.textContent=v?'Play motion':'Pause motion';kick()}
 btn.addEventListener('click',()=>setPaused(!paused));
 setPaused(paused);
 })();
