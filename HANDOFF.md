@@ -3,15 +3,14 @@
 Updated 15 Nov 2026.
 
 ## Done
-- Back link "← padelwithvitto" added to the headers of padel-101, shot-breaks and road-to-pro (edited in this repo, branch claude/determined-dirac-p8emgx).
-- Guide 3 phase 1 built at people-lose-it/index.html: skeleton, hero, chapters 00 (the count), 01 (the hard line), 02 (a bird in the hand), "still being built" list, data disclosure. Landing page has a "Guide 03 · In progress" card.
-- Checked at 1280 px and 360 px: no script errors, no sideways scroll, figures end on 48/52, 20 of 20, +13/+12.
+- Back link "← padelwithvitto" on padel-101, shot-breaks and road-to-pro. Live on main (Pages deploy of 4cf4def succeeded).
+- Guide 3 phase 1, live on main: people-lose-it/index.html with hero, chapters 00 (count), 01 (hard line), 02 (bird in the hand), data disclosure, plus the landing card.
+- Guide 3 phase 2, on branch claude/determined-dirac-p8emgx only (not merged): chapter 03 (volley errors, balls-into-the-net tally, 1 of 19, short-putt analogy) and chapter 04 (overhead winners, dot plot against the error line, 17 of 22, sambal-and-rice analogy). Checked at 1280 px and 360 px: no script errors, no sideways scroll, figures end on 1/18 and 17/5.
 
 ## Left
-- Merge the branch into main so GitHub Pages shows it, then check live.
+- Merge phase 2 into main when Vitto says so. The live URL cannot be fetched from the cloud session (proxy blocks github.io), so Vitto checks it by eye.
 - Copy the three edited index.html files (padel-101, shot-breaks, road-to-pro) back into the local source folders. Otherwise the next publish.sh run overwrites the back link. Guide 3 and the landing page live only in this repo, so publish.sh leaves them alone.
-- Guide 3 phase 2: chapters 03 (volley errors, 1 of 19) and 04 (overhead winners, 17 of 22, never behind the error line).
-- Guide 3 phase 3: chapter 05 reverse stress test with an interactive "flip the set" slider, using Vitto's four sets (a Gold final and a Gold round of 16; partners and opponents anonymised), and chapter 06 method (name players consistently: left player left, right player right, your pair on top, opponents below; note serving vs returning; watch each point; tally the box). Method first, copyable sheet with simple rules second. Invite readers to improve it or build their own.
+- Guide 3 phase 3: chapter 05 reverse stress test with an interactive "flip the set" slider, using Vitto's four sets (a Gold final and a Gold round of 16; partners and opponents anonymised), and chapter 06 method (name players consistently: left player left, right player right, your pair on top, opponents below; note serving vs returning; watch each point; tally the box). Method first, copyable sheet with simple rules second. Invite readers to improve it or build their own. Then remove the "still being built" section and the "In progress" label on the landing card.
 - Padel 101 phases 3-4.
 
 ## Guide 3 decisions
