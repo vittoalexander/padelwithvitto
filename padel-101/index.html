@@ -1,0 +1,891 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Padel 101</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600&family=DM+Serif+Display:ital@0;1&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+/* Layout idea: a night-court spec sheet. Every section is a sticky "instrument panel":
+   a code-drawn court on one side, numbered readouts on the other, driven by scroll. */
+:root{
+  --court:#121417;      /* page: graphite (PadelIQ direction C) */
+  --panel:#1D2025;      /* raised panels */
+  --line:#F4F5F6;       /* court lines, main text */
+  --muted:#9AA3AB;      /* labels, secondary text */
+  --rule:#2A2E34;
+  --ball:#EC4C47;       /* the one bold colour: PadelIQ coral */
+  --glass:#A7C7DC;      /* glass walls */
+  --fault:#E0A458;      /* faults / wrong */
+  --display:"DM Serif Display", Georgia, serif;
+  --body:"DM Sans", system-ui, Arial, sans-serif;
+  --mono:"DM Mono", ui-monospace, Menlo, Consolas, monospace;
+  color-scheme:dark;
+}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{margin:0;background:var(--court);color:var(--line);font-family:var(--body);font-size:17px;line-height:1.55;-webkit-font-smoothing:antialiased;overflow-x:hidden}
+a{color:var(--ball)}
+:focus-visible{outline:2px solid var(--ball);outline-offset:3px;border-radius:2px}
+h1,h2,h3{font-family:var(--display);font-weight:400;letter-spacing:-.005em;line-height:1.02;margin:0;text-wrap:balance}
+.mono{font-family:var(--mono);font-size:12px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted)}
+.wrap{max-width:1240px;margin:0 auto;padding:0 clamp(16px,4vw,40px)}
+
+/* ---------- top bar ---------- */
+.top{position:fixed;inset:0 0 auto 0;z-index:50;background:linear-gradient(var(--court),rgba(18,20,23,.85) 70%,transparent);backdrop-filter:blur(6px)}
+.top .wrap{display:flex;align-items:center;gap:20px;height:56px}
+.brand{font-family:var(--display);font-weight:400;font-size:22px;letter-spacing:0;color:var(--line);text-decoration:none}
+.brand b{color:var(--ball)}
+.top nav{display:flex;gap:16px;margin-left:auto}
+.top nav a{color:var(--muted);text-decoration:none;font-family:var(--mono);font-size:11px;letter-spacing:.08em}
+.top nav a.on,.top nav a:hover{color:var(--line)}
+.top nav a.on::before{content:"";display:inline-block;width:6px;height:6px;border-radius:50%;background:var(--ball);margin-right:6px;vertical-align:1px}
+.ctrl{font-family:var(--mono);font-size:11px;letter-spacing:.08em;text-transform:uppercase;background:none;border:1px solid var(--rule);color:var(--line);padding:7px 10px;border-radius:3px;cursor:pointer}
+.ctrl:hover{border-color:var(--muted)}
+.progress{position:absolute;left:0;bottom:0;height:2px;background:var(--ball);width:0;transform-origin:left}
+.counter{font-family:var(--mono);font-size:11px;color:var(--muted);min-width:64px;text-align:right}
+@media (max-width:860px){.top nav{display:none}.counter{margin-left:auto}}
+
+/* ---------- hero ---------- */
+.hero{padding:120px 0 56px;border-bottom:1px solid var(--rule)}
+.hero .wrap{display:grid;grid-template-columns:1.1fr .9fr;gap:48px;align-items:center}
+.hero h1{font-size:clamp(58px,9vw,132px);font-weight:400}
+.hero h1 em{font-style:italic}
+.hero h1 em{font-style:normal;color:var(--ball)}
+.hero h1 .row{display:block;overflow:hidden}
+.hero h1 .row span{display:inline-block}
+.lede{max-width:46ch;color:#C9CED3;font-size:19px;margin:24px 0 28px}
+.cta{display:flex;gap:12px;flex-wrap:wrap}
+.btn{display:inline-flex;align-items:center;gap:10px;font-family:var(--mono);font-size:12px;letter-spacing:.08em;text-transform:uppercase;text-decoration:none;padding:13px 18px;border-radius:3px;border:1px solid var(--rule);color:var(--line);background:none;cursor:pointer}
+.btn.primary{background:var(--ball);color:#121417;border-color:var(--ball);font-weight:500}
+.btn:hover{transform:translateY(-1px)}
+.scope{border:1px solid var(--rule);border-radius:6px;background:var(--panel);padding:16px}
+.scope-head{display:flex;justify-content:space-between;margin-bottom:10px}
+.scope-foot{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-top:12px}
+.scope-foot div{border-top:1px solid var(--rule);padding-top:8px}
+.scope-foot b{display:block;font-family:var(--mono);font-weight:500;font-size:15px;color:var(--line);font-variant-numeric:tabular-nums;letter-spacing:0}
+.live{color:var(--ball)}
+.live::before{content:"";display:inline-block;width:7px;height:7px;border-radius:50%;background:var(--ball);margin-right:6px;animation:blink 1.4s infinite}
+@keyframes blink{50%{opacity:.25}}
+@media (max-width:900px){.hero .wrap{grid-template-columns:1fr}.hero{padding-top:96px}}
+
+/* ---------- scrolly sections ---------- */
+.chapter{position:relative;border-bottom:1px solid var(--rule)}
+.chapter[data-len="3"]{height:320vh}
+.chapter[data-len="2"]{height:240vh}
+.chapter[data-len="6"]{height:560vh}
+.stage{position:sticky;top:0;height:100vh;height:100svh;display:flex;align-items:center;padding-top:56px}
+.stage .wrap{width:100%;display:grid;grid-template-columns:minmax(300px,.8fr) 1.2fr;gap:clamp(24px,4vw,64px);align-items:center}
+.tag{display:flex;gap:14px;align-items:center;margin-bottom:18px}
+.tag .n{color:var(--ball)}
+.tag::after{content:"";flex:1;height:1px;background:var(--rule)}
+.chapter h2{font-size:clamp(44px,6vw,84px);margin-bottom:22px}
+.steps{list-style:none;margin:0;padding:0;display:grid;gap:4px}
+.steps li{border-left:2px solid var(--rule);padding:10px 0 10px 18px;color:var(--muted);transition:color .35s,border-color .35s}
+.steps li b{display:block;font-family:var(--body);font-weight:600;color:inherit;font-size:18px;margin-bottom:2px}
+.steps li p{margin:0;font-size:15.5px;max-width:44ch}
+.steps li.on{border-color:var(--ball);color:var(--line)}
+.steps li.on b{color:var(--line)}
+.readout{display:grid;grid-template-columns:repeat(auto-fit,minmax(118px,1fr));gap:1px;background:var(--rule);border:1px solid var(--rule);border-radius:4px;overflow:hidden;margin-top:18px}
+.readout div{background:var(--court);padding:9px 12px}
+.readout b{display:block;font-family:var(--mono);font-weight:500;font-size:16px;color:var(--line);letter-spacing:0;font-variant-numeric:tabular-nums}
+.viz{position:relative}
+.viz svg{display:block;width:100%;height:auto;overflow:visible}
+.tilt{transform-origin:50% 60%;will-change:transform}
+.scrollhint{position:absolute;right:0;bottom:-34px}
+@media (max-width:900px){
+  .chapter[data-len="3"]{height:300vh}
+  .stage{align-items:flex-start;padding-top:64px}
+  .stage .wrap{grid-template-columns:1fr;gap:12px}
+  .stage .viz{order:-1;max-height:40svh}
+  .stage .viz svg{max-height:40svh}
+  .chapter h2{font-size:38px;margin-bottom:10px}
+  .tag{margin-bottom:8px}
+  .steps li{padding:5px 0 5px 12px}
+  .steps li b{font-size:15px}
+  .steps li p{font-size:13.5px}
+  .steps li:not(.on) p{display:none}
+  .readout{margin-top:10px}
+  .readout b{font-size:13px}
+  .scrollhint{display:none}
+  /* touch targets */
+  .ctrl{min-height:40px;padding:7px 12px}
+  .seg{display:flex;flex-wrap:wrap}
+  .seg button{min-height:40px;flex:1 1 auto}
+}
+/* short phones (e.g. 360x640): drop the spec readout in pinned chapters so the active step is never clipped */
+@media (max-width:900px) and (max-height:720px){
+  .stage .viz,.stage .viz svg{max-height:34svh}
+  .chapter h2{font-size:30px;margin-bottom:6px}
+  .chapter .steps+.readout{display:none}
+  .steps li{padding:3px 0 3px 12px}
+}
+
+/* svg classes */
+.ln{fill:none;stroke:var(--line);stroke-width:1.1;stroke-linecap:square}
+.gl{fill:none;stroke:var(--glass);stroke-width:2.4}
+.ms{fill:none;stroke:var(--muted);stroke-width:1;stroke-dasharray:1.5 2.5}
+.surf{fill:#1A2530}
+.surf2{fill:#1E2B37}
+.net{stroke:var(--line);stroke-width:1.6}
+.dim{stroke:var(--ball);stroke-width:.6;fill:none}
+.dimt{font-family:var(--mono);font-size:5.2px;fill:var(--ball);letter-spacing:.04em}
+.lbl{font-family:var(--mono);font-size:4.4px;fill:var(--muted);letter-spacing:.06em;text-transform:uppercase}
+.ball{fill:var(--ball)}
+.trail{fill:none;stroke:var(--ball);stroke-width:1.2;stroke-dasharray:2 2.5;opacity:.75}
+.us{fill:var(--ball)}
+.ball{fill:#F4F5F6}
+.them{fill:none;stroke:var(--line);stroke-width:1.4}
+.rope{stroke:var(--ball);stroke-width:.8;stroke-dasharray:2 2}
+.bad{fill:none;stroke:var(--fault);stroke-width:1.2;stroke-dasharray:2 2}
+.badt{font-family:var(--mono);font-size:4.6px;fill:var(--fault);letter-spacing:.06em}
+.zone{fill:var(--ball);opacity:.12}
+/* side view (larger viewBox) */
+.sv .lbl{font-size:12px}
+.sv .dimt{font-size:13px}
+.sv .floor{stroke:var(--line);stroke-width:2}
+.sv .gl{stroke-width:5}
+.sv .net{stroke-width:3}
+.sv .trail{stroke-width:3;stroke-dasharray:6 7}
+.sv .tick{stroke:var(--rule);stroke-width:1}
+.sv .bad{stroke-width:3;stroke-dasharray:6 6}
+.sv .badt{font-size:13px}
+.fig{stroke:var(--line);stroke-width:3;fill:none;stroke-linecap:round}
+.fig.ghost{stroke:var(--muted);opacity:.7}
+/* diagram labels: bigger in viewBox units so they stay readable on a phone */
+@media (max-width:900px){
+  .dimt{font-size:6.6px}.lbl{font-size:5.6px}.badt{font-size:5.9px}
+  .sv .lbl{font-size:24px}.sv .dimt,.sv .badt{font-size:25px}
+  .sv .tick{stroke-width:2}.sv .floor{stroke-width:3}.sv .trail{stroke-width:4}.fig{stroke-width:4}
+}
+
+/* ---------- scoring ---------- */
+.plain{padding:110px 0;border-bottom:1px solid var(--rule)}
+.plain .wrap{display:grid;grid-template-columns:minmax(300px,.8fr) 1.2fr;gap:clamp(24px,4vw,64px);align-items:start}
+.plain h2{font-size:clamp(44px,6vw,84px);margin-bottom:22px}
+.plain p{color:#C9CED3;max-width:46ch}
+.board{background:#0C0E10;border:1px solid var(--rule);border-radius:6px;padding:clamp(14px,2.4vw,24px)}
+.board table{width:100%;border-collapse:collapse;font-variant-numeric:tabular-nums}
+.board th{font-family:var(--mono);font-weight:400;font-size:11px;letter-spacing:.08em;color:var(--muted);text-align:center;padding:0 6px 10px;text-transform:uppercase}
+.board th:first-child{text-align:left}
+.board td{border-top:1px solid var(--rule);padding:14px 6px;text-align:center;font-family:var(--display);font-weight:400;font-size:clamp(30px,4.4vw,52px);line-height:1}
+.board td:first-child{text-align:left;font-family:var(--body);font-weight:600;font-size:17px}
+.board td.pts{color:var(--ball);min-width:2.6em}
+.board td.dimset{color:var(--muted)}
+.srv{display:inline-block;width:9px;height:9px;border-radius:50%;background:var(--ball);margin-left:8px;vertical-align:2px;opacity:0}
+.srv.on{opacity:1}
+.flag{min-height:46px;display:flex;align-items:center;gap:10px;margin:12px 0 6px;font-family:var(--mono);font-size:12px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted)}
+.flag.hot{color:#121417;background:var(--ball);padding:0 12px;border-radius:3px}
+.board .row{display:flex;gap:10px;flex-wrap:wrap;margin-top:8px}
+.board .row .btn{flex:1;justify-content:center;min-width:140px}
+.seg{display:inline-flex;border:1px solid var(--rule);border-radius:3px;overflow:hidden}
+.seg button{font-family:var(--mono);font-size:11px;letter-spacing:.06em;text-transform:uppercase;background:none;border:0;color:var(--muted);padding:8px 12px;cursor:pointer}
+.seg button[aria-pressed="true"]{background:var(--panel);color:var(--line)}
+.deuce{list-style:none;margin:0 0 16px;padding:0;display:grid;gap:8px;max-width:46ch}
+.deuce li{color:#C9CED3;font-size:15.5px;border-left:2px solid var(--rule);padding-left:12px}
+.deuce b{display:block;color:var(--line);font-family:var(--mono);font-weight:500;font-size:12px;letter-spacing:.08em;text-transform:uppercase}
+.ladder{display:flex;gap:6px;margin:18px 0 22px;flex-wrap:wrap}
+.ladder span{font-family:var(--display);font-weight:400;font-size:30px;border:1px solid var(--rule);border-radius:3px;padding:6px 12px;line-height:1}
+.ladder span:last-child{color:var(--ball);border-color:var(--ball)}
+.ladder i{font-style:normal;align-self:center;color:var(--muted);font-family:var(--mono);font-size:12px}
+@media (max-width:900px){.plain .wrap{grid-template-columns:1fr}.plain{padding:72px 0}}
+
+/* ---------- shots ---------- */
+.shotcard{display:grid;gap:10px}
+.shotname{display:flex;align-items:baseline;gap:14px}
+.shotname h3{font-size:clamp(38px,5vw,64px);color:var(--ball)}
+.shotdesc{margin:0;color:#C9CED3;max-width:44ch;min-height:4.8em}
+.pips{display:flex;gap:6px;margin-top:8px}
+.pips button{flex:1;height:4px;border:0;border-radius:2px;background:var(--rule);cursor:pointer;padding:0}
+.pips button.on{background:var(--ball)}
+.pips button.done{background:var(--muted)}
+@media (max-width:900px){.shotdesc{min-height:0;font-size:14px}}
+
+/* ---------- checklist ---------- */
+.cards{display:grid;grid-template-columns:repeat(4,1fr);gap:1px;background:var(--rule);border:1px solid var(--rule);border-radius:6px;overflow:hidden;margin-top:36px}
+.cards article{background:var(--court);padding:22px 20px 26px;display:flex;flex-direction:column;gap:10px}
+.cards h3{font-size:30px}
+.cards p{margin:0;font-size:15.5px;color:#C9CED3}
+.cards .mono{color:var(--ball)}
+@media (max-width:1000px){.cards{grid-template-columns:repeat(2,1fr)}}
+@media (max-width:560px){.cards{grid-template-columns:1fr}}
+.glossary{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:0 32px;margin-top:40px}
+.glossary div{border-top:1px solid var(--rule);padding:12px 0}
+.glossary b{font-family:var(--mono);font-weight:500;font-size:13px;letter-spacing:.06em;text-transform:uppercase;color:var(--line)}
+.glossary span{display:block;color:var(--muted);font-size:15px}
+
+footer{padding:90px 0 60px}
+footer .big{font-family:var(--display);font-weight:400;font-size:clamp(56px,11vw,160px);line-height:.88;margin:0 0 28px}
+footer .big em{font-style:normal;color:var(--ball)}
+.foot{display:flex;justify-content:space-between;gap:16px;flex-wrap:wrap;border-top:1px solid var(--rule);padding-top:18px;margin-top:48px}
+
+/* ---------- phone overrides (kept last so they win over the base rules above) ---------- */
+@media (max-width:900px){
+  .pips{gap:4px;margin-top:2px}
+  /* 32px tall touch target, still drawn as a 4px bar */
+  .pips button{height:32px;border-radius:0;background:linear-gradient(var(--rule),var(--rule)) center/100% 4px no-repeat}
+  .pips button.on{background:linear-gradient(var(--ball),var(--ball)) center/100% 4px no-repeat}
+  .pips button.done{background:linear-gradient(var(--muted),var(--muted)) center/100% 4px no-repeat}
+  .shotname h3{font-size:34px}
+  .shotcard{gap:6px}
+}
+@media (max-width:900px) and (max-height:720px){
+  .shotname h3{font-size:28px}
+  .shotdesc{font-size:13.5px}
+}
+@media (max-width:400px){
+  .hero h1{font-size:52px}
+  .lede{font-size:17px}
+  .ladder span{font-size:24px;padding:6px 9px}
+  .board td:first-child{font-size:15px}
+}
+
+/* reveal: visible at rest, only nudged */
+.rise{transition:transform .9s cubic-bezier(.2,.7,.1,1),opacity .9s}
+.js .rise.pre{transform:translateY(18px);opacity:.35}
+/* Lenis (smooth scroll) base rules */
+html.lenis,html.lenis body{height:auto}
+.lenis.lenis-smooth{scroll-behavior:auto!important}
+.lenis.lenis-smooth [data-lenis-prevent]{overscroll-behavior:contain}
+.lenis.lenis-stopped{overflow:hidden}
+/* pause motion: no automatic animation, no reveal nudges */
+.paused{scroll-behavior:auto}
+.paused .live::before{animation:none}
+.paused .rise,.paused .steps li{transition:none}
+.paused.js .rise.pre{transform:none;opacity:1}
+@media (prefers-reduced-motion:reduce){
+  html{scroll-behavior:auto}
+  .rise,.steps li{transition:none}
+  .js .rise.pre{transform:none;opacity:1}
+  .live::before{animation:none}
+}
+</style>
+</head>
+<body>
+
+<header class="top">
+  <div class="wrap">
+    <a class="brand" href="#top">PADEL<b>/</b>101</a>
+    <nav aria-label="Chapters">
+      <a href="#court">01 Court</a><a href="#serve">02 Serve</a><a href="#glass">03 Glass</a><a href="#score">04 Score</a><a href="#shots">05 Shots</a><a href="#move">06 Move</a><a href="#start">07 Start</a>
+    </nav>
+    <span class="counter" id="counter">00 / 07</span>
+    <button class="ctrl" id="pause" aria-pressed="false">Pause motion</button>
+  </div>
+  <div class="progress" id="progress"></div>
+</header>
+
+<main id="top">
+<!-- HERO -->
+<section class="hero">
+  <div class="wrap">
+    <div>
+      <p class="mono tag"><span class="n">Field guide</span><span>v1 · for first-timers</span></p>
+      <h1 aria-label="Learn padel in one scroll.">
+        <span class="row"><span>Learn</span></span>
+        <span class="row"><span><em>padel</em> in</span></span>
+        <span class="row"><span>one scroll.</span></span>
+      </h1>
+      <p class="lede">The court, the serve, the glass, the score and the six shots you'll hear about on day one. Every diagram moves as you scroll, so you see the rule happen instead of reading about it.</p>
+      <div class="cta">
+        <a class="btn primary" href="#court">Start at the court ↓</a>
+        <a class="btn" href="#score">Try the scoreboard</a>
+      </div>
+    </div>
+    <div class="scope" aria-label="Live rally on a padel court, seen from above">
+      <div class="scope-head mono"><span class="live">Rally · live</span><span id="shotno">Shot 001</span></div>
+      <svg viewBox="0 0 240 140" id="heroCourt" role="img" aria-label="Padel court from above with four players and a moving ball"></svg>
+      <div class="scope-foot mono">
+        <div>Ball X<b id="bx">0.0 m</b></div>
+        <div>Ball Y<b id="by">0.0 m</b></div>
+        <div>Height<b id="bz">0.0 m</b></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- 01 COURT -->
+<section class="chapter" id="court" data-len="3" data-scene="court">
+  <div class="stage"><div class="wrap">
+    <div>
+      <p class="mono tag"><span class="n">01 / 07</span><span>The court</span></p>
+      <h2>A cage made for rallies</h2>
+      <ol class="steps">
+        <li><b>20 × 10 metres</b><p>Smaller than a tennis court and fully enclosed. Always played as doubles, two against two.</p></li>
+        <li><b>A low net and two service boxes</b><p>The net is 88 cm in the middle. Service lines sit 6.95 m from the net on each side.</p></li>
+        <li><b>Glass at both ends</b><p>3 m glass back walls wrap round the corners. The rest of the sides is metal mesh. Both are part of the game.</p></li>
+      </ol>
+      <div class="readout mono">
+        <div>Length<b>20.00 m</b></div><div>Width<b>10.00 m</b></div><div>Net centre<b>0.88 m</b></div><div>Back glass<b>3.00 m</b></div>
+      </div>
+    </div>
+    <div class="viz"><div class="tilt" id="courtTilt"><svg viewBox="0 0 240 140" id="courtSvg" role="img" aria-label="Padel court diagram with dimensions"></svg></div>
+      <p class="mono scrollhint">Scroll to build the court</p></div>
+  </div></div>
+</section>
+
+<!-- 02 SERVE -->
+<section class="chapter" id="serve" data-len="3" data-scene="serve">
+  <div class="stage"><div class="wrap">
+    <div>
+      <p class="mono tag"><span class="n">02 / 07</span><span>The serve</span></p>
+      <h2>Underhand, and across</h2>
+      <ol class="steps">
+        <li><b>Bounce it, then hit it at waist height or below</b><p>Stand behind your service line. Drop the ball, let it bounce once, and swing.</p></li>
+        <li><b>Send it diagonally into the box</b><p>Start from the right side, then swap each point. The return must bounce before it's hit.</p></li>
+        <li><b>Two tries, one trap</b><p>If the serve bounces in the box and then hits the mesh, it's a fault. Hitting the glass is fine. Net and in means serve again.</p></li>
+      </ol>
+      <div class="readout mono">
+        <div>Contact<b>≤ waist</b></div><div>Serves<b>2 per point</b></div><div>First side<b>Right</b></div>
+      </div>
+    </div>
+    <div class="viz"><svg viewBox="0 0 240 140" id="serveSvg" role="img" aria-label="Serve path from behind the service line into the diagonal box"></svg></div>
+  </div></div>
+</section>
+
+<!-- 03 GLASS -->
+<section class="chapter" id="glass" data-len="3" data-scene="glass">
+  <div class="stage"><div class="wrap">
+    <div>
+      <p class="mono tag"><span class="n">03 / 07</span><span>The walls</span></p>
+      <h2>Floor first, then glass</h2>
+      <ol class="steps">
+        <li><b>The ball must land before it hits a wall</b><p>Your shot has to bounce on the floor on their side first. Straight into their glass loses you the point.</p></li>
+        <li><b>Let the glass give it back</b><p>After one bounce, the ball can come off the back or side walls and you can still play it. Wait for it.</p></li>
+        <li><b>Send it over the net</b><p>Hit it back before it bounces a second time. In a pinch you can even play it into your own glass to get it over.</p></li>
+      </ol>
+      <div class="readout mono">
+        <div>Floor → wall<b style="color:var(--ball)">Legal</b></div><div>Wall → floor<b style="color:var(--fault)">Point lost</b></div><div>Bounces allowed<b>1</b></div>
+      </div>
+    </div>
+    <div class="viz"><svg viewBox="0 0 1000 420" class="sv" id="glassSvg" role="img" aria-label="Side view: ball bounces, hits the back glass and is played back"></svg></div>
+  </div></div>
+</section>
+
+<!-- 04 SCORE -->
+<section class="plain" id="score">
+  <div class="wrap">
+    <div class="rise">
+      <p class="mono tag"><span class="n">04 / 07</span><span>Scoring</span></p>
+      <h2>Same as tennis, plus a golden point</h2>
+      <div class="ladder" aria-label="Point ladder"><span>0</span><i>→</i><span>15</span><i>→</i><span>30</span><i>→</i><span>40</span><i>→</i><span>Game</span></div>
+      <p>Win 6 games to take a set, by two. At 6–6 you play a tie-break to 7. Best of three sets wins the match.</p>
+      <p>40–40 is called deuce. What happens next depends on the event, so agree on it before the first serve:</p>
+      <ul class="deuce">
+        <li><b>Golden point</b> One deciding point straight away. The most common format at clubs.</li>
+        <li><b>Silver point</b> One advantage, then a deciding point. A club variant.</li>
+        <li><b>Star point</b> Two advantages, then a deciding point. The official pro format since 2026.</li>
+        <li><b>Advantage</b> Win two points in a row, however long that takes.</li>
+      </ul>
+      <p>On every deciding point, the receiving pair picks who returns.</p>
+    </div>
+    <div class="board rise" aria-live="polite">
+      <div style="display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap;margin-bottom:16px">
+        <span class="mono">Scoreboard · tap to play</span>
+        <div class="seg" role="group" aria-label="Deuce rule">
+          <button data-adv="0" aria-pressed="true">Golden</button><button data-adv="1" aria-pressed="false">Silver</button><button data-adv="2" aria-pressed="false">Star</button><button data-adv="99" aria-pressed="false">Advantage</button>
+        </div>
+      </div>
+      <table>
+        <thead><tr><th>Pair</th><th>Set 1</th><th>Set 2</th><th>Set 3</th><th>Points</th></tr></thead>
+        <tbody>
+          <tr><td>You<span class="srv on" id="srv0" title="Serving"></span></td><td id="s0-0">0</td><td id="s0-1" class="dimset">–</td><td id="s0-2" class="dimset">–</td><td class="pts" id="p0">0</td></tr>
+          <tr><td>Them<span class="srv" id="srv1" title="Serving"></span></td><td id="s1-0">0</td><td id="s1-1" class="dimset">–</td><td id="s1-2" class="dimset">–</td><td class="pts" id="p1">0</td></tr>
+        </tbody>
+      </table>
+      <div class="flag" id="flag">● marks the serving pair</div>
+      <div class="row">
+        <button class="btn primary" id="win0">Point to you</button>
+        <button class="btn" id="win1">Point to them</button>
+      </div>
+      <div class="row">
+        <button class="btn" id="undo">Undo</button>
+        <button class="btn" id="jump">Jump to 40–40</button>
+        <button class="btn" id="reset">Reset</button>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- 05 SHOTS -->
+<section class="chapter" id="shots" data-len="6" data-scene="shots">
+  <div class="stage"><div class="wrap">
+    <div class="shotcard">
+      <p class="mono tag"><span class="n">05 / 07</span><span>Six shots</span></p>
+      <div class="shotname"><span class="mono" id="shotIdx">01 / 06</span><h3 id="shotName">Lob</h3></div>
+      <p class="mono" id="shotAka">Globo</p>
+      <p class="shotdesc" id="shotDesc"></p>
+      <div class="readout mono" id="shotSpec"></div>
+      <div class="pips" id="pips" aria-label="Jump to shot"></div>
+    </div>
+    <div class="viz"><svg viewBox="0 0 1000 420" class="sv" id="shotSvg" role="img" aria-label="Side view of the selected shot's path"></svg></div>
+  </div></div>
+</section>
+
+<!-- 06 MOVE -->
+<section class="chapter" id="move" data-len="3" data-scene="move">
+  <div class="stage"><div class="wrap">
+    <div>
+      <p class="mono tag"><span class="n">06 / 07</span><span>Positioning</span></p>
+      <h2>Move like you're tied together</h2>
+      <ol class="steps">
+        <li><b>The net is where points are won</b><p>The pair at the net attacks. The pair at the back defends and waits for a chance.</p></li>
+        <li><b>Lob over them, take their place</b><p>A good lob pushes them back. You and your partner walk up together and claim the net.</p></li>
+        <li><b>Never one up, one back</b><p>Split up and you leave a diagonal hole down the middle. Imagine a 3 m rope between you.</p></li>
+      </ol>
+      <div class="readout mono">
+        <div>Attack<b>At the net</b></div><div>Defend<b>Near the glass</b></div><div>Gap<b>~3 m</b></div>
+      </div>
+    </div>
+    <div class="viz"><svg viewBox="0 0 240 140" id="moveSvg" role="img" aria-label="Court from above showing both pairs changing positions"></svg></div>
+  </div></div>
+</section>
+
+<!-- 07 START -->
+<section class="plain" id="start" style="border-bottom:0">
+  <div class="wrap" style="display:block">
+    <div class="rise">
+      <p class="mono tag"><span class="n">07 / 07</span><span>Your first week</span></p>
+      <h2 style="max-width:14ch">Four things before your first game</h2>
+    </div>
+    <div class="cards">
+      <article class="rise"><span class="mono">A · Racket</span><h3>Round & soft</h3><p>A round head has the biggest sweet spot. A softer foam core forgives off-centre hits. Leave the diamond shapes for later.</p></article>
+      <article class="rise"><span class="mono">B · Shoes</span><h3>Grip for sand</h3><p>Most courts are artificial grass with sand on top. Padel or clay shoes with a herringbone sole stop you sliding.</p></article>
+      <article class="rise"><span class="mono">C · Court</span><h3>Book 90 minutes</h3><p>Courts are booked by the hour for four people. 90 minutes gives you a warm-up and two short sets.</p></article>
+      <article class="rise"><span class="mono">D · Coach</span><h3>One lesson first</h3><p>An hour with a coach on grip, ready position and the glass saves you weeks of bad habits.</p></article>
+    </div>
+    <div class="glossary rise">
+      <div><b>Por tres</b><span>Smash that bounces out over the back wall.</span></div>
+      <div><b>Golden point</b><span>One deciding point at 40–40.</span></div>
+      <div><b>Drive / Revés</b><span>Right side / left side of the court.</span></div>
+      <div><b>Pared</b><span>Wall. "Pared!" means let it come off the glass.</span></div>
+      <div><b>Bajada</b><span>Attacking a ball after it pops off the back glass.</span></div>
+      <div><b>Mixto / Americano</b><span>Social formats where partners rotate.</span></div>
+    </div>
+  </div>
+</section>
+</main>
+
+<footer>
+  <div class="wrap">
+    <p class="big">See you<br>on <em>court.</em></p>
+    <div class="cta"><a class="btn primary" href="#top">Back to the top ↑</a><a class="btn" href="#score">Practise the scoring</a></div>
+    <div class="foot mono"><span>Padel 101 · a field guide for first-timers</span><span>Made by Vitto · coach · <a href="https://www.instagram.com/padelwithvitto/">@padelwithvitto</a></span></div>
+  </div>
+</footer>
+
+<script src="https://cdn.jsdelivr.net/npm/lenis@1.1.18/dist/lenis.min.js"></script>
+<script>
+document.documentElement.classList.add('js');
+const NS='http://www.w3.org/2000/svg';
+const $=s=>document.querySelector(s);
+const clamp=(v,a=0,b=1)=>Math.min(b,Math.max(a,v));
+const ease=t=>t<.5?4*t*t*t:1-Math.pow(-2*t+2,3)/2;
+const lerp=(a,b,t)=>a+(b-a)*t;
+const seg=(p,a,b)=>clamp((p-a)/(b-a));
+const reduce=matchMedia('(prefers-reduced-motion: reduce)').matches;
+let paused=reduce;
+
+function el(tag,attrs={},parent){const e=document.createElementNS(NS,tag);for(const k in attrs)e.setAttribute(k,attrs[k]);if(parent)parent.appendChild(e);return e}
+
+/* ---- top-down court: 10 units per metre, court x 20..220, y 20..120 ---- */
+function court(svg,{labels=true}={}){
+  const g={};
+  el('rect',{x:20,y:20,width:200,height:100,class:'surf'},svg);
+  el('rect',{x:50.5,y:20,width:139,height:100,class:'surf2'},svg);
+  g.lines=[];
+  const L=(d,cls='ln')=>{const p=el('path',{d,class:cls,pathLength:1},svg);g.lines.push(p);return p};
+  g.outline=L('M20 20H220V120H20Z');
+  g.service=[L('M50.5 20V120'),L('M189.5 20V120'),L('M50.5 70H189.5')];
+  g.walls=[L('M20 20V120','gl'),L('M220 20V120','gl'),L('M20 20H60','gl'),L('M20 120H60','gl'),L('M220 20H180','gl'),L('M220 120H180','gl')];
+  g.mesh=[L('M60 20H180','ms'),L('M60 120H180','ms')];
+  g.net=el('path',{d:'M120 16V124',class:'net',pathLength:1},svg);
+  el('circle',{cx:120,cy:16,r:1.4,fill:'var(--line)'},svg);el('circle',{cx:120,cy:124,r:1.4,fill:'var(--line)'},svg);
+  if(labels){
+    el('text',{x:20,y:13,class:'lbl'},svg).textContent='Your side';
+    const t=el('text',{x:220,y:13,class:'lbl','text-anchor':'end'},svg);t.textContent='Their side';
+  }
+  return g;
+}
+function dot(svg,cls,r=3.6){return el('circle',{r,class:cls,cx:-50,cy:-50},svg)}
+
+/* ================= HERO RALLY ================= */
+(function(){
+  const svg=$('#heroCourt');const hg=court(svg);
+  const players=[[4,3],[4,7],[16,3],[16,7]].map((p,i)=>{const c=dot(svg,i<2?'us':'them');c.dataset.hx=p[0];c.dataset.hy=p[1];return c});
+  const shadow=el('ellipse',{rx:2.2,ry:1,fill:'rgba(0,0,0,.45)'},svg);
+  const ball=el('circle',{r:2,class:'ball'},svg);
+  const trail=el('path',{class:'trail'},svg);
+  let from=[4,3],to=[16,7],t0=performance.now(),dur=1100,shot=1,hist=[],live=false,held=0;
+  const pos=[[4,3],[4,7],[16,3],[16,7]];
+  function next(){
+    from=to;const side=from[0]<10?1:0;
+    to=[side?lerp(13,18.5,Math.random()):lerp(1.5,7,Math.random()),lerp(1.5,8.5,Math.random())];
+    dur=lerp(900,1500,Math.random());t0=performance.now();shot++;hist=[];
+    $('#shotno').textContent='Shot '+String(shot%1000).padStart(3,'0');
+  }
+  function frame(now){
+    requestAnimationFrame(frame);
+    if(paused||!live){if(!held)held=now;return}
+    if(held){t0+=now-held;held=0}
+    const t=clamp((now-t0)/dur);
+    const x=lerp(from[0],to[0],t),y=lerp(from[1],to[1],t),z=Math.sin(Math.PI*t)*lerp(1.5,4.5,(Math.abs(to[0]-from[0]))/16)+0.4;
+    const X=20+x*10,Y=20+y*10;
+    shadow.setAttribute('cx',X);shadow.setAttribute('cy',Y);
+    ball.setAttribute('cx',X);ball.setAttribute('cy',Y-z*3.2);ball.setAttribute('r',1.6+z*.18);
+    hist.push([X,Y-z*3.2]);if(hist.length>40)hist.shift();
+    trail.setAttribute('d','M'+hist.map(p=>p[0].toFixed(1)+' '+p[1].toFixed(1)).join('L'));
+    // receiver drifts to the ball
+    const side=to[0]>10?2:0;
+    const recv=Math.abs(pos[side][1]-to[1])<Math.abs(pos[side+1][1]-to[1])?side:side+1;
+    pos.forEach((p,i)=>{
+      const home=[+players[i].dataset.hx,+players[i].dataset.hy];
+      const target=i===recv?[lerp(home[0],to[0],.6),to[1]]:home;
+      p[0]=lerp(p[0],target[0],.04);p[1]=lerp(p[1],target[1],.04);
+      players[i].setAttribute('cx',20+p[0]*10);players[i].setAttribute('cy',20+p[1]*10);
+    });
+    if(now%5<1||t===1){$('#bx').textContent=x.toFixed(1)+' m';$('#by').textContent=y.toFixed(1)+' m';$('#bz').textContent=z.toFixed(1)+' m'}
+    if(t>=1)next();
+  }
+  // static first frame for thumbnails
+  ball.setAttribute('cx',80);ball.setAttribute('cy',60);shadow.setAttribute('cx',80);shadow.setAttribute('cy',66);
+  players.forEach((c,i)=>{c.setAttribute('cx',20+pos[i][0]*10);c.setAttribute('cy',20+pos[i][1]*10)});
+  requestAnimationFrame(frame);
+  window.heroRally={g:hg,players,ball,shadow,start(){live=true}};
+})();
+
+/* ================= SCENES ================= */
+const scenes={};
+
+/* 01 court */
+scenes.court=(function(){
+  const svg=$('#courtSvg');const g=court(svg,{labels:false});
+  const dims=el('g',{},svg);
+  const D=(d,tx,ty,text,anchor='middle',rot=0)=>{const gg=el('g',{},dims);el('path',{d,class:'dim'},gg);const t=el('text',{x:tx,y:ty,class:'dimt','text-anchor':anchor,transform:rot?`rotate(${rot} ${tx} ${ty})`:''},gg);t.textContent=text;return gg};
+  const d1=[D('M20 132H220M20 129V135M220 129V135',120,140,'20.00 m'),D('M231 20V120M228 20H234M228 120H234',238,72,'10.00 m','middle',90)];
+  const d2=[D('M120 8H189.5M120 5V11M189.5 5V11',155,4,'6.95 m'),D('M50.5 8H120M50.5 5V11',85,4,'6.95 m')];
+  const netT=el('text',{x:123,y:66,class:'dimt'},svg);netT.textContent='NET 0.88';
+  const d3=[];
+  const gt=el('text',{x:16,y:72,class:'dimt','text-anchor':'middle',transform:'rotate(-90 16 72)'},svg);gt.textContent='GLASS 3 m';d3.push(gt);
+  const mt=el('text',{x:120,y:131,class:'lbl','text-anchor':'middle'},svg);mt.textContent='mesh';d3.push(mt);
+  const tilt=$('#courtTilt');const steps=$('#court').querySelectorAll('.steps li');
+  return p=>{
+    const e=ease(seg(p,0,.3));
+    tilt.style.transform=`perspective(1100px) rotateX(${lerp(58,0,e)}deg) rotateZ(${lerp(-24,0,e)}deg) scale(${lerp(.86,1,e)})`;
+    g.outline.style.strokeDasharray=1;g.outline.style.strokeDashoffset=1-seg(p,.02,.3);
+    d1.forEach(d=>d.style.opacity=seg(p,.22,.32));
+    g.service.forEach((l,i)=>{l.style.strokeDasharray=1;l.style.strokeDashoffset=1-seg(p,.36+i*.04,.5+i*.04)});
+    g.net.style.strokeDasharray=1;g.net.style.strokeDashoffset=1-seg(p,.34,.44);
+    netT.style.opacity=seg(p,.4,.48);d2.forEach(d=>d.style.opacity=seg(p,.5,.6));
+    g.walls.forEach((l,i)=>{l.style.strokeDasharray=1;l.style.strokeDashoffset=1-seg(p,.66+i*.02,.8+i*.02)});
+    g.mesh.forEach(l=>{l.style.opacity=seg(p,.8,.9)});
+    d3.forEach(d=>d.style.opacity=seg(p,.78,.88));
+    const s=p<.33?0:p<.64?1:2;steps.forEach((li,i)=>li.classList.toggle('on',i===s));
+  };
+})();
+
+/* 02 serve */
+scenes.serve=(function(){
+  const svg=$('#serveSvg');court(svg);
+  // server: right side of "your" half when facing the net = bottom (y>70)
+  const box=el('rect',{x:120,y:20,width:69.5,height:50,class:'zone'},svg);
+  const boxT=el('text',{x:154.7,y:47,class:'dimt','text-anchor':'middle'},svg);boxT.textContent='TARGET BOX';
+  const server=dot(svg,'us');server.setAttribute('cx',42);server.setAttribute('cy',95);
+  dot(svg,'us').setAttribute('cx',100);svg.lastChild.setAttribute('cy',45);
+  const rec=dot(svg,'them');rec.setAttribute('cx',205);rec.setAttribute('cy',45);
+  const rp=dot(svg,'them');rp.setAttribute('cx',150);rp.setAttribute('cy',95);
+  const svT=el('text',{x:42,y:106,class:'lbl','text-anchor':'middle'},svg);svT.textContent='server';
+  const path=el('path',{d:'M44 94 Q110 40 172 38 L220 30',class:'trail',pathLength:1},svg);
+  const bounce=el('circle',{cx:172,cy:38,r:0,fill:'none',stroke:'var(--ball)','stroke-width':.8},svg);
+  const fault=el('path',{d:'M172 38 L150 20',class:'bad'},svg);
+  const fx=el('text',{x:136,y:15,class:'badt'},svg);fx.textContent='MESH = FAULT';
+  const ok=el('text',{x:222,y:25,class:'dimt','text-anchor':'end'},svg);ok.textContent='GLASS ✓';
+  const ball=el('circle',{r:2.2,class:'ball'},svg);
+  const len=path.getTotalLength();const steps=$('#serve').querySelectorAll('.steps li');
+  return p=>{
+    const drop=seg(p,0,.25);
+    const t=seg(p,.3,.62);
+    path.style.strokeDasharray=1;path.style.strokeDashoffset=1-t;
+    if(t<=0){ball.setAttribute('cx',46);ball.setAttribute('cy',92-Math.abs(Math.sin(drop*Math.PI*2))*6)}
+    else{const pt=path.getPointAtLength(len*t);ball.setAttribute('cx',pt.x);ball.setAttribute('cy',pt.y)}
+    const b=seg(p,.5,.6);bounce.setAttribute('r',b*6);bounce.style.opacity=b>0?1-b*.6:0;
+    box.style.opacity=.4+seg(p,.3,.45)*.6;boxT.style.opacity=seg(p,.3,.45);
+    const f=seg(p,.68,.8);fault.style.opacity=f;fx.style.opacity=f;ok.style.opacity=f;
+    const s=p<.3?0:p<.65?1:2;steps.forEach((li,i)=>li.classList.toggle('on',i===s));
+  };
+})();
+
+/* side-view scaffold: floor y=380, walls x=60/940, 44 px per metre */
+function sideCourt(svg){
+  const F=380,M=44;
+  for(let m=0;m<=20;m+=5){const x=60+m*M;el('line',{x1:x,y1:F,x2:x,y2:F+10,class:'tick'},svg);const t=el('text',{x,y:F+28,class:'lbl','text-anchor':'middle'},svg);t.textContent=m+' m'}
+  for(let h=1;h<=4;h++){const y=F-h*M;el('line',{x1:20,y1:y,x2:980,y2:y,class:'tick'},svg);const t=el('text',{x:16,y:y+4,class:'lbl','text-anchor':'end'},svg);t.textContent=h+'m'}
+  el('line',{x1:20,y1:F,x2:980,y2:F,class:'floor'},svg);
+  el('line',{x1:60,y1:F,x2:60,y2:F-3*M,class:'gl'},svg);el('line',{x1:940,y1:F,x2:940,y2:F-3*M,class:'gl'},svg);
+  el('line',{x1:60,y1:F-3*M,x2:60,y2:F-4*M,class:'ms'},svg);el('line',{x1:940,y1:F-3*M,x2:940,y2:F-4*M,class:'ms'},svg);
+  el('line',{x1:500,y1:F,x2:500,y2:F-.88*M,class:'net'},svg);
+  /* wall labels run up the inside of each wall so they never collide with the height scale */
+  [90,930].forEach(x=>{const y=F-1.3*M;const g=el('text',{x,y,class:'lbl','text-anchor':'middle',transform:`rotate(-90 ${x} ${y})`},svg);g.textContent='glass'});
+  return {F,M};
+}
+function figure(svg,x,F,cls='fig',reach=0){
+  const g=el('g',{class:cls},svg);
+  el('circle',{cx:x,cy:F-72,r:8},g);
+  el('path',{d:`M${x} ${F-64}V${F-30}M${x} ${F-30}L${x-10} ${F}M${x} ${F-30}L${x+10} ${F}M${x} ${F-56}L${x+14+reach} ${F-50-reach*2.4}`},g);
+  return g;
+}
+
+/* 03 glass */
+scenes.glass=(function(){
+  const svg=$('#glassSvg');const {F,M}=sideCourt(svg);
+  figure(svg,330,F,'fig ghost');
+  const me=figure(svg,800,F,'fig');
+  const tIn=el('path',{d:`M330 ${F-60} Q560 ${F-260} 760 ${F}`,class:'trail',pathLength:1},svg);
+  const tWall=el('path',{d:`M760 ${F} Q860 ${F-150} 940 ${F-120} Q880 ${F-110} 830 ${F-70}`,class:'trail',pathLength:1},svg);
+  const tOut=el('path',{d:`M830 ${F-70} Q600 ${F-300} 300 ${F}`,class:'trail',pathLength:1},svg);
+  const bad=el('path',{d:`M330 ${F-60} Q620 ${F-330} 940 ${F-60}`,class:'bad'},svg);
+  const badT=el('text',{x:980,y:F-250,class:'badt','text-anchor':'end'},svg);badT.textContent='NO BOUNCE → POINT LOST';
+  const mk=(x,y,txt,tx=x,ty=y-18,anchor='middle')=>{const g=el('g',{},svg);el('circle',{cx:x,cy:y,r:10,fill:'none',stroke:'var(--ball)','stroke-width':2},g);const t=el('text',{x:tx,y:ty,class:'dimt','text-anchor':anchor},g);t.textContent=txt;return g};
+  /* labels sit to the left of each marker so they clear the player and the right wall at phone sizes */
+  const m1=mk(760,F,'1 · BOUNCE',742,F-12,'end'),m2=mk(940,F-120,'2 · GLASS',980,F-142,'end'),m3=mk(830,F-70,'3 · HIT',812,F-86,'end');
+  const ball=el('circle',{r:9,class:'ball'},svg);
+  const paths=[tIn,tWall,tOut].map(p=>[p,p.getTotalLength()]);
+  const steps=$('#glass').querySelectorAll('.steps li');
+  return p=>{
+    const a=seg(p,.04,.3),b=seg(p,.36,.62),c=seg(p,.68,.94);
+    [a,b,c].forEach((t,i)=>{paths[i][0].style.strokeDasharray=1;paths[i][0].style.strokeDashoffset=1-t});
+    let pp,L;
+    if(b<=0){[pp,L]=paths[0];var pt=pp.getPointAtLength(L*a)}
+    else if(c<=0){[pp,L]=paths[1];pt=pp.getPointAtLength(L*b)}
+    else{[pp,L]=paths[2];pt=pp.getPointAtLength(L*c)}
+    ball.setAttribute('cx',pt.x);ball.setAttribute('cy',pt.y);
+    m1.style.opacity=seg(p,.26,.32);m2.style.opacity=seg(p,.5,.56);m3.style.opacity=seg(p,.62,.68);
+    const bo=p<.3?seg(p,.12,.2)*(1-seg(p,.26,.32)):0;bad.style.opacity=bo*.9;badT.style.opacity=bo;
+    me.setAttribute('transform',`translate(${lerp(0,30,seg(p,.4,.62))} 0)`);
+    const s=p<.33?0:p<.66?1:2;steps.forEach((li,i)=>li.classList.toggle('on',i===s));
+  };
+})();
+
+/* 05 shots */
+const SHOTS=[
+ {n:'Lob',aka:'Globo',d:'A high ball over the pair at the net that lands deep. It pushes them back to the glass so your team can take the net.',spec:[['Height','6–8 m'],['Hit from','Back'],['Goal','Take the net']],path:'M180 320 Q520 -200 860 380 L935 300',me:180,opp:640},
+ {n:'Bandeja',aka:'"Tray"',d:'A controlled overhead with slice, hit around shoulder height. It keeps you at the net. Think placement, not power.',spec:[['Contact','Shoulder'],['Spin','Slice'],['Goal','Keep the net']],path:'M352 260 Q620 205 840 380 L935 330',me:340,opp:820},
+ {n:'Víbora',aka:'"Viper"',d:'The bandeja\'s attacking cousin. More side-spin and speed, so it skids low off the side glass and is hard to return.',spec:[['Contact','Head height'],['Spin','Side + slice'],['Goal','Pressure']],path:'M362 248 Q600 250 800 380 L935 365',me:350,opp:820},
+ {n:'Smash',aka:'Remate · Por tres',d:'A flat, hard overhead that bounces high enough to fly out over the back wall. Only go for it when the ball is close to the net.',spec:[['Contact','Max reach'],['Spin','Flat'],['Goal','Finish']],path:'M392 196 L700 380 Q840 60 995 20',me:380,opp:820},
+ {n:'Chiquita',aka:'"Little one"',d:'A soft, low ball from the back that dips at the feet of the net players. It forces a weak volley so you can move forward.',spec:[['Height','Just over net'],['Pace','Slow'],['Goal','Move up']],path:'M160 330 Q360 250 610 380',me:160,opp:640},
+ {n:'Bajada',aka:'"Coming down"',d:'Wait for the ball to pop off your own back glass, then attack it downward. It turns a defensive ball into a winner.',spec:[['Ball from','Your glass'],['Contact','Above head'],['Goal','Counter-attack']],path:'M214 196 Q460 250 760 380',pre:'M60 250 Q110 150 214 196',me:200,opp:640}
+];
+scenes.shots=(function(){
+  const svg=$('#shotSvg');const {F}=sideCourt(svg);
+  const pre=el('path',{class:'trail',style:'opacity:.4'},svg);
+  const path=el('path',{class:'trail',pathLength:1},svg);
+  const meG=el('g',{},svg),opG=el('g',{},svg);
+  const ball=el('circle',{r:9,class:'ball'},svg);
+  const pips=$('#pips');let cur=-1;
+  SHOTS.forEach((s,i)=>{const b=document.createElement('button');b.setAttribute('aria-label','Show '+s.n);b.onclick=()=>{const sec=$('#shots');const top=sec.offsetTop+(sec.offsetHeight-innerHeight)*((i+.6)/6);go(top)};pips.appendChild(b)});
+  function set(i){
+    const s=SHOTS[i];cur=i;
+    $('#shotIdx').textContent=String(i+1).padStart(2,'0')+' / 06';
+    $('#shotName').textContent=s.n;$('#shotAka').textContent=s.aka;$('#shotDesc').textContent=s.d;
+    $('#shotSpec').innerHTML=s.spec.map(([k,v])=>`<div>${k}<b>${v}</b></div>`).join('');
+    path.setAttribute('d',s.path);pre.setAttribute('d',s.pre||'');
+    meG.innerHTML='';opG.innerHTML='';
+    figure(meG,s.me,F,'fig',i===4?-6:8);figure(opG,s.opp,F,'fig ghost');
+    [...pips.children].forEach((b,j)=>{b.className=j===i?'on':j<i?'done':''});
+  }
+  set(0);
+  return p=>{
+    const raw=p*6;const i=Math.min(5,Math.floor(raw));if(i!==cur)set(i);
+    const t=ease(clamp((raw-i)/.7));
+    path.style.strokeDasharray=1;path.style.strokeDashoffset=1-t;
+    const L=path.getTotalLength();const pt=path.getPointAtLength(L*t);
+    ball.setAttribute('cx',pt.x);ball.setAttribute('cy',pt.y);
+  };
+})();
+
+/* 06 positioning */
+scenes.move=(function(){
+  const svg=$('#moveSvg');court(svg);
+  const zoneNet=el('rect',{x:80,y:20,width:40,height:100,class:'zone'},svg);
+  const zt=el('text',{x:100,y:132,class:'dimt','text-anchor':'middle'},svg);zt.textContent='NET ZONE';
+  const rope=el('line',{class:'rope'},svg);
+  const ghostA=el('circle',{r:3.6,class:'bad'},svg),ghostB=el('circle',{r:3.6,class:'bad'},svg);
+  const hole=el('path',{d:'M95 45 L40 95',class:'bad'},svg);
+  const holeT=el('text',{x:58,y:62,class:'badt'},svg);holeT.textContent='HOLE';
+  const lob=el('path',{d:'M40 50 Q120 0 200 55',class:'trail',pathLength:1},svg);
+  const ball=el('circle',{r:2.2,class:'ball'},svg);
+  const A=dot(svg,'us'),B=dot(svg,'us'),C=dot(svg,'them'),D=dot(svg,'them');
+  const back=[[40,45],[40,95]],net=[[98,45],[98,95]],tBack=[[200,45],[200,95]],tNet=[[142,45],[142,95]];
+  const steps=$('#move').querySelectorAll('.steps li');const L=lob.getTotalLength();
+  const put=(c,x,y)=>{c.setAttribute('cx',x);c.setAttribute('cy',y)};
+  return p=>{
+    const lt=seg(p,.34,.5),mv=ease(seg(p,.42,.62));
+    lob.style.strokeDasharray=1;lob.style.strokeDashoffset=1-lt;lob.style.opacity=p<.66?1:.3;
+    const pt=lob.getPointAtLength(L*lt);put(ball,pt.x,pt.y);ball.style.opacity=p<.32?0:1;
+    const us=back.map((b,i)=>[lerp(b[0],net[i][0],mv),lerp(b[1],net[i][1],mv)]);
+    const th=tNet.map((b,i)=>[lerp(b[0],tBack[i][0],mv),lerp(b[1],tBack[i][1],mv)]);
+    put(A,...us[0]);put(B,...us[1]);put(C,...th[0]);put(D,...th[1]);
+    rope.setAttribute('x1',us[0][0]);rope.setAttribute('y1',us[0][1]);rope.setAttribute('x2',us[1][0]);rope.setAttribute('y2',us[1][1]);
+    zoneNet.setAttribute('x',lerp(120,80,mv));zoneNet.setAttribute('width',40);
+    zoneNet.setAttribute('x',p<.4?120:80);zt.setAttribute('x',p<.4?140:100);
+    const w=seg(p,.7,.82);
+    put(ghostA,95,45);put(ghostB,40,95);[ghostA,ghostB,hole,holeT].forEach(e=>e.style.opacity=w);
+    const s=p<.33?0:p<.66?1:2;steps.forEach((li,i)=>li.classList.toggle('on',i===s));
+  };
+})();
+
+/* end-of-step progress values: reduced-motion users see each step's final state */
+scenes.court.stops=[.32,.63,1];scenes.serve.stops=[.29,.64,1];scenes.glass.stops=[.32,.62,1];
+scenes.move.stops=[.31,.65,1];scenes.shots.stops=[0,1,2,3,4,5].map(i=>(i+.75)/6);
+
+/* ================= SCROLL ENGINE ================= */
+const chapters=[...document.querySelectorAll('[data-scene]')];
+const navLinks=[...document.querySelectorAll('.top nav a')];
+const sectIds=['court','serve','glass','score','shots','move','start'];
+const state=chapters.map(sec=>({sec,fn:scenes[sec.dataset.scene],cur:-1,target:0}));
+const secEls=sectIds.map(id=>document.getElementById(id));
+/* read scroll position -> targets (cheap, once per scroll frame) */
+function measure(){
+  state.forEach(s=>{const r=s.sec.getBoundingClientRect();s.target=clamp(-r.top/(s.sec.offsetHeight-innerHeight))});
+  const doc=document.documentElement;const pr=scrollY/(doc.scrollHeight-innerHeight);
+  $('#progress').style.width=(pr*100).toFixed(2)+'%';
+  let idx=-1;secEls.forEach((s,i)=>{if(s.getBoundingClientRect().top<innerHeight*.5)idx=i});
+  $('#counter').textContent=String(idx+1).padStart(2,'0')+' / 07';
+  navLinks.forEach((a,i)=>a.classList.toggle('on',i===idx));
+}
+/* diagrams glide toward the scroll target (damped), snap when paused / reduced motion */
+let raf=0,last=0;
+function loop(now){
+  raf=0;const dt=Math.min(50,Math.max(1,now-last));last=now;
+  const k=(paused||reduce)?1:1-Math.exp(-dt/85);
+  let busy=false;
+  state.forEach(s=>{
+    const t=reduce?s.fn.stops.find(v=>v>=s.target-1e-6):s.target;
+    if(s.cur<0){s.cur=t;s.fn(t);return}
+    const d=t-s.cur;if(d===0)return;
+    if(Math.abs(d)<.0005||k===1)s.cur=t;else{s.cur+=d*k;busy=true}
+    s.fn(s.cur);
+  });
+  if(busy)raf=requestAnimationFrame(loop);
+}
+function tick(){measure();if(!raf){last=performance.now()-16;raf=requestAnimationFrame(loop)}}
+let ticking=false;
+addEventListener('scroll',()=>{if(!ticking){ticking=true;requestAnimationFrame(()=>{tick();ticking=false})}},{passive:true});
+addEventListener('resize',tick);
+measure();loop(performance.now());
+
+/* smooth scroll (Lenis). Off for reduced motion and while motion is paused; native scroll is the fallback */
+let lenis=null;
+function lenisOn(){if(reduce||lenis||typeof Lenis==='undefined')return;lenis=new Lenis({lerp:.11,wheelMultiplier:1})}
+function lenisOff(){if(lenis){lenis.destroy();lenis=null}}
+(function lraf(t){if(lenis)lenis.raf(t);requestAnimationFrame(lraf)})(performance.now());
+function go(target){
+  if(lenis)lenis.scrollTo(target,{duration:1.1});
+  else{const top=typeof target==='number'?target:target.getBoundingClientRect().top+scrollY;scrollTo({top,behavior:(reduce||paused)?'auto':'smooth'})}
+}
+document.addEventListener('click',e=>{
+  const a=e.target.closest('a[href^="#"]');if(!a)return;
+  const t=document.getElementById(a.getAttribute('href').slice(1));if(!t)return;
+  e.preventDefault();go(t);history.replaceState(null,'',a.getAttribute('href'));
+});
+
+/* reveal nudges (content is visible at rest) */
+const rises=[...document.querySelectorAll('.rise')];
+if('IntersectionObserver' in window&&!reduce){
+  const io=new IntersectionObserver(es=>es.forEach(e=>{if(e.isIntersecting){e.target.classList.remove('pre');io.unobserve(e.target)}}),{rootMargin:'0px 0px -8% 0px'});
+  rises.forEach((r,i)=>{if(r.getBoundingClientRect().top>innerHeight){r.classList.add('pre');r.style.transitionDelay=(i%4)*70+'ms';io.observe(r)}});
+}
+
+/* hero load sequence: one timeline. header -> tag -> headline -> lede -> CTAs -> scope -> court draws -> players -> rally */
+const heroAnims=[];
+if(!reduce){
+  const E='cubic-bezier(.2,.7,.1,1)';
+  const A=(node,kf,delay,duration=700)=>{if(node)heroAnims.push(node.animate(kf,{duration,delay,easing:E,fill:'backwards'}))};
+  const up=[{opacity:0,transform:'translateY(14px)'},{opacity:1,transform:'none'}];
+  const fade=[{opacity:0},{opacity:1}];
+  A($('.top'),[{opacity:0,transform:'translateY(-100%)'},{opacity:1,transform:'none'}],0,600);
+  A($('.hero .tag'),up,120);
+  document.querySelectorAll('.hero h1 .row span').forEach((s,i)=>A(s,[{transform:'translateY(100%)'},{transform:'none'}],220+i*110,900));
+  A($('.hero .lede'),up,620);
+  A($('.hero .cta'),up,740);
+  A($('.hero .scope'),up,520,800);
+  const H=window.heroRally,draw=[{strokeDasharray:1,strokeDashoffset:1},{strokeDasharray:1,strokeDashoffset:0}];
+  A(H.g.outline,draw,800,800);
+  H.g.service.forEach((l,i)=>A(l,draw,1050+i*70,600));
+  A(H.g.net,draw,1150,500);
+  H.g.walls.forEach((l,i)=>A(l,draw,1300+i*40,500));
+  H.g.mesh.forEach(l=>A(l,fade,1500,400));
+  H.players.forEach((c,i)=>A(c,fade,1550+i*70,350));
+  A(H.ball,fade,1850,300);A(H.shadow,fade,1850,300);
+  document.querySelectorAll('.scope-foot div').forEach((d,i)=>A(d,fade,1700+i*80,400));
+  setTimeout(()=>H.start(),2100);
+}else window.heroRally.start();
+
+/* pause motion */
+const pb=$('#pause');
+function setPause(v){
+  paused=v;pb.setAttribute('aria-pressed',v);pb.textContent=v?'Play motion':'Pause motion';
+  document.documentElement.classList.toggle('paused',v);
+  if(v){lenisOff();heroAnims.forEach(a=>a.finish());window.heroRally.start();tick()}else lenisOn();
+}
+setPause(paused);pb.onclick=()=>setPause(!paused);
+
+/* ================= SCOREBOARD ================= */
+const NAMES={0:'Golden point',1:'Silver point',2:'Star point'};
+const Score={
+  init(adv=0){return{pts:[0,0],games:[0,0],sets:[],won:[0,0],tb:false,adv,deuces:0,server:0,done:false}},
+  decisive(s){return !s.tb&&s.pts[0]===3&&s.pts[1]===3&&s.deuces>s.adv},
+  point(s0,i){
+    const s=JSON.parse(JSON.stringify(s0));if(s.done)return s;const o=1-i;
+    if(s.tb){s.pts[i]++;if(s.pts[i]>=7&&s.pts[i]-s.pts[o]>=2)Score.game(s,i);return s}
+    if(Score.decisive(s)){Score.game(s,i);return s}
+    s.pts[i]++;
+    const a=s.pts[i],b=s.pts[o];
+    if(a>=4&&a-b>=2){Score.game(s,i);return s}
+    if(a===b&&a>=3){s.pts=[3,3];s.deuces++}
+    return s;
+  },
+  game(s,i){
+    const o=1-i;s.games[i]++;s.pts=[0,0];s.deuces=0;s.tb=false;s.server=1-s.server;
+    if((s.games[i]>=6&&s.games[i]-s.games[o]>=2)||s.games[i]===7){s.sets.push(s.games.slice());s.won[i]++;s.games=[0,0];if(s.won[i]===2)s.done=true}
+    else if(s.games[0]===6&&s.games[1]===6)s.tb=true;
+  },
+  label(s){
+    if(s.tb)return s.pts.map(String);
+    const L=['0','15','30','40'];const [a,b]=s.pts;
+    if(a>=3&&b>=3){if(a===b)return['40','40'];return a>b?['AD','40']:['40','AD']}
+    return s.pts.map(x=>L[x]);
+  }
+};
+let S=Score.init(0),H=[];
+function render(){
+  const lab=Score.label(S);$('#p0').textContent=lab[0];$('#p1').textContent=lab[1];
+  for(let k=0;k<3;k++)for(let i=0;i<2;i++){
+    const c=document.getElementById(`s${i}-${k}`);
+    const v=k<S.sets.length?S.sets[k][i]:k===S.sets.length&&!S.done?S.games[i]:null;
+    c.textContent=v==null?'–':v;c.className=(k===S.sets.length&&!S.done)?'':'dimset';
+  }
+  $('#srv0').classList.toggle('on',S.server===0&&!S.done);$('#srv1').classList.toggle('on',S.server===1&&!S.done);
+  const f=$('#flag');f.classList.remove('hot');const [a,b]=S.pts;
+  if(S.done){f.textContent=(S.won[0]===2?'You':'They')+' win the match '+S.sets.map(x=>x.join('–')).join(', ');f.classList.add('hot')}
+  else if(S.tb)f.textContent='Tie-break · first to 7, win by 2';
+  else if(Score.decisive(S)){f.textContent=NAMES[S.adv]+' · next point wins · receivers choose who returns';f.classList.add('hot')}
+  else if(a>=3&&b>=3&&a===b){const left=S.adv>=99?'unlimited':(S.adv-S.deuces+1);f.textContent='Deuce '+S.deuces+' · advantages left before the deciding point: '+left}
+  else if(a>=3&&b>=3)f.textContent='Advantage '+(a>b?'you':'them')+' · one more point for the game';
+  else f.textContent='● marks the serving pair';
+  $('#win0').disabled=$('#win1').disabled=S.done;
+}
+$('#win0').onclick=()=>{H.push(S);S=Score.point(S,0);render()};
+$('#win1').onclick=()=>{H.push(S);S=Score.point(S,1);render()};
+$('#undo').onclick=()=>{if(H.length){S=H.pop();render()}};
+$('#reset').onclick=()=>{H=[];S=Score.init(S.adv);render()};
+$('#jump').onclick=()=>{H.push(S);S=JSON.parse(JSON.stringify(S));if(!S.done&&!S.tb){S.pts=[3,3];S.deuces=1}render()};
+const modeBtns=[...document.querySelectorAll('.seg button[data-adv]')];
+modeBtns.forEach(btn=>btn.onclick=()=>{S=JSON.parse(JSON.stringify(S));S.adv=+btn.dataset.adv;modeBtns.forEach(x=>x.setAttribute('aria-pressed',x===btn));render()});
+render();
+window.__Score=Score;
+</script>
+</body>
+</html>

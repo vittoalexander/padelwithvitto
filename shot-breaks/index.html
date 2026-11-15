@@ -1,0 +1,441 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Why a padel shot breaks</title>
+<meta name="description" content="See, Decide, Set, Hit. Four steps in every padel shot, two fuels under them, and six places a shot can break.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600&family=DM+Serif+Display&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+/* Visual direction: PadelIQ "direction C". Structure after fighterready.com: loader, numbered rounds,
+   oversized headline, one line, "Read more". Everything is drawn in SVG; one shot unfolds as you scroll. */
+:root{
+  --bg:#121417;--panel:#1D2025;--rule:#2A2E34;--muted:#9AA3AB;--text:#F4F5F6;
+  --coral:#EC4C47;--glass:#A7C7DC;--fault:#E0A458;
+  --display:"DM Serif Display",Georgia,serif;--body:"DM Sans",system-ui,Arial,sans-serif;--mono:"DM Mono",ui-monospace,Menlo,monospace;
+  color-scheme:dark;
+}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--text);font-family:var(--body);font-size:17px;line-height:1.55;-webkit-font-smoothing:antialiased;overflow-x:hidden}
+:focus-visible{outline:2px solid var(--coral);outline-offset:3px;border-radius:2px}
+.mono{font-family:var(--mono);font-size:12px;letter-spacing:.1em;text-transform:uppercase;color:var(--muted)}
+button{font:inherit;color:inherit}
+
+/* loader */
+.loader{position:fixed;inset:0;z-index:100;background:var(--bg);display:none;place-items:center}
+.js.loading .loader{display:grid}
+.loader div{width:min(260px,70vw)}
+.loader i{display:block;height:1px;background:var(--rule);margin:14px 0 10px;position:relative}
+.loader i::after{content:"";position:absolute;inset:0;background:var(--coral);transform-origin:left;transform:scaleX(var(--p,0))}
+.loader p{display:flex;justify-content:space-between;margin:0}
+.loader b{font-family:var(--display);font-weight:400;font-size:26px;letter-spacing:.01em;text-transform:uppercase}
+.loader b em{font-style:normal;color:var(--coral)}
+
+/* top bar */
+.top{position:fixed;inset:0 0 auto 0;z-index:50;height:56px;display:flex;align-items:center;gap:16px;padding:0 clamp(16px,4vw,40px);background:var(--bg);border-bottom:1px solid var(--rule)}
+.brand{font-family:var(--display);font-size:19px;text-transform:uppercase;letter-spacing:.02em;color:var(--text);text-decoration:none;white-space:nowrap}
+.brand b{font-weight:400;color:var(--coral)}
+.counter{margin-left:auto;font-family:var(--mono);font-size:11px;letter-spacing:.1em;color:var(--muted);white-space:nowrap}
+.ctrl{font-family:var(--mono);font-size:11px;letter-spacing:.08em;text-transform:uppercase;background:none;border:1px solid var(--rule);padding:7px 12px;min-height:40px;border-radius:6px;cursor:pointer;white-space:nowrap}
+.ctrl:hover{border-color:var(--muted)}
+.progress{position:absolute;left:0;bottom:-1px;height:2px;width:0;background:var(--coral)}
+
+/* layout: rounds scroll on the left, the shot stays pinned on the right */
+.layout{display:grid;grid-template-columns:minmax(0,.9fr) minmax(0,1.1fr);gap:clamp(24px,4vw,64px);max-width:1320px;margin:0 auto;padding:0 clamp(16px,4vw,40px)}
+.stage{position:sticky;top:56px;height:calc(100vh - 56px);height:calc(100svh - 56px);display:flex;flex-direction:column;justify-content:center;order:2}
+.scope{border:1px solid var(--rule);border-radius:6px;background:var(--panel);padding:14px 14px 10px}
+.scope-head{display:flex;justify-content:space-between;margin-bottom:6px}
+.scope-head .live{color:var(--coral)}
+.scope svg{display:block;width:100%;height:auto}
+.round{min-height:100vh;min-height:100svh;display:flex;flex-direction:column;justify-content:center;padding:96px 0 64px;border-bottom:1px solid var(--rule)}
+.round:last-of-type{border-bottom:0}
+.tag{display:flex;gap:12px;align-items:center;margin:0 0 20px}
+.tag .n{color:var(--coral)}
+.tag::after{content:"";flex:1;height:1px;background:var(--rule)}
+h1,h2{font-family:var(--display);font-weight:400;text-transform:uppercase;line-height:.92;letter-spacing:.005em;margin:0;font-size:clamp(50px,7.4vw,118px);text-wrap:balance}
+h1 em,h2 em{font-style:normal;color:var(--coral)}
+h1 .row,h2 .row{display:block;overflow:hidden;padding-bottom:.06em}
+h1 .row span,h2 .row span{display:inline-block}
+.line{font-size:clamp(18px,1.7vw,22px);color:#C9CED3;max-width:34ch;margin:22px 0 0}
+details{margin-top:26px;border-top:1px solid var(--rule);max-width:46ch}
+summary{list-style:none;cursor:pointer;display:flex;align-items:center;gap:12px;padding:14px 0;min-height:44px;font-family:var(--mono);font-size:12px;letter-spacing:.1em;text-transform:uppercase;color:var(--text)}
+summary::-webkit-details-marker{display:none}
+summary::before{content:"+";display:grid;place-items:center;width:26px;height:26px;border:1px solid var(--rule);border-radius:6px;color:var(--coral);font-size:15px}
+details[open] summary::before{content:"\2212"}
+details ul{margin:0 0 6px;padding:0;list-style:none;display:grid;gap:10px}
+details li{border-left:2px solid var(--rule);padding-left:14px;color:#C9CED3;font-size:15.5px}
+details li b{display:block;font-family:var(--mono);font-weight:500;font-size:11px;letter-spacing:.1em;text-transform:uppercase;color:var(--text)}
+details li b.warn{color:var(--fault)}
+
+/* six places + reply */
+.chips{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-top:26px;max-width:520px}
+.chips button{display:flex;align-items:center;gap:8px;min-height:44px;padding:8px 10px;background:none;border:1px solid var(--rule);border-radius:6px;cursor:pointer;font-family:var(--mono);font-size:12px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);text-align:left}
+.chips button i{font-style:normal;display:grid;place-items:center;flex:none;width:20px;height:20px;border-radius:50%;border:1px solid var(--fault);color:var(--fault);font-size:11px}
+.chips button[aria-pressed="true"]{border-color:var(--fault);color:var(--text)}
+.chips button[aria-pressed="true"] i{background:var(--fault);color:var(--bg)}
+.card{margin-top:14px;max-width:520px;border:1px solid var(--rule);border-radius:6px;background:var(--panel);padding:16px;display:grid;gap:12px}
+.card div b{display:block;font-family:var(--mono);font-weight:500;font-size:11px;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);margin-bottom:2px}
+.card div:first-child b{color:var(--fault)}
+.card p{margin:0;font-size:15.5px;color:#C9CED3}
+.reply{margin-top:14px;max-width:520px;border:1px solid var(--rule);border-radius:6px;background:var(--panel);padding:16px}
+.reply q{display:block;quotes:none;font-family:var(--display);font-size:clamp(28px,3.2vw,42px);line-height:1.05;min-height:2.1em}
+.reply q b{font-weight:400;color:var(--coral)}
+.timer{height:2px;background:var(--rule);margin:14px 0 8px}
+.timer i{display:block;height:100%;background:var(--coral);transform-origin:left}
+.reply p{display:flex;justify-content:space-between;margin:0}
+.draft{margin-top:16px;max-width:520px;font-size:13.5px;color:var(--muted)}
+footer{border-top:1px solid var(--rule);padding:28px clamp(16px,4vw,40px);display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap}
+footer a{color:var(--coral);text-decoration:none}
+
+/* svg */
+.fl{stroke:var(--text);stroke-width:2}
+.gl{stroke:var(--glass);stroke-width:5}
+.nt{stroke:var(--text);stroke-width:3}
+.fig{stroke:var(--text);stroke-width:3.5;fill:none;stroke-linecap:round}
+.fig.ghost{stroke:var(--muted);opacity:.7}
+.in{fill:none;stroke:var(--text);stroke-width:2.5;stroke-dasharray:6 7;opacity:.55}
+.opt{fill:none;stroke:var(--muted);stroke-width:2.5;stroke-dasharray:6 7}
+.out{fill:none;stroke:var(--coral);stroke-width:3.5}
+.sight{stroke:var(--glass);stroke-width:1.5;stroke-dasharray:3 6}
+.ball{fill:var(--text)}
+.t{font-family:var(--mono);font-size:19px;letter-spacing:.1em;fill:var(--muted);text-transform:uppercase}
+.t.g{fill:var(--glass)}.t.c{fill:var(--coral)}
+.node circle{fill:var(--bg);stroke:var(--rule);stroke-width:2}
+.node text{font-family:var(--mono);font-size:20px;letter-spacing:.12em;fill:var(--muted)}
+.node.done circle{stroke:var(--muted);fill:var(--muted)}
+.node.on circle{stroke:var(--coral);fill:var(--coral)}
+.node.on text{fill:var(--text)}
+.link{stroke:var(--rule);stroke-width:2}
+.fuel rect.bg{fill:none;stroke:var(--rule);stroke-width:1.5}
+.fuel rect.fill{fill:var(--coral)}
+.mk circle{fill:var(--bg);stroke:var(--fault);stroke-width:2}
+.mk text{font-family:var(--mono);font-size:18px;fill:var(--fault);text-anchor:middle}
+.mk.sel circle{fill:var(--fault)}
+.mk.sel text{fill:var(--bg)}
+.mk{cursor:pointer}
+
+/* reveal: content is visible at rest; headline rows slide up once */
+.js .round h2 .row span{transition:transform .9s cubic-bezier(.2,.7,.1,1)}
+.js .round.pre h2 .row span{transform:translateY(105%)}
+.js .round .line,.js .round details,.js .round .chips,.js .round .card,.js .round .reply{transition:opacity .7s .15s,transform .7s .15s cubic-bezier(.2,.7,.1,1)}
+.js .round.pre .line,.js .round.pre details,.js .round.pre .chips,.js .round.pre .card,.js .round.pre .reply{opacity:0;transform:translateY(14px)}
+.paused .round *{transition:none!important}
+.paused .round.pre *{opacity:1!important;transform:none!important}
+html.lenis,html.lenis body{height:auto}
+.lenis.lenis-smooth{scroll-behavior:auto!important}
+.lenis.lenis-stopped{overflow:hidden}
+
+/* phone: the shot is pinned on top, rounds scroll under it */
+@media (max-width:900px){
+  .layout{display:block;padding:0}
+  .stage{height:auto;top:56px;z-index:10;background:var(--bg);padding:8px 12px 8px;border-bottom:1px solid var(--rule);display:block}
+  .scope{padding:8px 8px 4px;border:0;background:none}
+  .scope-head{display:none}
+  .scope svg{max-height:34svh;margin:0 auto}
+  .rounds{padding:0 16px}
+  .round{min-height:62svh;padding:36px 0 44px;justify-content:flex-start}
+  h1,h2{font-size:clamp(40px,12.5vw,64px)}
+  .line{margin-top:14px;font-size:17px}
+  .tag{margin-bottom:12px}
+  .t{font-size:24px}.node text{font-size:25px}.mk text{font-size:22px}
+  .chips{grid-template-columns:repeat(2,1fr)}
+  .brand{font-size:16px}
+}
+@media (max-width:520px){.counter .lg{display:none}.top{gap:10px}.ctrl{padding:7px 9px}}
+@media (prefers-reduced-motion:reduce){
+  .js .round *{transition:none!important}
+  .js .round.pre *{opacity:1!important;transform:none!important}
+}
+</style>
+</head>
+<body>
+
+<div class="loader" id="loader" aria-hidden="true"><div>
+  <b>Why a shot <em>breaks</em></b><i></i>
+  <p class="mono"><span>Reading the ball</span><span id="pct">0%</span></p>
+</div></div>
+
+<header class="top">
+  <a class="brand" href="#r0">Why a shot <b>breaks</b></a>
+  <span class="counter" id="counter"><span class="lg">Round </span><span id="cn">00</span> / 07</span>
+  <button class="ctrl" id="pause" aria-pressed="false">Pause motion</button>
+  <div class="progress" id="progress"></div>
+</header>
+
+<div class="layout">
+  <aside class="stage" aria-label="One padel shot, seen from the side, unfolding as you scroll">
+    <div class="scope">
+      <div class="scope-head mono"><span class="live" id="phase">One shot</span><span id="readout">Ball incoming</span></div>
+      <svg viewBox="0 0 1000 470" id="scene" role="img" aria-label="Side view of a padel shot in four steps: see, decide, set, hit, with body and mind underneath"></svg>
+    </div>
+  </aside>
+
+  <main class="rounds">
+    <section class="round" id="r0">
+      <p class="mono tag"><span class="n">Round 00</span><span>Overview</span></p>
+      <h1 aria-label="Why a shot breaks."><span class="row"><span>Why a</span></span><span class="row"><span>shot</span></span><span class="row"><span><em>breaks.</em></span></span></h1>
+      <p class="line">Every padel shot is four steps. When one step fails, the shot fails. Scroll to watch one shot happen.</p>
+    </section>
+
+    <section class="round" id="r1">
+      <p class="mono tag"><span class="n">Round 01</span><span>See</span></p>
+      <h2><span class="row"><span>You hit</span></span><span class="row"><span>what you</span></span><span class="row"><span><em>see.</em></span></span></h2>
+      <p class="line">Read the ball early: how fast, how high, and where it will bounce.</p>
+      <details><summary>Read more</summary><ul>
+        <li><b>Do</b>Watch the other player's racket face as they hit. It tells you the direction before the ball does.</li>
+        <li><b>Do</b>Call the bounce in your head: short, deep, or off the glass.</li>
+        <li><b class="warn">It broke here if</b>The ball surprised you, or you moved late or the wrong way.</li>
+      </ul></details>
+    </section>
+
+    <section class="round" id="r2">
+      <p class="mono tag"><span class="n">Round 02</span><span>Decide</span></p>
+      <h2><span class="row"><span>One ball,</span></span><span class="row"><span>one <em>plan.</em></span></span></h2>
+      <p class="line">Pick the shot before the ball arrives. Then commit to it.</p>
+      <details><summary>Read more</summary><ul>
+        <li><b>Do</b>Choose before the bounce, not during the swing.</li>
+        <li><b>Do</b>Keep a default. If you are unsure, lob.</li>
+        <li><b class="warn">It broke here if</b>You changed your mind mid-swing, or went for the hard shot when the easy one was open.</li>
+      </ul></details>
+    </section>
+
+    <section class="round" id="r3">
+      <p class="mono tag"><span class="n">Round 03</span><span>Set</span></p>
+      <h2><span class="row"><span>Feet</span></span><span class="row"><span><em>first.</em></span></span></h2>
+      <p class="line">Get behind the ball with the racket ready, and be balanced before you hit.</p>
+      <details><summary>Read more</summary><ul>
+        <li><b>Do</b>Take small steps to adjust, and prepare the racket while you move.</li>
+        <li><b>Do</b>Leave space. The ball should be in front of you, an arm's length away.</li>
+        <li><b class="warn">It broke here if</b>The ball was too close or too far, or you were still moving at contact.</li>
+      </ul></details>
+    </section>
+
+    <section class="round" id="r4">
+      <p class="mono tag"><span class="n">Round 04</span><span>Hit</span></p>
+      <h2><span class="row"><span>Let it</span></span><span class="row"><span><em>go.</em></span></span></h2>
+      <p class="line">Contact in front, a smooth swing, and a full finish.</p>
+      <details><summary>Read more</summary><ul>
+        <li><b>Do</b>Keep the grip loose and finish the swing toward your target.</li>
+        <li><b>Know</b>If the first three steps were right, this is the easy part. Many "bad technique" misses are a late See or a poor Set.</li>
+        <li><b class="warn">It broke here if</b>You were in the right place with the right plan and still rushed or tightened the swing.</li>
+      </ul></details>
+    </section>
+
+    <section class="round" id="r5">
+      <p class="mono tag"><span class="n">Round 05</span><span>Body + Mind</span></p>
+      <h2><span class="row"><span>The</span></span><span class="row"><span><em>fuel.</em></span></span></h2>
+      <p class="line">All four steps run on your body and your mind. When the fuel is low, good technique still breaks.</p>
+      <details><summary>Read more</summary><ul>
+        <li><b>Body</b>Legs, breath, water, sleep. Tired legs make every Set late.</li>
+        <li><b>Mind</b>Focus and calm. A head stuck on the last point makes every See late.</li>
+        <li><b class="warn">It broke here if</b>The same shot worked in the first set and stopped working in the third.</li>
+      </ul></details>
+    </section>
+
+    <section class="round" id="r6">
+      <p class="mono tag"><span class="n">Round 06</span><span>The six places</span></p>
+      <h2><span class="row"><span>Find the</span></span><span class="row"><span><em>break.</em></span></span></h2>
+      <p class="line">After any miss, the shot broke in one of six places. Pick one.</p>
+      <div class="chips" id="chips6" role="group" aria-label="The six places a shot breaks"></div>
+      <div class="card" aria-live="polite"><div><b>Looks like</b><p id="looks"></p></div><div><b>Try next ball</b><p id="tryit"></p></div></div>
+    </section>
+
+    <section class="round" id="r7">
+      <p class="mono tag"><span class="n">Round 07</span><span>The 3-second reply</span></p>
+      <h2><span class="row"><span>Say it in</span></span><span class="row"><span><em>three</em></span></span><span class="row"><span>seconds.</span></span></h2>
+      <p class="line">When your coach asks "what happened?", name the place and one reason. That is the whole answer.</p>
+      <div class="chips" id="chips7" role="group" aria-label="Pick where the shot broke"></div>
+      <div class="reply" aria-live="polite"><q id="reply"></q><div class="timer"><i id="timer"></i></div><p class="mono"><span>Your reply</span><span>3.0 s</span></p></div>
+    </section>
+  </main>
+</div>
+
+<footer class="mono"><span>Made by Vitto · <a href="https://instagram.com/padelwithvitto" rel="noopener">@padelwithvitto</a></span><span>See → Decide → Set → Hit</span></footer>
+
+<script src="https://cdn.jsdelivr.net/npm/lenis@1.1.18/dist/lenis.min.js"></script>
+<script>
+const root=document.documentElement;root.classList.add('js');
+const NS='http://www.w3.org/2000/svg';
+const $=s=>document.querySelector(s);
+const clamp=(v,a=0,b=1)=>Math.min(b,Math.max(a,v));
+const ease=t=>t<.5?4*t*t*t:1-Math.pow(-2*t+2,3)/2;
+const lerp=(a,b,t)=>a+(b-a)*t;
+const seg=(p,a,b)=>clamp((p-a)/(b-a));
+const reduce=matchMedia('(prefers-reduced-motion: reduce)').matches;
+let paused=reduce;
+function el(tag,attrs={},parent){const e=document.createElementNS(NS,tag);for(const k in attrs)e.setAttribute(k,attrs[k]);if(parent)parent.appendChild(e);return e}
+
+/* DRAFT content: the six places a shot breaks. Wording to be confirmed by Vitto. */
+const PLACES=[
+ {n:'See',looks:'The ball surprises you. You move late, or the wrong way.',tryit:'Watch the other racket face. Call the bounce early: short, deep or glass.',reply:'I read it late.'},
+ {n:'Decide',looks:'You change your mind mid-swing, or pick the hard shot.',tryit:'Choose before the bounce. If in doubt, lob.',reply:'I changed my mind.'},
+ {n:'Set',looks:'The ball is too close or too far. You are off balance at contact.',tryit:'Small steps, racket back early, stop before you hit.',reply:"My feet weren't there."},
+ {n:'Hit',looks:'Right place, right plan, and it still goes in the net.',tryit:'Contact in front, loose grip, finish the swing.',reply:'I rushed the swing.'},
+ {n:'Body',looks:'Heavy legs. You are late to everything by the third set.',tryit:'Breathe between points, drink, and lob to buy time.',reply:'My legs were gone.'},
+ {n:'Mind',looks:'You are still thinking about the last point, or the score.',tryit:'One breath, one cue word, next ball.',reply:'I was still on the last point.'}
+];
+
+/* ================= SCENE: one shot, side view. Floor y=380, 44 px per metre ================= */
+const scene=(function(){
+  const svg=$('#scene'),F=380;
+  // chain: See -> Decide -> Set -> Hit
+  const NX=[150,383,617,850];
+  el('line',{x1:NX[0],y1:40,x2:NX[3],y2:40,class:'link'},svg);
+  const nodes=['See','Decide','Set','Hit'].map((n,i)=>{const g=el('g',{class:'node'},svg);el('circle',{cx:NX[i],cy:40,r:8},g);const t=el('text',{x:NX[i],y:20,'text-anchor':'middle'},g);t.textContent=n.toUpperCase();return g});
+  // court
+  el('line',{x1:40,y1:F,x2:960,y2:F,class:'fl'},svg);
+  el('line',{x1:60,y1:F,x2:60,y2:F-132,class:'gl'},svg);el('line',{x1:940,y1:F,x2:940,y2:F-132,class:'gl'},svg);
+  el('line',{x1:500,y1:F,x2:500,y2:F-39,class:'nt'},svg);
+  // paths
+  const pin=el('path',{d:`M246 ${F-56} Q520 ${F-250} 700 ${F} Q735 ${F-96} 770 ${F-62}`,class:'in',pathLength:1},svg);
+  const low=el('path',{d:`M770 ${F-62} Q560 ${F-120} 380 ${F}`,class:'opt'},svg);
+  const lob=el('path',{d:`M770 ${F-62} Q470 ${F-430} 150 ${F}`,class:'opt'},svg);
+  const out=el('path',{d:lob.getAttribute('d'),class:'out',pathLength:1},svg);
+  const lowT=el('text',{x:470,y:F-70,class:'t'},svg);lowT.textContent='Low';
+  const lobT=el('text',{x:330,y:F-232,class:'t c'},svg);lobT.textContent='Lob';
+  const sight=el('line',{class:'sight'},svg);
+  const bnc=el('g',{},svg);el('circle',{cx:700,cy:F,r:11,fill:'none',stroke:'var(--glass)','stroke-width':2},bnc);
+  const bt=el('text',{x:700,y:F+30,class:'t g','text-anchor':'middle'},bnc);bt.textContent='Bounce';
+  const feet=el('path',{d:`M786 ${F+8}H806M810 ${F+8}H830`,stroke:'var(--coral)','stroke-width':3,fill:'none'},svg);
+  // figures
+  const fig=(x,cls)=>{const g=el('g',{class:cls},svg);el('circle',{cx:x,cy:F-72,r:8},g);const p=el('path',{},g);return {g,p,x}};
+  const arm=(f,x,reach,dir)=>f.p.setAttribute('d',`M${x} ${F-64}V${F-30}M${x} ${F-30}L${x-10} ${F}M${x} ${F-30}L${x+10} ${F}M${x} ${F-56}L${x+dir*(14+reach)} ${F-50-reach*2.4}`);
+  const opp=fig(232,'fig ghost');arm(opp,232,6,1);
+  const me=fig(0,'fig');
+  const ring=el('circle',{cx:770,cy:F-62,r:0,fill:'none',stroke:'var(--coral)','stroke-width':2},svg);
+  const ball=el('circle',{r:9,class:'ball'},svg);
+  // fuel
+  const fuel=el('g',{class:'fuel'},svg);
+  const bars=[[60,'Body'],[510,'Mind']].map(([x,n])=>{el('rect',{x,y:F+44,width:430,height:12,rx:3,class:'bg'},fuel);const f=el('rect',{x,y:F+44,width:0,height:12,rx:3,class:'fill'},fuel);const t=el('text',{x,y:F+80,class:'t'},fuel);t.textContent=n;return {f,t}});
+  // break markers, one per place
+  const MK=[[560,F-176],[640,F-250],[850,F-8],[746,F-106],[275,F+50],[725,F+50]];
+  const marks=MK.map(([x,y],i)=>{const g=el('g',{class:'mk',role:'button',tabindex:-1,'aria-label':'Break at '+PLACES[i].n},svg);el('circle',{cx:x,cy:y,r:17},g);const t=el('text',{x,y:y+6},g);t.textContent=i+1;g.addEventListener('click',()=>select(i));return g});
+  /* markers are bigger on phones; set as an attribute because the CSS r property is not supported everywhere */
+  const phone=matchMedia('(max-width:900px)');
+  const sizeMarks=()=>marks.forEach(g=>{g.firstChild.setAttribute('r',phone.matches?22:17);g.lastChild.setAttribute('dy',phone.matches?2:0)});
+  sizeMarks();phone.addEventListener('change',sizeMarks);
+  const Lin=pin.getTotalLength(),Lout=out.getTotalLength();
+  const PH=['One shot','01 See','02 Decide','03 Set','04 Hit','Body + Mind','Six places','The reply'];
+  const RD=['Ball incoming','Reading the bounce','Lob or low?','Feet behind the ball','Contact in front','Fuel under every step','Where did it break?','Name it in 3 seconds'];
+  let lastPh=-1;
+  function render(s){
+    // s: -1..0 overview, 0..4 the four steps, 4..5 fuel, 5..6 six places, 6..7 reply
+    const tin=seg(s,0,1)*.45+seg(s,1,2)*.25+seg(s,2,3)*.22+seg(s,3,3.35)*.08;
+    const tout=ease(seg(s,3.35,4));
+    pin.style.strokeDasharray=1;pin.style.strokeDashoffset=1-tin;
+    const pt=tout>0?out.getPointAtLength(Lout*tout):pin.getPointAtLength(Lin*tin);
+    ball.setAttribute('cx',pt.x);ball.setAttribute('cy',pt.y);
+    const px=lerp(866,800,ease(seg(s,2.05,2.75)));
+    const reach=lerp(0,10,ease(seg(s,2.5,3)))-ease(seg(s,3.2,3.35))*8+ease(seg(s,3.35,3.7))*16;
+    me.g.firstChild.setAttribute('cx',px);arm(me,px,reach,-1);
+    sight.setAttribute('x1',px-6);sight.setAttribute('y1',F-74);sight.setAttribute('x2',pt.x);sight.setAttribute('y2',pt.y);
+    sight.style.opacity=seg(s,.05,.25)*(1-seg(s,3.3,3.5));
+    bnc.style.opacity=seg(s,.5,.8)*(1-seg(s,3,3.3));
+    const o=seg(s,1.1,1.5),pick=seg(s,1.6,1.95);
+    low.style.opacity=o*(1-pick*.8)*(1-seg(s,3.4,3.8));lowT.style.opacity=o*(1-pick*.7)*(1-seg(s,3.4,3.8));
+    lob.style.opacity=o*(1-seg(s,3.4,4)*.7);lob.style.stroke=pick>.5?'var(--coral)':'';lobT.style.opacity=o*(.5+pick*.5);
+    out.style.strokeDasharray=1;out.style.strokeDashoffset=1-tout;
+    feet.style.opacity=seg(s,2.6,2.9);
+    const c=seg(s,3.3,3.7);ring.setAttribute('r',c*22);ring.style.opacity=c>0?1-c:0;
+    const fu=ease(seg(s,4,4.9));
+    bars.forEach((b,i)=>{b.f.setAttribute('width',430*lerp(.18,1,i?ease(seg(s,4.25,5)):fu));b.f.style.opacity=.3+.7*seg(s,4,4.3);b.t.style.fill=s>=4?'var(--text)':''});
+    const m=seg(s,5,5.35);marks.forEach(g=>{g.style.opacity=m;g.style.pointerEvents=m>.5?'auto':'none'});
+    const step=s<0?-1:Math.min(4,Math.floor(s));
+    nodes.forEach((n,i)=>{n.classList.toggle('on',i===step||step>=4);n.classList.toggle('done',i<step&&step<4)});
+    const ph=clamp(Math.floor(s)+1,0,7);
+    if(ph!==lastPh){lastPh=ph;$('#phase').textContent=PH[ph];$('#readout').textContent=RD[ph]}
+  }
+  return {render,marks};
+})();
+
+/* ================= SIX PLACES + REPLY ================= */
+let sel=0,timerAnim=null;
+function chips(host){PLACES.forEach((p,i)=>{const b=document.createElement('button');b.innerHTML='<i>'+(i+1)+'</i>'+p.n;b.onclick=()=>select(i,true);host.appendChild(b)})}
+chips($('#chips6'));chips($('#chips7'));
+function select(i,user){
+  sel=i;const p=PLACES[i];
+  document.querySelectorAll('.chips').forEach(h=>[...h.children].forEach((b,j)=>b.setAttribute('aria-pressed',j===i)));
+  scene.marks.forEach((g,j)=>g.classList.toggle('sel',j===i));
+  $('#looks').textContent=p.looks;$('#tryit').textContent=p.tryit;
+  $('#reply').innerHTML='<b>'+p.n+'.</b> '+p.reply;
+  if(timerAnim)timerAnim.cancel();
+  if(user&&!paused&&!reduce)timerAnim=$('#timer').animate([{transform:'scaleX(0)'},{transform:'scaleX(1)'}],{duration:3000,easing:'linear'});
+}
+select(0);
+
+/* ================= SCROLL ENGINE ================= */
+const rounds=[...document.querySelectorAll('.round')];
+const phoneQ=matchMedia('(max-width:900px)'),stageEl=$('.stage');
+let target=-1,cur=null,raf=0,last=0;
+function measure(){
+  /* on phones the shot is pinned on top, so progress is measured in the space below it
+     and each round's motion finishes as its headline reaches the pinned shot */
+  const top=phoneQ.matches?stageEl.getBoundingClientRect().bottom:0,span=phoneQ.matches?.8:1;
+  const ref=top+(innerHeight-top)*.72;let q=0;
+  rounds.forEach((r,i)=>{const b=r.getBoundingClientRect();if(b.top<=ref)q=i+clamp((ref-b.top)/(b.height*span))});
+  target=q-1;
+  const idx=clamp(Math.floor(q),0,7);
+  $('#cn').textContent=String(idx).padStart(2,'0');
+  const doc=document.documentElement;$('#progress').style.width=(scrollY/(doc.scrollHeight-innerHeight)*100).toFixed(2)+'%';
+  rounds.forEach(r=>{if(r.classList.contains('pre')&&r.getBoundingClientRect().top<innerHeight*.82)r.classList.remove('pre')});
+}
+/* the shot glides toward the scroll position; it snaps when paused, and reduced motion shows each round's finished state */
+function loop(now){
+  raf=0;const dt=Math.min(50,Math.max(1,now-last));last=now;
+  const t=reduce?Math.ceil(target-1e-6):target;
+  const k=(paused||reduce||cur===null)?1:1-Math.exp(-dt/90);
+  if(cur===null)cur=t;
+  const d=t-cur;
+  if(Math.abs(d)<.0005||k===1)cur=t;else{cur+=d*k;raf=requestAnimationFrame(loop)}
+  scene.render(cur);
+}
+function tick(){measure();if(!raf){last=performance.now()-16;raf=requestAnimationFrame(loop)}}
+let ticking=false;
+addEventListener('scroll',()=>{if(!ticking){ticking=true;requestAnimationFrame(()=>{tick();ticking=false})}},{passive:true});
+addEventListener('resize',tick);
+
+/* headline reveals: only rounds below the fold start hidden */
+if(!reduce)rounds.forEach(r=>{if(r.getBoundingClientRect().top>innerHeight*.82)r.classList.add('pre')});
+measure();loop(performance.now());
+
+/* smooth scroll (Lenis). Off for reduced motion and while paused */
+let lenis=null;
+function lenisOn(){if(reduce||lenis||typeof Lenis==='undefined')return;lenis=new Lenis({lerp:.11})}
+function lenisOff(){if(lenis){lenis.destroy();lenis=null}}
+(function lraf(t){if(lenis)lenis.raf(t);requestAnimationFrame(lraf)})(performance.now());
+document.addEventListener('click',e=>{
+  const a=e.target.closest('a[href^="#"]');if(!a)return;const t=document.getElementById(a.getAttribute('href').slice(1));if(!t)return;
+  e.preventDefault();if(lenis)lenis.scrollTo(t,{duration:1.1});else t.scrollIntoView({behavior:'auto'});
+});
+
+/* loader, then the hero headline */
+const intro=[];
+function heroIn(){
+  if(reduce)return;
+  document.querySelectorAll('#r0 h1 .row span').forEach((s,i)=>intro.push(s.animate([{transform:'translateY(105%)'},{transform:'none'}],{duration:900,delay:80+i*110,easing:'cubic-bezier(.2,.7,.1,1)',fill:'backwards'})));
+  [$('#r0 .line'),$('.stage .scope')].forEach((n,i)=>intro.push(n.animate([{opacity:0,transform:'translateY(14px)'},{opacity:1,transform:'none'}],{duration:700,delay:480+i*140,easing:'cubic-bezier(.2,.7,.1,1)',fill:'backwards'})));
+}
+if(!reduce){
+  root.classList.add('loading');const L=$('#loader'),t0=performance.now(),D=900;
+  (function step(now){
+    const p=clamp((now-t0)/D);L.style.setProperty('--p',ease(p));$('#pct').textContent=Math.round(ease(p)*100)+'%';
+    if(p<1)return requestAnimationFrame(step);
+    root.classList.remove('loading');heroIn();
+  })(t0);
+  // safety: never leave the loader up if frames are throttled
+  setTimeout(()=>{if(root.classList.contains('loading')){root.classList.remove('loading');heroIn()}},2500);
+}
+
+/* pause motion */
+const pb=$('#pause');
+function setPause(v){
+  paused=v;pb.setAttribute('aria-pressed',v);pb.textContent=v?'Play motion':'Pause motion';
+  root.classList.toggle('paused',v);
+  if(v){lenisOff();root.classList.remove('loading');intro.forEach(a=>a.finish());if(timerAnim)timerAnim.finish();tick()}else lenisOn();
+}
+setPause(paused);pb.onclick=()=>setPause(!paused);
+</script>
+</body>
+</html>
