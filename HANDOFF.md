@@ -1,22 +1,20 @@
 # Handoff: padelwithvitto
 
-Updated 15 Nov 2026.
+Updated 16 Nov 2026.
 
-## Done
-- Back link "← padelwithvitto" on padel-101, shot-breaks and road-to-pro. Live on main.
-- Guide 3 phases 1-2 (hero, chapters 00-04, data disclosure, landing card). Live on main at 81b50b8.
-- Guide 3 phase 3, on branch claude/determined-dirac-p8emgx only (not merged):
-  - Chapter 05 reverse stress test: Vitto's four sets (Padel Pro Gold final, Gold round of 16) and an interactive "Flip the set" tool with a "Your set" mode.
-  - Chapter 06 method: five steps plus an animated charting grid (twelve made-up points).
-  - "The whole guide in six lines" recap and "Three things to take on court" call to action.
-  - "Still being built" section and the "In progress" label removed.
-  - Animations retimed: scroll sets a target and each figure eases toward it at a capped speed (about 3 s minimum for a full play); items fade and slide instead of popping; on phones the figure pins under the header while its story plays. Pause motion shows every figure complete.
-- Tested at 1280, 1040, 390 and 360 px: no script errors, no sideways scroll, end states 48/52, 23 sets, +13/+12, 1/18, 17/5, 2/6; flip tool verdicts checked for all presets and the custom mode.
+## Done (all live on main)
+- Back link "← padelwithvitto" on padel-101, shot-breaks and road-to-pro.
+- "Last updated 16 Nov 2026" on every page (landing, padel-101, shot-breaks, road-to-pro, sponsors.html, guide 3): a visible <time> element plus an article:modified_time meta tag. Change both when a page changes.
+- Guide 3 complete at people-lose-it/index.html: hero, chapters 00-06, flip-the-set tool, six-line recap, three next-match actions, "The case against this guide" (three objections with replies), data disclosure.
+- Animations: scroll sets a target and each figure eases toward it at a capped speed; on phones the figure pins under the header while it plays.
+- After the devil's-advocate review: chapter 01 explains why (winners 14.2 vs 13.1, errors 11.6 vs 17.9) and adds the match-level check (10 of 10); absolute wording softened to "in this sample"; disclosure adds 10 matches, 13 stats tested, set-by-set counting, dates and source.
+- Charting template for chapter 06: people-lose-it/downloads/padel-set-charting-template.xlsx and .pdf, v1.0, rebuilt from the Template tab layout (no player names). Caveats stated: 10 marks per shot, one set per sheet.
+- Source sheet: Padel Benchmark Lab, Reverse stress test tab, section D, rows 51-56 added (independent matches, match-level check, stats tested, why the UE gap dominates, unforced is a judgement, counting method).
 
 ## Left
-- Merge phase 3 into main when Vitto says so. The live URL cannot be fetched from the cloud session (proxy blocks github.io), so Vitto checks it by eye.
-- Copy the three edited index.html files (padel-101, shot-breaks, road-to-pro) back into the local source folders. Otherwise the next publish.sh run overwrites the back link. Guide 3 and the landing page live only in this repo, so publish.sh leaves them alone.
-- Optional: a copyable charting sheet for chapter 06. Needs Vitto to share a public template sheet; the guide currently teaches the pen-and-grid method only.
+- Vitto checks the live site by eye (the cloud session cannot fetch github.io).
+- Copy the edited padel-101, shot-breaks and road-to-pro files from this repo back into the local source folders (padel-101, padel-shot-breaks, padel-athlete-site). Otherwise the next publish.sh run overwrites the back link and the date stamps. Guide 3 and the landing page live only in this repo, so publish.sh leaves them alone.
+- Guide 3 follow-ups worth doing with a second batch of charted sets: re-test findings 3-5 (volley, overhead), and re-run the "would break finding 1" check.
 - Padel 101 phases 3-4.
 
 ## Guide 3 decisions

@@ -3,8 +3,9 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
+<meta property="article:modified_time" content="2026-11-16">
 <title>Nobody wins padel. People lose it.</title>
-<meta name="description" content="23 sets charted point by point. The pair with fewer unforced errors won every time. A scroll-through guide for padel improvers who want numbers behind their next step.">
+<meta name="description" content="23 sets charted point by point. In this sample the pair with fewer unforced errors never lost a set. A scroll-through guide for padel improvers who want numbers behind their next step.">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600&family=DM+Serif+Display:ital@0;1&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
@@ -147,6 +148,20 @@ b.w{font-weight:500;color:var(--soft)}
 .cap{min-height:66px;margin-top:10px}
 .cap p{margin:4px 0 0;font-size:15px;line-height:1.4;color:var(--text)}
 
+.dl{display:flex;flex-wrap:wrap;gap:10px;margin:4px 0 0}
+.btn.ghost{background:none;border:1px solid var(--rule);color:var(--text)}
+.btn.ghost:hover{background:none;border-color:var(--muted)}
+/* the case against */
+.against{padding:96px 0 24px}
+.against h2{font-size:clamp(34px,5vw,56px);margin:12px 0 16px}
+.against .lead{color:var(--soft);max-width:60ch;margin-bottom:32px}
+.obj{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:16px}
+.obj article{border:1px solid var(--rule);border-radius:10px;padding:22px 20px 20px;display:flex;flex-direction:column}
+.obj h3{font-size:25px;line-height:1.1;margin:10px 0 12px;font-style:italic}
+.obj p{color:var(--soft);font-size:15.5px;margin:0 0 14px}
+.obj .reply{margin:auto 0 0;padding-top:14px;border-top:1px solid var(--rule);color:var(--text)}
+.obj .reply b{color:var(--coral);font-weight:600}
+@media (max-width:860px){.obj{grid-template-columns:1fr}}
 /* recap + next match */
 .recap{padding:96px 0 40px}
 .recap h2,.cta h2{font-size:clamp(34px,5vw,56px);margin:12px 0 32px}
@@ -250,11 +265,13 @@ svg .lbl{fill:var(--soft)}
   <div class="wrap">
     <div class="txt">
       <p class="mono">01 · The hard line</p>
-      <h2>Fewer errors won. Every time.</h2>
+      <h2>Fewer errors won every set I charted.</h2>
       <p>In 20 of the 23 sets, one pair made fewer unforced errors than the other. I checked who won those sets.</p>
       <div class="big"><span id="n20">20</span> of 20</div>
       <div class="bigcap">sets won by the pair with fewer unforced errors</div>
-      <p>Not most of the time. <strong>All of the time.</strong> No pair in this sample won a set after making more errors than the other side.</p>
+      <p>Not most of them. <strong>All of them, in this sample.</strong> No pair won a set after making more errors than the other side.</p>
+      <p>Here is why. Winners were almost equal: pairs that won a set hit 14.2 winners on average, and pairs that lost hit 13.1. Errors were not equal at all: <strong>11.6 against 17.9</strong>. At this level pairs differ in what they give away, not in what they create.</p>
+      <p>Sets inside one match are not independent, because it is the same four people on the same day. So I also checked whole matches: the pair with fewer errors won <strong>10 of 10</strong>.</p>
       <p>In the other 3 sets the errors were level. Only then did winners decide it: the pair with more winners took all 3.</p>
       <p class="note"><i>Think of a golf scorecard.</i><br>The club medal is rarely won by the player with the most birdies. It is won by the player with the fewest double bogeys.</p>
     </div>
@@ -421,7 +438,7 @@ svg .lbl{fill:var(--soft)}
     <div class="txt">
       <p class="mono">06 · Your turn</p>
       <h2>Chart one set of your own.</h2>
-      <p>You do not need my spreadsheet. A pen, a grid and one set to watch is enough. Video helps, because you can rewind.</p>
+      <p>A pen, a grid and one set to watch is enough. Video helps, because you can rewind. My template is below if you want a head start.</p>
       <ol class="how">
         <li><strong>Fix everyone's place.</strong>Left-side player on the left, right-side player on the right. The pair you are following on top, the opponents below. Keep it the same all match.</li>
         <li><strong>Note who is serving.</strong>Each game, mark which pair serves and which pair returns.</li>
@@ -429,6 +446,11 @@ svg .lbl{fill:var(--soft)}
         <li><strong>Put one mark in one box.</strong>Whose racket, and winner or error. Add the shot type if you want more detail.</li>
         <li><strong>Add it up, then run the stress test.</strong>Count the errors for each pair. The gap plus one is your distance to the line.</li>
       </ol>
+      <div class="dl">
+        <a class="btn" href="downloads/padel-set-charting-template.xlsx" download>Excel template ↓</a>
+        <a class="btn ghost" href="downloads/padel-set-charting-template.pdf" download>Printable PDF ↓</a>
+      </div>
+      <p class="small" style="margin:12px 0 20px">My own charting template, v1.0, last updated <time datetime="2026-11-16">16 Nov 2026</time>. The Excel file also opens in Google Sheets and counts for you. Two limits: each shot has room for 10 marks, which may not be enough for beginners, and one sheet covers one set.</p>
       <p>When you cannot decide which box, pick a rule and keep it for the whole match. A consistent count teaches you more than a perfect one.</p>
       <p class="note"><i>This is my system, and it is not always right.</i><br>I miss calls, and I am happy to say so. Change it, improve it, or build your own. If you find a better way, <a href="https://instagram.com/padelwithvitto" rel="noopener">tell me</a>.</p>
     </div>
@@ -453,7 +475,7 @@ svg .lbl{fill:var(--soft)}
     <h2>The whole guide in six lines.</h2>
     <ol class="lines">
       <li class="rv" style="--i:0"><a href="#count"><b>52%</b><span><strong>Half of all points are given away.</strong> More points end in a miss nobody forced than in a winner.</span></a></li>
-      <li class="rv" style="--i:1"><a href="#line"><b>20 of 20</b><span><strong>Fewer errors won every set.</strong> Not most of them. All of them.</span></a></li>
+      <li class="rv" style="--i:1"><a href="#line"><b>20 of 20</b><span><strong>Fewer errors won every set in this sample.</strong> 20 of 20 sets, and 10 of 10 matches.</span></a></li>
       <li class="rv" style="--i:2"><a href="#bird"><b>0 of 8</b><span><strong>Winners cannot buy back errors.</strong> More winners plus more errors lost every time.</span></a></li>
       <li class="rv" style="--i:3"><a href="#volley"><b>1 of 19</b><span><strong>The missed volley costs the most.</strong> Hitting more volley winners did not make up for it.</span></a></li>
       <li class="rv" style="--i:4"><a href="#overhead"><b>17 of 22</b><span><strong>Overheads pay, but only behind the line.</strong> They never rescued a pair that was losing on errors.</span></a></li>
@@ -471,8 +493,36 @@ svg .lbl{fill:var(--soft)}
       <article class="rv" style="--i:1"><span class="num">2</span><h3>Safe volley, earned smash.</h3><p>At the net, play the volley you know you will make. Keep the big swing for the high ball that is clearly yours.</p></article>
       <article class="rv" style="--i:2"><span class="num">3</span><h3>Count after the set.</h3><p>Ask one question: who gave away more points? If it was you, that number is your next training session.</p></article>
     </div>
-    <p class="small">These come from 23 sets at one level of play. Test them in your own game and keep what holds up.</p>
+    <p class="small">These come from 23 sets at one level of play. Test them in your own game and keep what holds up. Not convinced? Read <a href="#against">the case against this guide</a>.</p>
     <div class="go"><a class="btn" href="../">More guides →</a><a class="plain" href="https://instagram.com/padelwithvitto" rel="noopener">Tell me what you found · @padelwithvitto</a></div>
+  </div>
+</section>
+
+<section class="against" id="against">
+  <div class="wrap">
+    <p class="mono">Devil's advocate</p>
+    <h2>The case against this guide.</h2>
+    <p class="lead">A finding you cannot argue with is usually a finding nobody has tested. Here are the three strongest objections I know of, and how much of each I accept.</p>
+    <div class="obj">
+      <article>
+        <span class="mono">Objection 1</span>
+        <h3>"You restated the scoreboard."</h3>
+        <p>Every point is a winner or an error, so the points you win are your winners plus their errors. Saying the pair with fewer errors won is close to saying the team that let in fewer goals won.</p>
+        <p class="reply"><b>Partly true.</b> The error gap is built into the score. What the count adds is which half mattered: winners were almost equal between pairs, and errors were not.</p>
+      </article>
+      <article>
+        <span class="mono">Objection 2</span>
+        <h3>"Unforced is your opinion."</h3>
+        <p>One person decided which misses were unforced, already knowing who won. If the better pair's depth and speed caused those misses, then somebody did win the point. A stronger pair may simply do both: miss less and win.</p>
+        <p class="reply"><b>True, and I cannot rule it out.</b> This data shows that fewer errors and winning go together. It does not prove that one causes the other. Treat "make fewer errors" as something to test in your own game.</p>
+      </article>
+      <article>
+        <span class="mono">Objection 3</span>
+        <h3>"It is 10 matches, not 23 sets."</h3>
+        <p>The 23 sets come from 10 matches in one league over nine days. I also looked at 13 different stats, and chapters 03 and 04 show the most striking ones. Look at enough numbers and some will stand out by luck.</p>
+        <p class="reply"><b>True.</b> At match level the pattern holds 10 of 10, but with only 10 matches the data cannot rule out a real rate as low as about 7 in 10. The volley and overhead findings need a second sample before I trust them.</p>
+      </article>
+    </div>
   </div>
 </section>
 
@@ -482,12 +532,15 @@ svg .lbl{fill:var(--soft)}
     <h2>About the data.</h2>
     <p>If I show you numbers, you should be able to see exactly what is in them and what is not. Here is everything.</p>
     <dl>
-      <div><dt>What was charted</dt><dd><strong>24 sets</strong> from Indonesian Padel League matches. 23 have a final score and are used for every win or lose number in this guide. One set was charted for scouting without a score and is left out of those numbers.</dd></div>
+      <div><dt>What was charted</dt><dd><strong>24 sets</strong> from Indonesian Padel League matches. 23 have a final score and are used for every win or lose number in this guide. Those 23 sets come from <strong>10 matches</strong>. One set was charted for scouting without a score and is left out of those numbers.</dd></div>
       <div><dt>When</dt><dd>The 23 scored sets were played between 16 and 24 October 2026.</dd></div>
       <div><dt>Who is in it</dt><dd>Players based in Indonesia and foreign players in the league, from high Silver level upward. That is roughly <strong>4.0 to 6.5</strong> on the international rating scale. All other players are anonymised.</dd></div>
       <div><dt>Nothing left out</dt><dd>Every set I charted is included. I did not pick the ones that fit. <strong>Four of the sets are my own, and I lost all four.</strong> The main result barely moves if you remove them.</dd></div>
       <div><dt>How points are counted</dt><dd>Each point is logged as a winner or an unforced error, by shot type and by whether the pair was serving or returning. There is no separate "forced error" box: a shot that forces a miss counts as a winner for the pair that hit it.</dd></div>
+      <div><dt>Set by set</dt><dd>I count each set on its own and combine sets into a match afterwards. That lets me see fatigue and changes of tactics between sets. Some coaches count a whole match as one, which is also valid and may lead to different conclusions.</dd></div>
+      <div><dt>What was tested</dt><dd>I compared 13 different stats against who won. This guide shows the ones that stood out, which is a reason to be careful with them. The full list is in the case against this guide, above.</dd></div>
       <div><dt>Known limits</dt><dd>One person did all the charting: me. Whether a miss was forced is a judgement call, and <strong>some of my calls are wrong</strong>. The shot list is not complete either. A wall exit or a counter-smash, for example, gets filed under forehand, backhand, volley or smash.</dd></div>
+      <div><dt>Dates and source</dt><dd>Sets played 16 to 24 October 2026. Analysis built 7 November 2026. Page last updated <time datetime="2026-11-16">16 Nov 2026</time>. Source: my own point-by-point charting; nothing here comes from a third party.</dd></div>
       <div><dt>How to read it</dt><dd>23 sets is a small sample at one level of play. Read every number as a pattern worth testing, not a law. One set won by a pair that made 2 or more extra errors would break the main finding, and I check for that every time I chart a new batch.</dd></div>
     </dl>
   </div>
@@ -495,7 +548,7 @@ svg .lbl{fill:var(--soft)}
 
 </main>
 
-<footer class="mono"><div class="wrap"><span>Guide 03 · Nobody wins padel</span><span>Made by Vitto · coach · <a href="https://instagram.com/padelwithvitto" rel="noopener">@padelwithvitto</a></span></div></footer>
+<footer class="mono"><div class="wrap"><span>Guide 03 · Nobody wins padel · Last updated <time datetime="2026-11-16">16 Nov 2026</time></span><span>Made by Vitto · coach · <a href="https://instagram.com/padelwithvitto" rel="noopener">@padelwithvitto</a></span></div></footer>
 
 <script>
 (()=>{
