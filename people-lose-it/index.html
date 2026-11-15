@@ -1,0 +1,359 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Nobody wins padel. People lose it.</title>
+<meta name="description" content="23 sets charted point by point. The pair with fewer unforced errors won every time. A scroll-through guide for padel improvers who want numbers behind their next step.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600&family=DM+Serif+Display:ital@0;1&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+/* Visual direction: PadelIQ "direction A · Signature". Midnight navy ground, soft blue secondary, coral as the one accent.
+   Coral = unforced errors and the key number. Soft blue = winners. Never white text on coral. */
+:root{
+  --bg:#002941; --panel:#0d3d5a; --rule:#1d4a66; --muted:#8fb3c4; --soft:#b6dfed; --text:#ffffff; --coral:#fd6e6e;
+  --display:"DM Serif Display",Georgia,serif; --body:"DM Sans",system-ui,Arial,sans-serif; --mono:"DM Mono",ui-monospace,Menlo,Consolas,monospace;
+  color-scheme:dark;
+}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{margin:0;background:var(--bg);color:var(--text);font-family:var(--body);font-size:17px;line-height:1.6;-webkit-font-smoothing:antialiased;overflow-x:hidden}
+a{color:var(--coral)}
+:focus-visible{outline:2px solid var(--coral);outline-offset:3px;border-radius:2px}
+h1,h2,h3{font-family:var(--display);font-weight:400;line-height:1.05;margin:0;text-wrap:balance}
+p{margin:0 0 16px}
+.mono{font-family:var(--mono);font-size:12px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted)}
+.wrap{max-width:1120px;margin:0 auto;padding:0 clamp(16px,4vw,40px)}
+em.k{font-style:normal;color:var(--coral)}
+b.w{font-weight:500;color:var(--soft)}
+
+/* top bar */
+.top{position:fixed;inset:0 0 auto 0;z-index:50;height:56px;display:flex;align-items:center;gap:16px;padding:0 clamp(16px,4vw,40px);background:var(--bg);border-bottom:1px solid var(--rule)}
+.back{font-family:var(--mono);font-size:11px;letter-spacing:.08em;color:var(--muted);text-decoration:none;white-space:nowrap}
+.back:hover{color:var(--text)}
+.brand{font-family:var(--display);font-size:20px;color:var(--text);text-decoration:none;white-space:nowrap}
+.brand b{font-weight:400;color:var(--coral)}
+.top nav{display:flex;gap:16px;margin-left:auto}
+.top nav a,.top nav span{font-family:var(--mono);font-size:11px;letter-spacing:.08em;text-decoration:none;color:var(--muted);white-space:nowrap}
+.top nav span{opacity:.45}
+.top nav a.on,.top nav a:hover{color:var(--text)}
+.top nav a.on::before{content:"";display:inline-block;width:6px;height:6px;border-radius:50%;background:var(--coral);margin-right:6px;vertical-align:1px}
+.counter{font-family:var(--mono);font-size:11px;letter-spacing:.08em;color:var(--muted);white-space:nowrap}
+.ctrl{font-family:var(--mono);font-size:11px;letter-spacing:.08em;text-transform:uppercase;background:none;border:1px solid var(--rule);color:var(--text);padding:7px 12px;min-height:40px;border-radius:6px;cursor:pointer;white-space:nowrap}
+.ctrl:hover{border-color:var(--muted)}
+.progress{position:absolute;left:0;bottom:-1px;height:2px;background:var(--coral);width:0}
+@media (max-width:1020px){.top nav{display:none}.counter{margin-left:auto}}
+@media (max-width:520px){.back span{display:none}.top{gap:10px}.ctrl{padding:7px 9px}}
+@media (max-width:380px){.brand{font-size:17px}.top{padding:0 12px;gap:8px}}
+
+/* hero */
+.hero{padding:132px 0 72px;border-bottom:1px solid var(--rule)}
+.hero h1{font-size:clamp(46px,8.4vw,104px);margin:16px 0 24px;max-width:13ch}
+.hero h1 em{font-style:italic;color:var(--coral)}
+.lede{font-size:20px;color:var(--soft);max-width:46ch;margin-bottom:32px}
+.btn{display:inline-flex;align-items:center;gap:10px;font-family:var(--mono);font-size:12px;letter-spacing:.08em;text-transform:uppercase;text-decoration:none;padding:14px 18px;border-radius:6px;background:var(--coral);color:var(--bg);font-weight:500}
+.btn:hover{background:#ff8a8a}
+.strip{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:1px;background:var(--rule);border:1px solid var(--rule);border-radius:8px;overflow:hidden;margin-top:56px;max-width:720px}
+.strip div{background:var(--bg);padding:18px 16px}
+.strip b{display:block;font-family:var(--display);font-weight:400;font-size:clamp(28px,5vw,40px);line-height:1;margin-bottom:8px}
+.strip span{font-family:var(--mono);font-size:11px;letter-spacing:.06em;color:var(--muted);text-transform:uppercase;line-height:1.4;display:block}
+
+/* chapters */
+.ch{padding:96px 0;border-bottom:1px solid var(--rule)}
+.ch .wrap{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:clamp(32px,6vw,80px);align-items:start}
+.ch .txt{padding-top:8px}
+.ch h2{font-size:clamp(36px,5.2vw,60px);margin:12px 0 24px}
+.ch .txt p{color:var(--soft);max-width:48ch}
+.ch .txt p strong{color:var(--text);font-weight:500}
+.big{font-family:var(--display);font-size:clamp(64px,10vw,112px);line-height:.95;color:var(--coral);margin:8px 0 4px;font-variant-numeric:tabular-nums}
+.bigcap{font-family:var(--mono);font-size:12px;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);margin-bottom:24px}
+.note{border-left:2px solid var(--coral);padding:2px 0 2px 16px;margin:24px 0 0;color:var(--text)!important;font-size:16px}
+.note i{font-family:var(--display);font-style:italic;font-size:19px}
+.fig{position:sticky;top:88px;background:var(--panel);border:1px solid var(--rule);border-radius:10px;padding:20px}
+.fig-head{display:flex;justify-content:space-between;gap:12px;margin-bottom:14px}
+.fig svg{display:block;width:100%;height:auto}
+.fig-foot{margin-top:14px;padding-top:12px;border-top:1px solid var(--rule);font-size:13px;line-height:1.5;color:var(--muted)}
+.legend{display:flex;flex-wrap:wrap;gap:6px 18px;font-family:var(--mono);font-size:11px;letter-spacing:.04em;color:var(--soft);margin-top:12px}
+.legend i{display:inline-block;width:9px;height:9px;border-radius:50%;margin-right:7px;vertical-align:-1px}
+.tally{display:grid;grid-template-columns:1fr 1fr;gap:1px;background:var(--rule);border-radius:6px;overflow:hidden;margin-top:14px}
+.tally div{background:var(--panel);padding:12px 4px 4px}
+.tally b{display:block;font-family:var(--display);font-weight:400;font-size:40px;line-height:1;font-variant-numeric:tabular-nums}
+.tally span{font-family:var(--mono);font-size:11px;letter-spacing:.06em;text-transform:uppercase;color:var(--muted)}
+.tiles{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:1px;background:var(--rule);border:1px solid var(--rule);border-radius:8px;overflow:hidden;margin:28px 0 0}
+.tiles div{background:var(--bg);padding:16px 12px}
+.tiles b{display:block;font-family:var(--display);font-weight:400;font-size:34px;line-height:1;margin-bottom:8px;color:var(--text)}
+.tiles span{display:block;font-size:13px;line-height:1.4;color:var(--muted)}
+@media (max-width:860px){
+  .ch{padding:72px 0}
+  .ch .wrap{grid-template-columns:1fr}
+  .fig{position:static}
+}
+
+/* next + disclosure */
+.next{padding:80px 0;border-bottom:1px solid var(--rule)}
+.next h2{font-size:clamp(30px,4.4vw,44px);margin:12px 0 28px}
+.next ol{list-style:none;margin:0;padding:0;display:grid;grid-template-columns:repeat(auto-fit,minmax(230px,1fr));gap:12px}
+.next li{border:1px dashed var(--rule);border-radius:8px;padding:16px;color:var(--soft);font-size:15px;line-height:1.5}
+.next li b{display:block;font-family:var(--display);font-weight:400;font-size:22px;color:var(--text);margin:6px 0}
+.disc{padding:80px 0}
+.disc h2{font-size:clamp(30px,4.4vw,44px);margin:12px 0 12px}
+.disc>.wrap>p{color:var(--soft);max-width:60ch;margin-bottom:28px}
+.disc dl{margin:0;border-top:1px solid var(--rule)}
+.disc dl div{display:grid;grid-template-columns:200px minmax(0,1fr);gap:8px 24px;padding:16px 0;border-bottom:1px solid var(--rule)}
+.disc dt{font-family:var(--mono);font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);padding-top:4px}
+.disc dd{margin:0;color:var(--soft);font-size:15.5px;max-width:68ch}
+.disc dd strong{color:var(--text);font-weight:500}
+@media (max-width:640px){.disc dl div{grid-template-columns:1fr}}
+footer{border-top:1px solid var(--rule);padding:24px 0 48px}
+footer .wrap{display:flex;flex-wrap:wrap;justify-content:space-between;gap:8px}
+footer a{text-decoration:none}
+
+/* svg text */
+svg text{font-family:var(--mono);font-size:11px;fill:var(--muted)}
+svg .lbl{fill:var(--soft)}
+</style>
+</head>
+<body>
+
+<header class="top">
+  <a class="back" href="../" aria-label="Back to padelwithvitto">← <span>padelwithvitto</span></a>
+  <a class="brand" href="#top">Nobody <b>wins</b></a>
+  <nav aria-label="Chapters">
+    <a href="#count">00 Count</a><a href="#line">01 Line</a><a href="#bird">02 Bird</a><span>03 Volley</span><span>04 Overhead</span><span>05 Stress test</span><span>06 Your turn</span>
+  </nav>
+  <span class="counter" id="counter">00 / 06</span>
+  <button class="ctrl" id="pause" aria-pressed="false">Pause motion</button>
+  <div class="progress" id="progress"></div>
+</header>
+
+<main id="top">
+
+<section class="hero">
+  <div class="wrap">
+    <p class="mono">Guide 03 · The numbers</p>
+    <h1>Nobody wins padel. People <em>lose</em> it.</h1>
+    <p class="lede">I charted 23 sets, point by point, to see what separates the pair that wins from the pair that loses. It was not who hit the best shots. It was who gave away the fewest.</p>
+    <a class="btn" href="#count">Start with the count →</a>
+    <div class="strip">
+      <div><b>23</b><span>sets charted with a score</span></div>
+      <div><b>1,307</b><span>points, one by one</span></div>
+      <div><b>4.0–6.5</b><span>player level, international scale</span></div>
+    </div>
+  </div>
+</section>
+
+<!-- 00 -->
+<section class="ch" id="count" data-ch="0">
+  <div class="wrap">
+    <div class="txt">
+      <p class="mono">00 · The count</p>
+      <h2>Every point goes in one of two boxes.</h2>
+      <p>When a point ends, I ask one question: <strong>did somebody win it, or did somebody give it away?</strong></p>
+      <p>A <b class="w">winner</b> is a shot the other pair could not get back. That includes a shot so good it forced the miss.</p>
+      <p>An <em class="k">unforced error</em> is a miss nobody forced. The ball was playable and it went into the net, the glass or out.</p>
+      <p>There is no third box. Every point is one or the other, so the two always add up to the whole set.</p>
+      <div class="big" id="n52">52%</div>
+      <div class="bigcap">of all points ended in an unforced error</div>
+      <p>More than half the points in these matches were not won. They were handed over.</p>
+    </div>
+    <div class="fig" data-fig="dots">
+      <div class="fig-head mono"><span>100 points, how they ended</span><span>1,307 charted</span></div>
+      <svg id="dots" viewBox="0 0 320 320" role="img" aria-label="A grid of 100 dots. 48 are winners and 52 are unforced errors."></svg>
+      <div class="tally">
+        <div><b id="tw" style="color:var(--soft)">0</b><span>winners</span></div>
+        <div><b id="te" style="color:var(--coral)">0</b><span>unforced errors</span></div>
+      </div>
+      <div class="fig-foot">Scaled to 100 points. The real count is 629 winners and 678 unforced errors across 23 sets.</div>
+    </div>
+  </div>
+</section>
+
+<!-- 01 -->
+<section class="ch" id="line" data-ch="1">
+  <div class="wrap">
+    <div class="txt">
+      <p class="mono">01 · The hard line</p>
+      <h2>Fewer errors won. Every time.</h2>
+      <p>In 20 of the 23 sets, one pair made fewer unforced errors than the other. I checked who won those sets.</p>
+      <div class="big"><span id="n20">20</span> of 20</div>
+      <div class="bigcap">sets won by the pair with fewer unforced errors</div>
+      <p>Not most of the time. <strong>All of the time.</strong> No pair in this sample won a set after making more errors than the other side.</p>
+      <p>In the other 3 sets the errors were level. Only then did winners decide it: the pair with more winners took all 3.</p>
+      <p class="note"><i>Think of a golf scorecard.</i><br>The club medal is rarely won by the player with the most birdies. It is won by the player with the fewest double bogeys.</p>
+    </div>
+    <div class="fig" data-fig="bells">
+      <div class="fig-head mono"><span>Errors per set</span><span id="bellcount">0 / 23 sets</span></div>
+      <svg id="bells" viewBox="0 0 320 372" role="img" aria-label="23 sets, one per row. In 20 rows the set winner's dot sits left of the loser's dot, meaning fewer errors. In 3 rows the dots sit on top of each other."></svg>
+      <div class="legend"><span><i style="background:var(--soft)"></i>Pair that won the set</span><span><i style="background:var(--coral)"></i>Pair that lost</span><span><i style="background:none;border:1.5px solid #fff"></i>Level</span></div>
+      <div class="fig-foot">One row per set, widest gap at the top. The blue dot is never to the right of the coral one. The smallest gap that still lost a set was 2 errors.</div>
+    </div>
+  </div>
+</section>
+
+<!-- 02 -->
+<section class="ch" id="bird" data-ch="2">
+  <div class="wrap">
+    <div class="txt">
+      <p class="mono">02 · A bird in the hand</p>
+      <h2>Winners cannot buy back errors.</h2>
+      <p>Maybe you can make more mistakes if you also hit more winners. Eight times in this sample a pair tried exactly that: more winners than the other side, and more errors too.</p>
+      <div class="big">0 of 8</div>
+      <div class="bigcap">won the set</div>
+      <p>The clearest case is on the scale. One pair hit <b class="w">13 more winners</b> than their opponents in a single set. They also made <em class="k">12 more errors</em>. All that attacking bought them one extra point, and they lost the set 6–7.</p>
+      <p class="note"><i>A bird in the hand is worth two in the bush.</i><br>The ball you keep in play is the bird in your hand. The winner you go for is still in the bush.</p>
+      <div class="tiles">
+        <div><b>0 / 8</b><span>sets won with more winners and more errors</span></div>
+        <div><b>+13</b><span>biggest winners lead that still lost</span></div>
+        <div><b>≈1.4</b><span>winners needed to cancel one error</span></div>
+      </div>
+      <p style="margin-top:20px;font-size:14.5px;color:var(--muted)">The 1.4 comes from fitting a simple line through all 23 sets. Remove any one set and it stays between 1.3 and 1.4. It is a pattern in this sample, not a law of padel.</p>
+    </div>
+    <div class="fig" data-fig="scale">
+      <div class="fig-head mono"><span>One set, one pair</span><span id="scalestate">Empty scale</span></div>
+      <svg id="scale" viewBox="0 0 320 300" role="img" aria-label="A balance scale. 13 extra winners on the left pan, 12 extra errors on the right pan. The scale ends almost level."></svg>
+      <div class="tally">
+        <div><b id="sw" style="color:var(--soft)">+0</b><span>extra winners</span></div>
+        <div><b id="se" style="color:var(--coral)">+0</b><span>extra errors</span></div>
+      </div>
+      <div class="fig-foot" id="scalefoot">Counts are this pair minus their opponents, in one set: 23 winners against 10, and 25 errors against 13.</div>
+    </div>
+  </div>
+</section>
+
+<section class="next">
+  <div class="wrap">
+    <p class="mono">Still being built</p>
+    <h2>Four more chapters are on the way.</h2>
+    <ol>
+      <li><span class="mono">03</span><b>The most expensive miss</b>Which single shot hurts most when it goes wrong.</li>
+      <li><span class="mono">04</span><b>Where attacking does pay</b>The one kind of winner that matters, and when.</li>
+      <li><span class="mono">05</span><b>The reverse stress test</b>Start from a lost set and work backwards. Uses my own four losses.</li>
+      <li><span class="mono">06</span><b>Your turn</b>How to chart one of your own sets with a pen and a grid.</li>
+    </ol>
+  </div>
+</section>
+
+<section class="disc" id="data">
+  <div class="wrap">
+    <p class="mono">Disclosure</p>
+    <h2>About the data.</h2>
+    <p>If I show you numbers, you should be able to see exactly what is in them and what is not. Here is everything.</p>
+    <dl>
+      <div><dt>What was charted</dt><dd><strong>24 sets</strong> from Indonesian Padel League matches. 23 have a final score and are used for every win or lose number in this guide. One set was charted for scouting without a score and is left out of those numbers.</dd></div>
+      <div><dt>When</dt><dd>The 23 scored sets were played between 16 and 24 October 2026.</dd></div>
+      <div><dt>Who is in it</dt><dd>Players based in Indonesia and foreign players in the league, from high Silver level upward. That is roughly <strong>4.0 to 6.5</strong> on the international rating scale. All other players are anonymised.</dd></div>
+      <div><dt>Nothing left out</dt><dd>Every set I charted is included. I did not pick the ones that fit. <strong>Four of the sets are my own, and I lost all four.</strong> The main result barely moves if you remove them.</dd></div>
+      <div><dt>How points are counted</dt><dd>Each point is logged as a winner or an unforced error, by shot type and by whether the pair was serving or returning. There is no separate "forced error" box: a shot that forces a miss counts as a winner for the pair that hit it.</dd></div>
+      <div><dt>Known limits</dt><dd>One person did all the charting: me. Whether a miss was forced is a judgement call, and <strong>some of my calls are wrong</strong>. The shot list is not complete either. A wall exit or a counter-smash, for example, gets filed under forehand, backhand, volley or smash.</dd></div>
+      <div><dt>How to read it</dt><dd>23 sets is a small sample at one level of play. Read every number as a pattern worth testing, not a law. One set won by a pair that made 2 or more extra errors would break the main finding, and I check for that every time I chart a new batch.</dd></div>
+    </dl>
+  </div>
+</section>
+
+</main>
+
+<footer class="mono"><div class="wrap"><span>Guide 03 · chapters 00–02 of 06</span><span>Made by Vitto · coach · <a href="https://instagram.com/padelwithvitto" rel="noopener">@padelwithvitto</a></span></div></footer>
+
+<script>
+(()=>{
+const NS='http://www.w3.org/2000/svg';
+const el=(p,t,a={},txt)=>{const e=document.createElementNS(NS,t);for(const k in a)e.setAttribute(k,a[k]);if(txt!=null)e.textContent=txt;p.appendChild(e);return e};
+const clamp=(v,a=0,b=1)=>Math.max(a,Math.min(b,v));
+const ease=t=>1-Math.pow(1-t,3);
+const C={soft:'#b6dfed',coral:'#fd6e6e',rule:'#1d4a66',muted:'#8fb3c4',dim:'#17486a'};
+const $=id=>document.getElementById(id);
+
+/* ---- 00: 100 dots ---- */
+const dots=[];{
+  const s=$('dots');
+  for(let i=0;i<100;i++){const x=i%10,y=Math.floor(i/10);dots.push(el(s,'circle',{cx:16+x*32,cy:16+y*32,r:10,fill:C.dim}))}
+}
+function drawDots(p){
+  const n=Math.round(ease(p)*100);
+  dots.forEach((d,i)=>d.setAttribute('fill',i<n?(i<48?C.soft:C.coral):C.dim));
+  $('tw').textContent=Math.min(n,48);$('te').textContent=Math.max(0,n-48);
+}
+
+/* ---- 01: dumbbells. [winner's UEs, loser's UEs] per set, widest gap first ---- */
+const SETS=[[13,25],[14,24],[4,14],[6,15],[5,14],[8,17],[17,26],[7,16],[6,13],[15,22],[9,16],[16,23],[9,16],[15,21],[7,13],[15,20],[14,19],[10,14],[10,14],[14,16],[20,20],[17,17],[16,16]];
+const rows=[];{
+  const s=$('bells'),x0=14,x1=306,max=28,X=v=>x0+(x1-x0)*v/max,top=34,rh=14;
+  [0,10,20].forEach(v=>{el(s,'line',{x1:X(v),x2:X(v),y1:top-8,y2:top+rh*23,stroke:C.rule,'stroke-width':1});el(s,'text',{x:X(v),y:16,'text-anchor':v?'middle':'start'},v+(v===20?' errors':''))});
+  SETS.forEach(([w,l],i)=>{
+    const y=top+i*rh+4,g=el(s,'g',{opacity:0});
+    if(w===l){el(g,'circle',{cx:X(w),cy:y,r:4.5,fill:'none',stroke:'#fff','stroke-width':1.5})}
+    else{el(g,'line',{x1:X(w),x2:X(l),y1:y,y2:y,stroke:C.muted,'stroke-width':1.5,opacity:.55});el(g,'circle',{cx:X(l),cy:y,r:4.5,fill:C.coral});el(g,'circle',{cx:X(w),cy:y,r:4.5,fill:C.soft})}
+    rows.push(g);
+  });
+  el(s,'text',{x:x0+6,y:top+rh*21+8,'text-anchor':'start',class:'lbl'},'level on errors →').setAttribute('id','lvl');
+}
+function drawBells(p){
+  const n=Math.round(ease(p)*23);
+  rows.forEach((g,i)=>g.setAttribute('opacity',i<n?1:0));
+  $('lvl').setAttribute('opacity',n>20?1:0);
+  $('bellcount').textContent=n+' / 23 sets';
+  $('n20').textContent=Math.min(n,20);
+}
+
+/* ---- 02: scale ---- */
+const sc={};{
+  const s=$('scale');
+  el(s,'path',{d:'M160 92 L160 262 M112 262 H208',stroke:C.muted,'stroke-width':3,fill:'none','stroke-linecap':'round'});
+  sc.beam=el(s,'line',{stroke:'#fff','stroke-width':3,'stroke-linecap':'round'});
+  el(s,'circle',{cx:160,cy:92,r:5,fill:'#fff'});
+  sc.pan=[0,1].map(i=>{const g=el(s,'g');
+    el(g,'path',{d:'M0 0 L-44 58 M0 0 L44 58',stroke:C.muted,'stroke-width':1.2,fill:'none'});
+    el(g,'path',{d:'M-50 58 H50',stroke:'#fff','stroke-width':3,'stroke-linecap':'round'});
+    const balls=[];const n=i?12:13;
+    for(let k=0;k<n;k++){const r=Math.floor(k/5),c=k%5,inRow=Math.min(5,n-r*5);balls.push(el(g,'circle',{cx:(c-(inRow-1)/2)*17,cy:49-r*16,r:7.5,fill:i?C.coral:C.soft,opacity:0}))}
+    el(g,'text',{x:0,y:80,'text-anchor':'middle',class:'lbl'},i?'errors':'winners');
+    return {g,balls}});
+}
+function drawScale(p){
+  const a=clamp(p/.42),b=clamp((p-.5)/.42);
+  const w=Math.round(ease(a)*13),e=Math.round(ease(b)*12);
+  sc.pan[0].balls.forEach((c,i)=>c.setAttribute('opacity',i<w?1:0));
+  sc.pan[1].balls.forEach((c,i)=>c.setAttribute('opacity',i<e?1:0));
+  const th=clamp((w-e)*1.7,-22,22)*Math.PI/180,L=104,cx=160,cy=92;
+  const lx=cx-L*Math.cos(th),ly=cy+L*Math.sin(th),rx=cx+L*Math.cos(th),ry=cy-L*Math.sin(th);
+  sc.beam.setAttribute('x1',lx);sc.beam.setAttribute('y1',ly);sc.beam.setAttribute('x2',rx);sc.beam.setAttribute('y2',ry);
+  sc.pan[0].g.setAttribute('transform',`translate(${lx} ${ly})`);sc.pan[1].g.setAttribute('transform',`translate(${rx} ${ry})`);
+  $('sw').textContent='+'+w;$('se').textContent='+'+e;
+  $('scalestate').textContent=e===12?'Net: +1 point · lost 6–7':w===13&&e>0?'Now the errors':w>0&&e===0?'Winners pile up':'Empty scale';
+}
+
+/* ---- scroll driver ---- */
+const draw={dots:drawDots,bells:drawBells,scale:drawScale};
+const figs=[...document.querySelectorAll('.fig')];
+const chs=[...document.querySelectorAll('.ch')];
+const links=[...document.querySelectorAll('.top nav a')];
+const reduce=matchMedia('(prefers-reduced-motion: reduce)').matches;
+let paused=reduce;
+function frame(){
+  const vh=innerHeight;
+  figs.forEach(f=>{
+    const sec=f.closest('.ch').getBoundingClientRect(),r=f.getBoundingClientRect();
+    const sticky=getComputedStyle(f).position==='sticky';
+    /* desktop: progress through the chapter. phone: progress as the figure rises through the screen */
+    const p=paused?1:sticky?clamp((vh*.55-sec.top)/Math.max(1,sec.height-vh*.75)*1.25):clamp((vh*.92-r.top)/(vh*.6));
+    draw[f.dataset.fig](p);
+  });
+  let cur=0;chs.forEach((c,i)=>{if(c.getBoundingClientRect().top<vh*.5)cur=i});
+  const started=chs[0].getBoundingClientRect().top<vh*.5;
+  $('counter').textContent=String(cur).padStart(2,'0')+' / 06';
+  links.forEach((a,i)=>a.classList.toggle('on',started&&i===cur));
+  const max=document.documentElement.scrollHeight-vh;
+  $('progress').style.width=(max>0?clamp(scrollY/max)*100:0)+'%';
+}
+let tick=false;
+const req=()=>{if(!tick){tick=true;requestAnimationFrame(()=>{tick=false;frame()})}};
+addEventListener('scroll',req,{passive:true});addEventListener('resize',req);
+const btn=$('pause');
+function setPaused(v){paused=v;btn.setAttribute('aria-pressed',v);btn.textContent=v?'Play motion':'Pause motion';frame()}
+btn.addEventListener('click',()=>setPaused(!paused));
+setPaused(paused);
+})();
+</script>
+</body>
+</html>
