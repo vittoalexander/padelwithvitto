@@ -1,0 +1,273 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Vitto Alexander | Road to Pro 2027</title>
+<meta name="description" content="Vitto Alexander, padel player and coach from Jakarta. Almost two decades of tennis, 23 padel tournaments in his first year, a Gold final in October. Road to Pro 2027.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Anton&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="style.css?v=6">
+<script>document.documentElement.classList.add('js')</script>
+</head>
+<body>
+
+<header class="top">
+  <a class="mono" href="#hero" aria-label="Vitto Alexander, home">VA</a>
+  <nav class="nav">
+    <a href="#gear">Gear</a>
+    <a href="#story">Story</a>
+    <a href="#results">Results</a>
+    <a href="#gallery">Gallery</a>
+    <a href="#contact">Contact</a>
+    <a class="keep" href="sponsors.html">Partner guide</a>
+  </nav>
+</header>
+
+<!-- HERO -->
+<section class="hero" id="hero">
+  <svg class="court" viewBox="0 0 2000 1000" fill="none" stroke="rgba(0,0,0,.13)" stroke-width="3" aria-hidden="true">
+    <rect x="2" y="2" width="1996" height="996"/>
+    <line x1="1000" y1="2" x2="1000" y2="998" stroke-dasharray="10 10"/>
+    <line x1="305" y1="2" x2="305" y2="998"/>
+    <line x1="1695" y1="2" x2="1695" y2="998"/>
+    <line x1="305" y1="500" x2="1695" y2="500"/>
+  </svg>
+
+  <div class="stats">
+    <div class="stat"><b>23</b><span>Tournaments in 2026</span></div>
+    <div class="stat"><b>7</b><span>Top-four finishes</span></div>
+    <div class="stat"><b>1</b><span>Title</span></div>
+  </div>
+
+  <div class="hero-photo">
+    <img src="assets/hero.jpg" alt="Vitto Alexander clenching his fist and shouting after winning a point">
+  </div>
+
+  <!-- Live count of days since padel became his game; set in main.js -->
+  <div class="hero-num"><small>Day</small><span id="day">287</span></div>
+
+  <div class="facts">
+    <div class="fact"><b>Jakarta</b><span>Indonesia</span></div>
+    <div class="fact"><b>24</b><span>Years old</span></div>
+    <div class="fact"><b>Almost 20</b><span>Years with a racket in hand</span></div>
+  </div>
+
+  <div class="hero-name">
+    <h1>Vitto Alexander</h1>
+    <p>Padel gives the ball back. Off the glass, a miss becomes one more chance to read it again. That's why I fell for this game: it rewards the player who keeps learning over the one who gets everything right.</p>
+  </div>
+
+  <div class="hero-next">
+    <span class="eyebrow">Season 2027</span>
+    <b>Calendar TBA</b>
+  </div>
+</section>
+
+<!-- QUOTE -->
+<section class="quote">
+  <div class="tile reveal"><img class="bw" src="assets/ch-climb.jpg" alt="Vitto jumping for a smash in front of a crowd" loading="lazy" style="object-position:50% 30%"></div>
+  <p class="quote-text" data-split>
+    I'd rather <span class="hl">keep learning</span> than get everything right. Every match is a lesson, every partner a teacher, every session a chance to come back <span class="hl">sharper, calmer, more complete.</span>
+  </p>
+  <div class="tile reveal"><img class="bw" src="assets/volley.jpg" alt="Vitto low at the net, playing a volley" loading="lazy" style="object-position:50% 40%"></div>
+</section>
+
+<!-- GEAR: spinning 3D racket and shoes, drawn in code (gear3d.js) -->
+<section class="gear3d" id="gear">
+  <span class="eyebrow">What I play with</span>
+  <canvas aria-label="A spinning padel racket between a left and a right court shoe"></canvas>
+  <div class="caps">
+    <div><span class="eyebrow">Left</span><b>Asics Gel Challenger 15 Padel</b></div>
+    <div><span class="eyebrow">Racket</span><b>Adidas Metalbone 2026</b></div>
+    <div><span class="eyebrow">Right</span><b>White / Energy Orange</b></div>
+  </div>
+</section>
+
+<!-- STORY: title and timeline left, photos in the middle, text right -->
+<section class="saga" id="story">
+  <div class="saga-side">
+    <span id="saga-count" class="keep">01 / 07</span>
+    <span id="saga-date"></span>
+    <h3 id="saga-title"></h3>
+    <ul id="saga-list" class="keep"></ul>
+  </div>
+  <div class="saga-track">
+    <figure>
+      <img src="assets/ch-tennis.jpg" alt="Vitto resting on a courtside bench" loading="lazy">
+      <figcaption class="saga-cap"><span class="d">Almost two decades</span><h3>The foundation</h3><div class="t"><p>Before padel there was tennis: almost two decades of it. Everything I do on a padel court started there.</p><p>In November 2025 I made it formal with the ITF PTC and ITF CBI (Level 1) certifications, with Coach Martin Setiawan (ITF Level 3 Certified) and other tutors.</p></div></figcaption>
+    </figure>
+    <figure>
+      <img src="assets/g-swing.jpg" alt="Vitto mid-swing on a forehand" loading="lazy">
+      <figcaption class="saga-cap"><span class="d">2022 to 2025</span><h3>Seattle years</h3><div class="t"><p>Three years of pickleball in Seattle, Washington, up to DUPR 5.0+. Golf alongside it: from beginner to a 13 handicap within a year.</p><p>I practised with Arccos and Trackman or Toptracer data, then played by feel. That is still how I learn: a meticulous system, quick adjustments, and my best when the pressure is on.</p></div></figcaption>
+    </figure>
+    <figure>
+      <img src="assets/ch-south.jpg" alt="Vitto smiling on court at South Padel" loading="lazy">
+      <figcaption class="saga-cap"><span class="d">February 2026</span><h3>Falling for padel</h3><div class="t"><p>I first hit a padel ball in August 2025, then played fewer than ten hours over the next six months. In February 2026 I fell in love with the game.</p><p>I went straight to learning it properly: a three-day training at PadelMBA in March, my FIP L0 certification in April, and more than four months and 50 hours of group lessons at South Padel Academy.</p></div></figcaption>
+    </figure>
+    <figure>
+      <img src="assets/ch-title.jpg" alt="Vitto with arms raised in celebration, his dad behind him" loading="lazy" style="object-position:58% 30%">
+      <figcaption class="saga-cap"><span class="d">19-20 April 2026</span><h3>First title</h3><div class="t"><p>Marii M1, Silver Open, in Purwokerto. Two months after padel became my game, I won my first title with my dad as my partner.</p></div></figcaption>
+    </figure>
+    <figure>
+      <img src="assets/ch-climb.jpg" alt="Vitto jumping for a smash at FIP Bronze Jakarta in front of a crowd" loading="lazy" style="object-position:52% 30%">
+      <figcaption class="saga-cap"><span class="d">March to October 2026</span><h3>The climb</h3><div class="t"><p>Bronze in April. Silver a week later. Gold by September. 23 tournaments with 19 different partners across four cities, including my first FIP event in July.</p><p>By autumn the Silver podium had become routine: three semifinals on three straight weekends.</p></div></figcaption>
+    </figure>
+    <figure>
+      <img src="assets/ch-final.jpg" alt="Vitto and Jaime de las Heras holding the runner-up boards at Padel Pro Series" loading="lazy" style="object-position:50% 55%">
+      <figcaption class="saga-cap"><span class="d">18 October 2026</span><h3>Gold final</h3><div class="t"><p>Padel Pro Series 3.6, Men's Gold, with Jaime de las Heras. We finished runner-up, eight months after I started playing seriously.</p></div></figcaption>
+    </figure>
+    <figure>
+      <img src="assets/ch-road.jpg" alt="Vitto preparing a backhand, eyes on the ball" loading="lazy" style="object-position:50% 35%">
+      <figcaption class="saga-cap"><span class="d">2027</span><h3>Road to Pro</h3><div class="t"><p>My first year was about putting myself on the map. 2027 is about going after pro-level padel: tougher categories, a full calendar, and the same habit of learning from every match.</p></div></figcaption>
+    </figure>
+  </div>
+  <div class="saga-side">
+    <div id="saga-text"></div>
+  </div>
+</section>
+
+<!-- BACKGROUND -->
+<section class="wrap pad" id="background">
+  <div class="creds">
+    <div>
+      <span class="eyebrow">Background</span>
+      <h2 class="h2" data-split>Data in practice, <span class="hl">feel in play</span></h2>
+      <p class="lead reveal">Four racket and club sports have taught me the same thing: build a meticulous system, learn fast, adapt, and enjoy the pressure.</p>
+    </div>
+    <ul>
+      <li class="reveal"><i>~20 yrs</i><div><b>Tennis</b><span>Almost two decades on court before padel</span></div></li>
+      <li class="reveal"><i>2022-2025</i><div><b>Pickleball, DUPR 5.0+</b><span>Three years in Seattle, Washington</span></div></li>
+      <li class="reveal"><i>2023-2025</i><div><b>Golf, 13 handicap</b><span>From beginner within a year, practising with Arccos and Trackman / Toptracer data</span></div></li>
+      <li class="reveal"><i>Nov 2025</i><div><b>ITF PTC and ITF CBI (Level 1)</b><span>With Coach Martin Setiawan (ITF Level 3 Certified) and other tutors</span></div></li>
+      <li class="reveal"><i>Mar 2026</i><div><b>PadelMBA</b><span>Three-day training completed</span></div></li>
+      <li class="reveal"><i>Apr 2026</i><div><b>FIP L0 certification</b><span>International Padel Federation</span></div></li>
+      <li class="reveal"><i>2026</i><div><b>South Padel Academy</b><span>Over four months, 50+ hours of group lessons</span></div></li>
+    </ul>
+  </div>
+</section>
+
+<!-- RESULTS -->
+<section class="results wrap pad" id="results">
+  <span class="eyebrow">Selected results, 2026</span>
+  <h2 class="h2" data-split>Top <span class="hl">finishes</span></h2>
+  <div class="rows">
+    <div class="row reveal">
+      <span class="n">01</span>
+      <div class="res"><small>Gold</small>Runner-up</div>
+      <div class="ev"><b>Padel Pro Series 3.6</b><span>Padel Pro Satrio, Jakarta</span></div>
+      <div class="with">with Jaime de las Heras</div>
+      <div class="date">18.10.2026</div>
+    </div>
+    <div class="row reveal">
+      <span class="n">02</span>
+      <div class="res"><small>Silver Open</small>Champion</div>
+      <div class="ev"><b>Marii M1</b><span>East Padel House, Purwokerto</span></div>
+      <div class="with">with my dad</div>
+      <div class="date">19-20.04.2026</div>
+    </div>
+    <div class="row reveal">
+      <span class="n">03</span>
+      <div class="res"><small>Silver</small>Semifinalist</div>
+      <div class="ev"><b>MOP</b><span>MOP, Jakarta</span></div>
+      <div class="with">with Roberto Winokan</div>
+      <div class="date">04-05.07.2026</div>
+    </div>
+    <div class="row reveal">
+      <span class="n">04</span>
+      <div class="res"><small>Team</small>Third place</div>
+      <div class="ev"><b>Clover Cup</b><span>Clover, Jakarta</span></div>
+      <div class="with">captain, team ZAS</div>
+      <div class="date">12-13.09.2026</div>
+    </div>
+    <div class="row reveal">
+      <span class="n">05</span>
+      <div class="res"><small>Silver</small>Semifinalist</div>
+      <div class="ev"><b>Padel Hall</b><span>Padel Hall, Bogor</span></div>
+      <div class="with">with Imam Akram</div>
+      <div class="date">26-27.09.2026</div>
+    </div>
+    <div class="row reveal">
+      <span class="n">06</span>
+      <div class="res"><small>Silver</small>Semifinalist</div>
+      <div class="ev"><b>SPH</b><span>SPH Urban Forest Cipete, Jakarta</span></div>
+      <div class="with">with Roberto Winokan</div>
+      <div class="date">03.10.2026</div>
+    </div>
+    <div class="row tba reveal">
+      <span class="n">—</span>
+      <div class="res"><small>Season 2027</small>Calendar to be announced</div>
+      <div class="ev"></div><div class="with"></div><div class="date">2027</div>
+    </div>
+  </div>
+  <p class="also reveal">Also in 2026: a third straight semifinal weekend at SPH Setiabudi (Team, captain of ZAS) on 10 October, round of 16 at Orca Padel (Gold), and a first FIP Bronze entry in Jakarta.</p>
+</section>
+
+<!-- NUMBERS -->
+<section class="wrap pad" id="numbers">
+  <span class="eyebrow">Year one, on the map</span>
+  <h2 class="h2" data-split>On court <span class="hl">almost every week</span></h2>
+  <div class="nums">
+    <div class="num reveal"><b>23</b><span>Tournaments played in eight months</span></div>
+    <div class="num reveal"><b>23</b><span>Clubs and venues</span></div>
+    <div class="num reveal"><b>4</b><span>Cities: Jakarta, Bogor, Surabaya, Purwokerto</span></div>
+    <div class="num reveal"><b>10K<i>+</i></b><span>Views on a single Instagram post, @vittoalexander</span></div>
+  </div>
+</section>
+
+<!-- GALLERY -->
+<section class="gallery" id="gallery">
+  <div class="wrap">
+    <h2 class="h2" data-split>On <span class="hl">court</span></h2>
+    <span class="eyebrow">Drag →</span>
+  </div>
+  <div class="strip">
+    <figure><img src="assets/g-forehand.jpg" alt="Vitto stretching for a forehand at FIP Bronze Jakarta" loading="lazy"></figure>
+    <figure><img src="assets/g-ready.jpg" alt="Vitto in ready position at the net" loading="lazy"></figure>
+    <figure><img src="assets/ch-climb.jpg" alt="Vitto jumping for a smash in front of a crowd" loading="lazy"></figure>
+    <figure><img src="assets/g-pps.jpg" alt="Vitto moving to the ball at Padel Pro Series" loading="lazy"></figure>
+    <figure><img src="assets/g-partner.jpg" alt="Vitto and his partner laughing between points" loading="lazy"></figure>
+    <figure><img src="assets/g-swing.jpg" alt="Vitto mid-swing on a forehand" loading="lazy"></figure>
+    <figure><img src="assets/g-podium.jpg" alt="Winners' podium at Marii Cup M1" loading="lazy"></figure>
+    <figure><img src="assets/g-clover.jpg" alt="Team ZAS at the Clover Cup" loading="lazy"></figure>
+    <figure><img src="assets/volley.jpg" alt="Vitto low at the net, playing a volley" loading="lazy"></figure>
+    <figure><img src="assets/g-zas.jpg" alt="Vitto and a teammate flexing courtside" loading="lazy"></figure>
+    <figure><img src="assets/medal.jpg" alt="Runner-up medal, Padel Pro Series 3, Men's Gold" loading="lazy"></figure>
+  </div>
+</section>
+
+<!-- RELATIONSHIPS -->
+<section class="partner wrap pad" style="background:var(--grey)">
+  <h2 class="h2" data-split>Relationships first. <span class="hl">Everything else later.</span></h2>
+  <p class="reveal">My first year in padel was about getting on the map: playing everywhere, with everyone. If you're building something in this sport, a brand, a community or a club, I'd like to get to know you first. Come and hit with me.</p>
+  <a class="btn reveal" href="#contact">Say hello</a>
+  <a class="more reveal" href="sponsors.html">Or read the partner guide →</a>
+</section>
+
+<!-- CONTACT -->
+<section class="contact wrap pad" id="contact">
+  <div class="grid">
+    <h2 data-split>Let's <span class="hl">talk</span></h2>
+    <div class="reveal">
+      <p>Want to play, talk padel or build something together? Message me and I'll reply personally.</p>
+      <div class="ways">
+        <div><span>Email</span><a href="mailto:vittoalexander13@gmail.com">vittoalexander13@gmail.com</a></div>
+        <div><span>Indonesia</span><a href="tel:+628111362854">+62 811 136 2854</a></div>
+        <div><span>US</span><a href="tel:+12068862584">+1 206 886 2584</a></div>
+        <div><span>Instagram</span><a href="https://www.instagram.com/vittoalexander" target="_blank" rel="noopener">@vittoalexander</a></div>
+      </div>
+      <a class="btn light" href="mailto:vittoalexander13@gmail.com?subject=Road%20to%20Pro%202027">Email me</a>
+    </div>
+  </div>
+</section>
+<footer class="foot">
+  <span>Vitto Alexander · Road to Pro 2027</span>
+  <span><a href="https://www.instagram.com/vittoalexander" target="_blank" rel="noopener">Instagram</a> · <a href="sponsors.html">Partner guide</a></span>
+</footer>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+<script src="gear3d.js?v=6"></script>
+<script src="main.js?v=6"></script>
+</body>
+</html>
