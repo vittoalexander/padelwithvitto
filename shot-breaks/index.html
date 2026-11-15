@@ -37,6 +37,10 @@ button{font:inherit;color:inherit}
 .top{position:fixed;inset:0 0 auto 0;z-index:50;height:56px;display:flex;align-items:center;gap:16px;padding:0 clamp(16px,4vw,40px);background:var(--bg);border-bottom:1px solid var(--rule)}
 .brand{font-family:var(--display);font-size:19px;text-transform:uppercase;letter-spacing:.02em;color:var(--text);text-decoration:none;white-space:nowrap}
 .brand b{font-weight:400;color:var(--coral)}
+.back{font-family:var(--mono);font-size:11px;letter-spacing:.08em;color:var(--muted);text-decoration:none;white-space:nowrap}
+.back:hover{color:var(--text)}
+@media (max-width:520px){.back span{display:none}}
+@media (max-width:400px){header.top{gap:7px;padding:0 10px}.top .brand{font-size:16px}.top .ctrl{padding:7px 7px;letter-spacing:.04em}}
 .counter{margin-left:auto;font-family:var(--mono);font-size:11px;letter-spacing:.1em;color:var(--muted);white-space:nowrap}
 .ctrl{font-family:var(--mono);font-size:11px;letter-spacing:.08em;text-transform:uppercase;background:none;border:1px solid var(--rule);padding:7px 12px;min-height:40px;border-radius:6px;cursor:pointer;white-space:nowrap}
 .ctrl:hover{border-color:var(--muted)}
@@ -158,6 +162,7 @@ html.lenis,html.lenis body{height:auto}
 </div></div>
 
 <header class="top">
+  <a class="back" href="../" aria-label="Back to padelwithvitto">← <span>padelwithvitto</span></a>
   <a class="brand" href="#r0">Why a shot <b>breaks</b></a>
   <span class="counter" id="counter"><span class="lg">Round </span><span id="cn">00</span> / 07</span>
   <button class="ctrl" id="pause" aria-pressed="false">Pause motion</button>
