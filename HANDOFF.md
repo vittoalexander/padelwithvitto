@@ -16,6 +16,7 @@ Updated 16 Nov 2026.
 - Copy the edited padel-101, shot-breaks and road-to-pro files from this repo back into the local source folders (padel-101, padel-shot-breaks, padel-athlete-site). Otherwise the next publish.sh run overwrites the back link and the date stamps. Guide 3 and the landing page live only in this repo, so publish.sh leaves them alone.
 - Guide 3 follow-ups worth doing with a second batch of charted sets: re-test findings 3-5 (volley, overhead), and re-run the "would break finding 1" check.
 - Padel 101 phases 3-4.
+- Guides 04-06: ideas saved in GUIDE-IDEAS.md. Guide 04 is to be a second numbers guide (topic open); 05 is showing up (front door + goals vs systems); 06 is comparison (broad vs narrow). Nothing built.
 
 ## Guide 3 decisions
 - One guide, for improvers who want numbers behind their next step. Few numbers, analogies with matching visuals.
