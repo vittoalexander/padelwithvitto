@@ -46,6 +46,37 @@ Padel angle to explore
 - Goal "reach level X" versus system "two drilling sessions and one match every week".
 - Possible numbers tie-in with Guide 03/04: sessions attended versus rating over time.
 
+Section idea: athlete types (added 16 Nov 2026, rough)
+
+Premise: "Berlatih seperti bertanding, bertanding seperti berlatih." English options for the page:
+- "Train like it's the final. Play the final like it's training."
+- "Sweat in practice as if it counts. Play when it counts as if it's practice."
+- "Make practice a battle, so the battle feels like practice."
+
+Vitto's two types
+- A. The Spartan (volume). Trains relentlessly, their whole life, so that when the battle comes it feels like a "vacation". Example: Michael Phelps, who by his own account went years without a rest day.
+- B. The Engineer (precision). Cuts the hours and makes each one count. Example: Cam McEvoy, who redesigned his sprint training around strength and short, race-speed efforts, cut his pool hours sharply (Vitto's memory: about 20 hours down to about 6) and won the 50 m freestyle at the top level.
+
+More types to consider (Claude's suggestions, pick or drop)
+- C. The Metronome (polarised). Most sessions deliberately easy, a few very hard, intensity measured rather than felt. Example: Norwegian endurance athletes such as Jakob Ingebrigtsen and Kristian Blummenfelt.
+- D. The Sampler (late specialiser). Plays many sports young, picks one late, brings the borrowed skills along. Example: Roger Federer, as told in David Epstein's "Range", against Tiger Woods as the early specialiser.
+- E. The Player (learns by playing). Little formal drilling, huge amounts of small-sided games. Example: Brazilian footballers raised on futsal and street football.
+- F. The Long-Gamer (recovery first). Treats sleep, food and rest as part of training to stay at the top for decades. Example: LeBron James, Novak Djokovic.
+
+Padel angle
+- Which type are you now, and which does your week actually allow? A club player with a job and four court hours a week cannot be a Spartan, so those hours have to be Engineer hours.
+- Possible numbers tie-in: Vitto's own load data (Vitto Padel Hours, hard-after-hard days).
+
+Caveats to state in the guide
+- The event picks the method. A 50 m swim is about 21 seconds of pure power; Phelps raced 200 m and 400 m events that need endurance. McEvoy's plan would not have worked for Phelps's races, and the reverse.
+- Padel is a skill sport, so cutting hours only works if the remaining hours hold more good repetitions, not just fewer.
+- We only hear about the athletes each method worked for (survivorship bias: the ones it broke do not get documentaries).
+
+To verify before publishing
+- McEvoy's exact before and after training hours, and whether his 50 m result was a world record or a world/Olympic title. Claude recalls a 2023 world title, 2024 Olympic gold and a world record in 2026, but has not checked.
+- "Matthew Smith": Claude could not place this name in the McEvoy story (his coach is recalled as Tim Lane). Confirm who was meant.
+- Phelps's "no days off" stretch: length and years.
+
 Caveat to state in the guide
 - "1% better every day" (about 37x in a year) is arithmetic used as a picture, not a measured result. Skill does not compound that cleanly.
 
