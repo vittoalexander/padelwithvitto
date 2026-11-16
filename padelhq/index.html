@@ -1,0 +1,66 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta property="article:modified_time" content="2026-11-16">
+<title>PadelHQ: open-level padel in Indonesia</title>
+<meta name="description" content="One calendar for open-level padel tournaments in Indonesia: dates, registration deadlines, live scores and livestream links.">
+<meta name="theme-color" content="#0D1012">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@600;700&family=Barlow:wght@400;500;600&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="style.css?v=1">
+</head>
+<body>
+<header class="top">
+  <a class="back" href="../">← padelwithvitto</a>
+  <div class="brand">
+    <span class="word">PADEL<em>HQ</em></span>
+    <span class="beta">Test build</span>
+  </div>
+  <p class="tag">Open-level padel in Indonesia. What's on, when to register, where to follow the score.</p>
+</header>
+
+<main>
+  <section id="now" class="now" aria-live="polite"></section>
+
+  <section class="cal" aria-labelledby="monthTitle">
+    <div class="calhead">
+      <h1 id="monthTitle">Calendar</h1>
+      <div class="nav">
+        <button id="prev" type="button" aria-label="Previous month">‹</button>
+        <button id="today" type="button">Today</button>
+        <button id="next" type="button" aria-label="Next month">›</button>
+      </div>
+    </div>
+    <div class="dow" aria-hidden="true"><span>Mon</span><span>Tue</span><span>Wed</span><span>Thu</span><span>Fri</span><span>Sat</span><span>Sun</span></div>
+    <div id="grid" class="grid"></div>
+    <ul class="legend">
+      <li><i class="k t1"></i>Tier 1</li>
+      <li><i class="k other"></i>Other events</li>
+      <li><i class="k reg"></i>Registration closes</li>
+      <li><i class="k tod"></i>Today</li>
+    </ul>
+  </section>
+
+  <section aria-labelledby="listTitle">
+    <h2 id="listTitle" class="sec">This month</h2>
+    <div id="list" class="list"></div>
+  </section>
+
+  <section id="tbcWrap" hidden aria-labelledby="tbcTitle">
+    <h2 id="tbcTitle" class="sec">Dates to be confirmed</h2>
+    <div id="tbc" class="list"></div>
+  </section>
+</main>
+
+<footer>
+  <p>Dates come from organisers' posts and the PBPI calendar. Events marked "Unconfirmed" have not been checked with the organiser, so confirm before you book travel.</p>
+  <p class="mono"><span id="src">Data: built-in list</span> · Know an event that's missing? <a href="https://instagram.com/padelwithvitto" rel="noopener">@padelwithvitto</a> · Last updated <time datetime="2026-11-16">16 Nov 2026</time></p>
+</footer>
+
+<script src="events.js?v=1"></script>
+<script src="app.js?v=1"></script>
+</body>
+</html>

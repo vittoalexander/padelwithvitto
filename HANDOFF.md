@@ -11,6 +11,14 @@ Updated 16 Nov 2026.
 - Charting template for chapter 06: people-lose-it/downloads/padel-set-charting-template.xlsx and .pdf, v1.0, rebuilt from the Template tab layout (no player names). Caveats stated: 10 marks per shot, one set per sheet.
 - Source sheet: Padel Benchmark Lab, Reverse stress test tab, section D, rows 51-56 added (independent matches, match-level check, stats tested, why the UE gap dominates, unforced is a judgement, counting method).
 
+## PadelHQ (test build, on branch claude/gifted-keller-k1xu9w, not yet on main)
+- padelhq/: index.html, style.css, app.js, events.js. Lives only in this repo, so publish.sh leaves it alone. No build step.
+- What it does: month calendar (Monday first, Indonesia time), "Live now / Next up" strip, event cards with Register / Scores / Watch / Details buttons, and a "Dates to be confirmed" list for events without dates.
+- Data: events.js is the built-in list. Set SHEET_CSV_URL in app.js to read a Google Sheet instead (header row needs Name and Start date; title rows above it are skipped; falls back to events.js if the sheet fails).
+- Design: charcoal #0D1012, ball green #C8F53C (Tier 1, live, main action), tosca #2FD6C3 (secondary), amber #FFB454 (deadlines, unconfirmed). Barlow Condensed headings, Barlow body, DM Mono labels.
+- Seed data: only Sirkuit Nasional Bali (19-22 Nov, Monster Padel Bali) is confirmed by Vitto. The rest came from web search because Instagram and pbpi.or.id are blocked in the cloud session; they are marked "unconfirmed".
+- Next: create the Google Sheet (plan shown to Vitto, waiting for approval), link PadelHQ from the landing page, merge to main, then Phase 2 (tournament pages, draws, order of play).
+
 ## Left
 - Vitto checks the live site by eye (the cloud session cannot fetch github.io).
 - Copy the edited padel-101, shot-breaks and road-to-pro files from this repo back into the local source folders (padel-101, padel-shot-breaks, padel-athlete-site). Otherwise the next publish.sh run overwrites the back link and the date stamps. Guide 3 and the landing page live only in this repo, so publish.sh leaves them alone.

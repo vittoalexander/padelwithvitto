@@ -3,6 +3,7 @@
 Padel learning sites by Vitto (@padelwithvitto).
 
 - Road to Pro 2027 (athlete site): https://vittoalexander.github.io/padelwithvitto/road-to-pro/
+- PadelHQ (tournament calendar, test build): https://vittoalexander.github.io/padelwithvitto/padelhq/
 - Padel 101: https://vittoalexander.github.io/padelwithvitto/padel-101/
 - Why a padel shot breaks: https://vittoalexander.github.io/padelwithvitto/shot-breaks/
 

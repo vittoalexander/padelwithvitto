@@ -1,0 +1,114 @@
+/* PadelHQ: night match under floodlights. Charcoal court, ball-green for live and action, tosca for secondary. */
+:root{
+  --bg:#0D1012;--panel:#15191C;--panel2:#1B2024;--rule:#272E33;
+  --text:#EEF2F0;--soft:#C3CCCB;--muted:#8A9698;
+  --ball:#C8F53C;--ball-ink:#141A00;--tosca:#2FD6C3;--tosca-dim:#14433F;--warn:#FFB454;
+  color-scheme:dark;
+}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{margin:0;background:var(--bg);color:var(--text);font-family:"Barlow",system-ui,Arial,sans-serif;font-size:16px;line-height:1.5;-webkit-font-smoothing:antialiased}
+a{color:var(--tosca)}
+.mono,.sec,.dow,.legend,.back,.beta{font-family:"DM Mono",ui-monospace,Menlo,monospace;font-size:12px;letter-spacing:.08em;text-transform:uppercase}
+header.top,main,footer{max-width:1040px;margin:0 auto;padding-left:clamp(16px,4vw,32px);padding-right:clamp(16px,4vw,32px)}
+
+header.top{padding-top:22px;padding-bottom:8px}
+.back{color:var(--muted);text-decoration:none}
+.back:hover{color:var(--text)}
+.brand{display:flex;align-items:center;gap:12px;margin-top:18px}
+.word{font-family:"Barlow Condensed","Arial Narrow",Impact,sans-serif;font-weight:700;font-size:clamp(52px,11vw,92px);line-height:.9;letter-spacing:.01em}
+.word em{font-style:normal;color:var(--ball)}
+.beta{border:1px solid var(--rule);color:var(--muted);padding:3px 8px;border-radius:99px;font-size:11px}
+.tag{color:var(--soft);max-width:46ch;margin:12px 0 0;font-size:17px}
+
+main{padding-top:22px;padding-bottom:40px}
+
+/* Live now / next up strip */
+.now{display:grid;gap:10px;margin-bottom:28px}
+.nowcard{display:flex;align-items:center;gap:14px;flex-wrap:wrap;padding:14px 16px;border:1px solid var(--rule);border-left:4px solid var(--tosca);border-radius:8px;background:var(--panel);color:inherit;text-decoration:none}
+.nowcard.live{border-left-color:var(--ball);background:linear-gradient(90deg,rgba(200,245,60,.10),var(--panel) 55%)}
+.nowcard:hover{border-color:#3a444a}
+.pill{font-family:"DM Mono",monospace;font-size:11px;letter-spacing:.1em;text-transform:uppercase;padding:4px 9px;border-radius:99px;white-space:nowrap;background:var(--tosca-dim);color:var(--tosca)}
+.live .pill{background:var(--ball);color:var(--ball-ink);font-weight:500;display:inline-flex;align-items:center;gap:6px}
+.live .pill::before{content:"";width:7px;height:7px;border-radius:50%;background:var(--ball-ink);animation:pulse 1.4s ease-in-out infinite}
+@keyframes pulse{50%{opacity:.25}}
+@media(prefers-reduced-motion:reduce){.live .pill::before{animation:none}html{scroll-behavior:auto}}
+.nowcard b{font-family:"Barlow Condensed",sans-serif;font-weight:700;font-size:26px;line-height:1.05;letter-spacing:.01em}
+.nowcard .meta{color:var(--soft);font-size:15px}
+.nowcard .go{margin-left:auto;color:var(--muted);font-family:"DM Mono",monospace;font-size:12px;letter-spacing:.08em;text-transform:uppercase}
+
+/* Calendar */
+.calhead{display:flex;align-items:flex-end;justify-content:space-between;gap:12px;margin-bottom:12px}
+h1{font-family:"Barlow Condensed",sans-serif;font-weight:700;font-size:clamp(34px,6vw,48px);line-height:1;margin:0;text-transform:uppercase;letter-spacing:.01em}
+h1 span{color:var(--muted)}
+.nav{display:flex;gap:6px}
+.nav button{font:inherit;font-family:"DM Mono",monospace;font-size:12px;letter-spacing:.08em;text-transform:uppercase;min-width:40px;height:40px;padding:0 12px;border-radius:6px;border:1px solid var(--rule);background:var(--panel);color:var(--text);cursor:pointer}
+.nav button:hover{border-color:var(--ball)}
+.nav button:focus-visible,a:focus-visible{outline:2px solid var(--ball);outline-offset:2px}
+#prev,#next{font-size:20px;padding:0;line-height:1}
+.dow{display:grid;grid-template-columns:repeat(7,minmax(0,1fr));color:var(--muted);padding:0 0 6px}
+.dow span{padding-left:8px}
+.grid{border:1px solid var(--rule);border-radius:8px;overflow:hidden;background:var(--panel)}
+.week{display:grid;grid-template-columns:repeat(7,minmax(0,1fr));position:relative}
+.week + .week{border-top:1px solid var(--rule)}
+.day{grid-row:1 / -1;border-left:1px solid var(--rule);padding:6px 8px;min-height:92px}
+.day:first-child,.day.c1{border-left:0}
+.day .n{font-family:"DM Mono",monospace;font-size:13px;color:var(--soft)}
+.day.out{background:#101315}
+.day.out .n{color:#4a5458}
+.day.wkend:not(.out){background:var(--panel2)}
+.day.today .n{background:var(--ball);color:var(--ball-ink);border-radius:99px;padding:2px 7px;font-weight:500}
+.bar{z-index:1;margin:0 3px 3px;padding:0 8px;height:24px;line-height:24px;border-radius:5px;font-size:13px;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;text-decoration:none;background:var(--tosca-dim);color:#BFF5EE;border:1px solid #1f6660}
+.bar.t1{background:var(--ball);color:var(--ball-ink);border-color:var(--ball)}
+.bar.unc{border-style:dashed}
+.bar.t1.unc{background:rgba(200,245,60,.16);color:var(--ball)}
+.bar.contL{border-top-left-radius:0;border-bottom-left-radius:0;margin-left:0}
+.bar.contR{border-top-right-radius:0;border-bottom-right-radius:0;margin-right:0}
+.bar.reg{background:transparent;border:1px dashed var(--warn);color:var(--warn);font-weight:500}
+.bar:hover{filter:brightness(1.12)}
+.legend{list-style:none;display:flex;flex-wrap:wrap;gap:8px 18px;padding:0;margin:12px 0 0;color:var(--muted)}
+.legend li{display:flex;align-items:center;gap:7px}
+.k{width:16px;height:10px;border-radius:3px;display:inline-block}
+.k.t1{background:var(--ball)}.k.other{background:var(--tosca-dim);border:1px solid #1f6660}
+.k.reg{border:1px dashed var(--warn)}.k.tod{background:var(--ball);border-radius:99px;width:10px}
+
+/* Event cards */
+.sec{color:var(--muted);margin:38px 0 12px;font-weight:400;font-size:12px}
+.list{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px}
+.card{display:flex;flex-direction:column;gap:10px;padding:18px;border:1px solid var(--rule);border-radius:8px;background:var(--panel);scroll-margin-top:16px}
+.card:target,.card.hit{border-color:var(--ball);box-shadow:0 0 0 1px var(--ball)}
+.badges{display:flex;flex-wrap:wrap;gap:6px}
+.badge{font-family:"DM Mono",monospace;font-size:11px;letter-spacing:.08em;text-transform:uppercase;padding:3px 8px;border-radius:4px;border:1px solid var(--rule);color:var(--soft)}
+.badge.t1{background:var(--ball);border-color:var(--ball);color:var(--ball-ink);font-weight:500}
+.badge.city{border-color:#1f6660;color:var(--tosca)}
+.badge.unc{border-style:dashed;color:var(--warn);border-color:#6b4d22}
+.badge.live{background:var(--ball);border-color:var(--ball);color:var(--ball-ink)}
+.badge.done{color:var(--muted)}
+.card h3{font-family:"Barlow Condensed",sans-serif;font-weight:700;font-size:30px;line-height:1.02;margin:2px 0 0;letter-spacing:.01em}
+.card .full{color:var(--muted);font-size:14px;margin:-4px 0 0}
+dl{display:grid;grid-template-columns:auto 1fr;gap:4px 14px;margin:0;font-size:15px}
+dt{color:var(--muted);font-family:"DM Mono",monospace;font-size:11px;letter-spacing:.08em;text-transform:uppercase;padding-top:3px}
+dd{margin:0;color:var(--text)}
+dd .cd{color:var(--warn);font-weight:600}
+dd .tbc{color:var(--muted)}
+.note{color:var(--muted);font-size:14px;margin:0}
+.btns{display:flex;flex-wrap:wrap;gap:8px;margin-top:auto;padding-top:6px}
+.btn{display:inline-flex;align-items:center;justify-content:center;min-height:40px;padding:0 14px;border-radius:6px;border:1px solid var(--rule);font-weight:600;font-size:14px;text-decoration:none;color:var(--text)}
+a.btn:hover{border-color:var(--ball)}
+a.btn.pri{background:var(--ball);border-color:var(--ball);color:var(--ball-ink)}
+span.btn{color:#58636a;border-style:dashed;font-weight:500}
+.empty{grid-column:1 / -1;padding:22px;border:1px dashed var(--rule);border-radius:8px;color:var(--muted)}
+
+footer{padding-top:20px;padding-bottom:44px;border-top:1px solid var(--rule);color:var(--muted);font-size:14px}
+footer p{margin:0 0 8px;max-width:72ch}
+footer .mono{font-size:11px}
+
+@media(max-width:720px){
+  .list{grid-template-columns:1fr}
+  .day{min-height:74px;padding:4px 5px}
+  .day .n{font-size:12px}
+  .dow span{padding-left:5px}
+  .bar{font-size:11px;padding:0 4px;height:20px;line-height:20px;margin:0 2px 2px}
+  .nowcard .go{margin-left:0;flex-basis:100%}
+  .nowcard b{font-size:23px}
+}
