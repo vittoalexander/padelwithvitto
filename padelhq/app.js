@@ -1,11 +1,20 @@
 /* PadelHQ calendar. Plain JavaScript, no build step.
-   Data: the list in events.js, or a Google Sheet when SHEET_CSV_URL is set. */
+   Data: the list in events.js, or a Google Sheet when sheetCsvUrl is set in config.js.
+   Live scores are drawn by live.js, which reads the event list this file publishes on window.PADELHQ. */
 (function () {
   "use strict";
 
-  // Paste the sheet's CSV link here to make the Google Sheet the source of truth.
-  // Format: https://docs.google.com/spreadsheets/d/<SHEET_ID>/gviz/tq?tqx=out:csv&sheet=Events
-  var SHEET_CSV_URL = "";
+  var CONFIG = window.PADELHQ_CONFIG || {};
+  var SHEET_CSV_URL = CONFIG.sheetCsvUrl || "";
+  // Display names for scoring platforms. "live" = PadelHQ can show the score itself; otherwise it links out.
+  var SCORERS = {
+    pbpi: { name: "PBPI", live: true, home: "https://www.pbpi.or.id/en/tournaments" },
+    alfred: { name: "Alfred for Padel", live: true, home: "https://www.alfredforpadel.com/" },
+    incourta: { name: "Incourta", live: false, home: "https://incourta.com/events" },
+    recourt: { name: "Recourt", live: false, home: "https://recourt.id/" },
+    skorpad: { name: "SkorPad", live: false, home: "https://skorpad.com/" },
+    padelscore: { name: "PadelScore.id", live: false, home: "https://padelscore.id/" }
+  };
 
   var MONTHS = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
   var MON = MONTHS.map(function (m) { return m.slice(0, 3); });
@@ -53,8 +62,17 @@
       prize: Number(String(raw.prize || "").replace(/[^\d]/g, "")) || 0,
       register: safeUrl(raw.register), scores: safeUrl(raw.scores), stream: safeUrl(raw.stream), info: safeUrl(raw.info),
       status: /^conf/i.test(String(raw.status || "")) ? "confirmed" : "unconfirmed",
-      notes: String(raw.notes || "").trim()
+      notes: String(raw.notes || "").trim(),
+      scoring: String(raw.scoring || "").trim().toLowerCase().replace(/[^a-z]/g, ""),
+      scoringId: String(raw.scoringId || "").trim()
     };
+    if (e.scoring === "alfredforpadel") e.scoring = "alfred";
+    e.scorer = SCORERS[e.scoring] || null;
+    if (!e.scorer) e.scoring = "";
+    // No scores link typed in: fall back to the scoring platform's own page for this tournament.
+    if (!e.scores && e.scorer) {
+      e.scores = e.scoring === "alfred" && /^[a-z0-9-]+$/.test(e.scoringId) ? "https://www.alfredforpadel.com/tournament/" + e.scoringId + "/match" : e.scorer.home;
+    }
     e.id = raw.id ? slug(raw.id) : slug(e.name);
     e.s = parse(raw.start);
     e.e = parse(raw.end);
@@ -87,7 +105,8 @@
     "level": "level", "city": "city", "venue": "venue", "start date": "start", "end date": "end",
     "registration deadline": "regDeadline", "reg deadline": "regDeadline", "prize (rp)": "prize",
     "register link": "register", "scores link": "scores", "stream link": "stream", "info link": "info",
-    "status": "status", "notes": "notes"
+    "status": "status", "notes": "notes",
+    "scoring provider": "scoring", "scoring": "scoring", "scoring id": "scoringId"
   };
   function fromCsv(text) {
     var rows = csvRows(text), h = -1, map = [];
@@ -124,13 +143,14 @@
     $("now").innerHTML = show.map(function (e) {
       var isLive = state(e) === "live";
       var where = [e.venue, e.city].filter(Boolean).join(", ");
-      var target = isLive && e.scores ? e.scores : "#" + e.id;
+      var board = isLive && e.scorer;                     // a live scoreboard is drawn further down the page
+      var target = board ? "#live" : isLive && e.scores ? e.scores : "#" + e.id;
       var ext = target.charAt(0) !== "#";
-      return '<a class="nowcard' + (isLive ? " live" : "") + '" href="' + esc(target) + '"' + (ext ? ' target="_blank" rel="noopener"' : ' data-jump="' + esc(e.id) + '"') + ">" +
+      return '<a class="nowcard' + (isLive ? " live" : "") + '" href="' + esc(target) + '"' + (ext ? ' target="_blank" rel="noopener"' : board ? "" : ' data-jump="' + esc(e.id) + '"') + ">" +
         '<span class="pill">' + (isLive ? "Live now" : "Next up · " + inDays(Math.round((e.s - today) / DAY))) + "</span>" +
         "<b>" + esc(e.name) + "</b>" +
         '<span class="meta">' + esc(range(e)) + (where ? " · " + esc(where) : "") + "</span>" +
-        '<span class="go">' + (isLive && e.scores ? "Open live scores →" : "Details →") + "</span></a>";
+        '<span class="go">' + (board ? "Live scores ↓" : isLive && e.scores ? "Open live scores →" : "Details →") + "</span></a>";
     }).join("");
   }
 
@@ -190,6 +210,7 @@
     if (e.level) rows += "<dt>Level</dt><dd>" + esc(e.level) + "</dd>";
     if (e.organizer) rows += "<dt>Host</dt><dd>" + esc(e.organizer) + "</dd>";
     if (e.prize) rows += "<dt>Prize</dt><dd>Rp " + e.prize.toLocaleString("en-US") + "</dd>";
+    if (e.scorer && st !== "done") rows += "<dt>Scoring</dt><dd>" + esc(e.scorer.name) + ' <span class="tbc">(' + (e.scorer.live && e.scoringId ? "live on PadelHQ during play" : "link to their live page") + ")</span></dd>";
     if (st !== "done") {
       var reg;
       if (e.reg == null) reg = '<span class="tbc">Deadline not added yet</span>';
@@ -254,6 +275,9 @@
     view = { y: d.getUTCFullYear(), m: d.getUTCMonth() };
     $("src").textContent = "Data: " + source;
     render();
+    // Hand the event list to live.js.
+    window.PADELHQ = { events: events, today: today, state: state, range: range };
+    document.dispatchEvent(new CustomEvent("padelhq:ready"));
     if (location.hash.length > 1) jump(location.hash.slice(1));
   }
 

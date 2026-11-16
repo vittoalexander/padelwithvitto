@@ -1,0 +1,10 @@
+# Cloudflare Worker settings for the PadelHQ score API.
+# Deploy from this folder with:  npx wrangler deploy
+name = "padelhq-scores"
+main = "worker.js"
+compatibility_date = "2026-10-01"
+workers_dev = true
+
+[vars]
+# Websites allowed to read this API from a browser, comma separated.
+ALLOWED_ORIGINS = "https://vittoalexander.github.io,http://localhost:8788,http://127.0.0.1:8788"

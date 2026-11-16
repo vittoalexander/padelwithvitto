@@ -1,7 +1,9 @@
 /* PadelHQ seed data.
-   Used when no Google Sheet is connected (see SHEET_CSV_URL in app.js), and as the fallback if the sheet fails to load.
+   Used when no Google Sheet is connected (see config.js), and as the fallback if the sheet fails to load.
    Dates are YYYY-MM-DD in Indonesia time. Leave a field as "" when it is not known yet.
-   status: "confirmed" = checked against the organiser; "unconfirmed" = found online, not yet checked. */
+   status: "confirmed" = checked against the organiser or the scoring platform; "unconfirmed" = found online, not yet checked.
+   scoring: which platform keeps the live score: pbpi, alfred (shown live on PadelHQ), or incourta, recourt, skorpad, padelscore (link only).
+   scoringId: that platform's id for the tournament. PBPI: the tournament number. Alfred: the last part of the tournament link. */
 window.PADELHQ_EVENTS = [
   {
     id: "sirnas-bali-2026",
@@ -9,19 +11,43 @@ window.PADELHQ_EVENTS = [
     fullName: "Grand Master Sirkuit Indonesia Open IV, Bali 2026",
     organizer: "PBPI",
     tier: "Tier 1",
-    level: "Open",
+    level: "Open: men's and women's doubles",
     city: "Uluwatu, Bali",
     venue: "Monster Padel Bali",
     start: "2026-11-19",
     end: "2026-11-22",
-    regDeadline: "",
+    regDeadline: "2026-11-14",
     prize: 150000000,
-    register: "",
+    register: "https://www.pbpi.or.id/en/tournaments/grand-master-sirkuit-indonesia-open-iv-bali-2026",
+    scores: "https://www.pbpi.or.id/en/tournaments/grand-master-sirkuit-indonesia-open-iv-bali-2026?tab=order-of-play",
+    stream: "https://youtube.com/@PBPadelIndonesia",
+    info: "https://www.instagram.com/p/Dfg8go4oWYm/",
+    scoring: "pbpi",
+    scoringId: "46",
+    status: "confirmed",
+    notes: "Final Sirkuit Nasional of 2026. Entry fee Rp 800,000. Streams go out on PBPI's YouTube channel."
+  },
+  {
+    id: "padeldome-bss-2026",
+    name: "Padeldome x BSS Academy",
+    fullName: "Grand Opening Padeldome x BSS Academy",
+    organizer: "",
+    tier: "",
+    level: "Bronze Open, Silver Open, Men and Women Lower Bronze",
+    city: "Bandung",
+    venue: "",
+    start: "2026-11-21",
+    end: "2026-11-22",
+    regDeadline: "",
+    prize: "",
+    register: "https://www.alfredforpadel.com/join/padeldome-bss-academy",
     scores: "",
     stream: "",
-    info: "https://www.instagram.com/p/Dfg8go4oWYm/",
-    status: "confirmed",
-    notes: "Final Sirkuit Nasional of 2026. Prize figure is from the PBPI listing."
+    info: "https://www.alfredforpadel.com/tournament/padeldome-bss-academy",
+    scoring: "alfred",
+    scoringId: "padeldome-bss-academy",
+    status: "unconfirmed",
+    notes: "Taken from Alfred for Padel's upcoming list. Added to test Alfred live scores this weekend."
   },
   {
     id: "sirnas-bali-youth-2026",
@@ -29,19 +55,43 @@ window.PADELHQ_EVENTS = [
     fullName: "Grand Master Sirkuit Indonesia Open Youth IV, Bali 2026",
     organizer: "PBPI",
     tier: "Tier 1",
-    level: "Junior",
-    city: "Badung, Bali",
-    venue: "",
+    level: "Youth U12, U14, U16, U18",
+    city: "Uluwatu, Bali",
+    venue: "Monster Padel Bali",
     start: "2026-11-26",
-    end: "",
-    regDeadline: "",
+    end: "2026-11-29",
+    regDeadline: "2026-11-21",
     prize: "",
-    register: "",
-    scores: "",
+    register: "https://www.pbpi.or.id/en/tournaments/grand-master-sirkuit-indonesia-open-youth-iv-bali-2026",
+    scores: "https://www.pbpi.or.id/en/tournaments/grand-master-sirkuit-indonesia-open-youth-iv-bali-2026?tab=order-of-play",
+    stream: "https://youtube.com/@PBPadelIndonesia",
+    info: "https://www.pbpi.or.id/en/tournaments/grand-master-sirkuit-indonesia-open-youth-iv-bali-2026",
+    scoring: "pbpi",
+    scoringId: "48",
+    status: "confirmed",
+    notes: "Junior event, not open level. Entry fee Rp 400,000."
+  },
+  {
+    id: "homeground-south-open-2026",
+    name: "Homeground South Open",
+    fullName: "Homeground South Open, grand opening tournament",
+    organizer: "Homeground Kemang",
+    tier: "",
+    level: "10 categories",
+    city: "Jakarta",
+    venue: "Homeground Tennis & Padel Kemang",
+    start: "2026-11-28",
+    end: "2026-11-29",
+    regDeadline: "2026-11-20",
+    prize: 100000000,
+    register: "https://incourta.com/events/homeground-south-open",
+    scores: "https://incourta.com/events/homeground-south-open",
     stream: "",
-    info: "https://www.pbpi.or.id/id",
+    info: "https://incourta.com/events/homeground-south-open",
+    scoring: "incourta",
+    scoringId: "homeground-south-open",
     status: "unconfirmed",
-    notes: "Start date is from the PBPI site. End date and venue not found yet."
+    notes: "Taken from Incourta. The deadline shown is for Women Lower Bronze; other categories may differ."
   },
   {
     id: "jakarta-padel-exhibition-2026",
@@ -60,8 +110,32 @@ window.PADELHQ_EVENTS = [
     scores: "",
     stream: "",
     info: "https://www.suarakarya.id/olahraga/26017910555/branding-jakarta-lewat-jakarta-padel-exhibition-2026-dorong-jadi-pusat-sport-tourism-kota-global",
+    scoring: "",
+    scoringId: "",
     status: "unconfirmed",
-    notes: "Not an open-level event. Added to test December and the registration-deadline marker."
+    notes: "Not an open-level event. Taken from a news article."
+  },
+  {
+    id: "padel-gp500-2026",
+    name: "Padel GP500",
+    fullName: "Padel GP500",
+    organizer: "",
+    tier: "",
+    level: "Silver, Bronze, Lower Bronze, Upper Beginner, U-18, Men 85+",
+    city: "Jakarta",
+    venue: "Noble Padel, PIK",
+    start: "2026-12-12",
+    end: "2026-12-13",
+    regDeadline: "",
+    prize: "",
+    register: "https://www.alfredforpadel.com/join/padel-gp500",
+    scores: "",
+    stream: "",
+    info: "https://www.alfredforpadel.com/tournament/padel-gp500",
+    scoring: "alfred",
+    scoringId: "padel-gp500",
+    status: "unconfirmed",
+    notes: "Taken from Alfred for Padel's upcoming list."
   },
   {
     id: "padel-pro-series-3-master",
@@ -80,8 +154,10 @@ window.PADELHQ_EVENTS = [
     scores: "",
     stream: "",
     info: "https://www.instagram.com/p/DfmS3vKEtF2/",
+    scoring: "",
+    scoringId: "",
     status: "unconfirmed",
-    notes: "Dates and venue still to be added from the organiser's post."
+    notes: "Dates, venue and scoring platform still to be added from the organiser's post."
   },
   {
     id: "rally-social-club-open-2026",
@@ -97,9 +173,11 @@ window.PADELHQ_EVENTS = [
     regDeadline: "",
     prize: 200000000,
     register: "",
-    scores: "https://incourta.com/",
+    scores: "https://incourta.com/events?status=completed",
     stream: "",
     info: "https://www.instagram.com/p/Dd3DZwJGWYm/",
+    scoring: "incourta",
+    scoringId: "",
     status: "unconfirmed",
     notes: "Dates and prize are from the Incourta listing, not from the organiser's post."
   }

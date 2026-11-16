@@ -12,12 +12,20 @@ Updated 16 Nov 2026.
 - Source sheet: Padel Benchmark Lab, Reverse stress test tab, section D, rows 51-56 added (independent matches, match-level check, stats tested, why the UE gap dominates, unforced is a judgement, counting method).
 
 ## PadelHQ (test build, on branch claude/gifted-keller-k1xu9w, not yet on main)
-- padelhq/: index.html, style.css, app.js, events.js. Lives only in this repo, so publish.sh leaves it alone. No build step.
-- What it does: month calendar (Monday first, Indonesia time), "Live now / Next up" strip, event cards with Register / Scores / Watch / Details buttons, and a "Dates to be confirmed" list for events without dates.
-- Data: events.js is the built-in list. Set SHEET_CSV_URL in app.js to read a Google Sheet instead (header row needs Name and Start date; title rows above it are skipped; falls back to events.js if the sheet fails).
-- Design: charcoal #0D1012, ball green #C8F53C (Tier 1, live, main action), tosca #2FD6C3 (secondary), amber #FFB454 (deadlines, unconfirmed). Barlow Condensed headings, Barlow body, DM Mono labels.
-- Seed data: only Sirkuit Nasional Bali (19-22 Nov, Monster Padel Bali) is confirmed by Vitto. The rest came from web search because Instagram and pbpi.or.id are blocked in the cloud session; they are marked "unconfirmed".
-- Next: create the Google Sheet (plan shown to Vitto, waiting for approval), link PadelHQ from the landing page, merge to main, then Phase 2 (tournament pages, draws, order of play).
+- padelhq/: index.html, style.css, config.js, events.js, app.js (calendar), live.js (scoreboards), providers.js (score adapters), api/ (score API). Lives only in this repo, so publish.sh leaves it alone. No build step.
+- Calendar: month grid (Monday first, Indonesia time), "Live now / Next up" strip, event cards, "Dates to be confirmed" list.
+- Live scores: each event has a scoring platform (scoring) and that platform's id (scoringId). On the event's dates the page draws a scoreboard and refreshes it every 15 s.
+  - PBPI: reads pbpi.or.id/api/tournament-live?tournamentId=N (the same feed PBPI's own page polls every 15 s). PBPI does not allow other sites' pages to read it from a browser, so it only works through the score API. Sirkuit Nasional Bali = 46, Youth = 48, Medan 2026 = 43 (finished, good for testing).
+  - Alfred for Padel: reads its public tRPC endpoints. Works from the browser too, so it is live even without the API (slower refresh, 30 s).
+  - Incourta, Recourt, SkorPad, PadelScore.id: link-out only. Incourta's robots.txt disallows its data endpoints and Recourt's disallows Anthropic agents, so neither was read. Ask them for access before adding adapters.
+  - Instagram shows a login wall to the cloud session, so captions cannot be read. "SkorApp" could not be matched to a public web score page.
+- Score API: padelhq/api/worker.js (Cloudflare Worker), 12 s cache, last good answer for 15 min if a platform is down, browser access limited to vittoalexander.github.io and localhost. Not deployed yet. After deploying, put its address in config.js -> apiBase. See padelhq/api/README.md.
+- Testing: node --test padelhq/api/test.mjs (6 checks). node padelhq/api/dev-server.mjs then http://localhost:8788/?api=http://localhost:8787&demo=1 or &scores=pbpi:43.
+- Not yet seen with a real match in progress: the PBPI "live" fields (points, server) were taken from PBPI's page code, and Alfred's in-progress set handling from its page code. Check both on the first live day (19 Nov for PBPI, 21 Nov for Alfred).
+- Cloud environment "padelwithvitto" allows the provider sites, pbpi.or.id, instagram.com and vittoalexander.github.io.
+- Data: events.js is the built-in list; config.js -> sheetCsvUrl switches to a Google Sheet (columns now include "Scoring provider" and "Scoring ID"). Sheet not created yet (plan shown, waiting for approval).
+- Design: charcoal #0D1012, ball green #C8F53C (Tier 1, live, main action), tosca #2FD6C3 (secondary), amber #FFB454 (deadlines, unconfirmed). Barlow Condensed headings, Barlow body, DM Mono labels and scores.
+- Next: deploy the API, merge to main, create the Google Sheet, link PadelHQ from the landing page, then tournament pages (draws, order of play).
 
 ## Left
 - Vitto checks the live site by eye (the cloud session cannot fetch github.io).
