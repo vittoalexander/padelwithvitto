@@ -2,6 +2,7 @@
    Update the numbers and the date when the league posts a new table. Columns: club, matches, wins, losses, points. */
 window.PADELHQ_IPL = {
   updated: "17 Nov 2026",
+  updatedDate: "2026-11-17",          // results on or before this day are already in the tables below
   source: "https://www.instagram.com/indonesianpadelleague/",
   men: [
     ["Rosiade Padel Club", 7, 6, 1, 19], ["Dewa United Padel Banten", 9, 4, 5, 16], ["Aubry Padel Indonesia", 5, 5, 0, 15],

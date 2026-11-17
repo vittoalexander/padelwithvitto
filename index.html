@@ -3,12 +3,12 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<meta property="article:modified_time" content="2026-11-16">
+<meta property="article:modified_time" content="2026-11-17">
 <title>Padel with Vitto</title>
 <meta name="description" content="Vitto Alexander's Road to Pro 2027, plus short scroll-through padel guides: Padel 101, Why a padel shot breaks, and Nobody wins padel.">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500&family=DM+Serif+Display&family=DM+Mono:wght@400;500&family=Anton&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500&family=DM+Serif+Display&family=DM+Mono:wght@400;500&family=Anton&family=Barlow+Condensed:wght@700&family=Barlow:wght@400;500;600&display=swap" rel="stylesheet">
 <style>
 :root{--bg:#121417;--panel:#1D2025;--rule:#2A2E34;--muted:#9AA3AB;--text:#F4F5F6;--coral:#EC4C47;color-scheme:dark}
 *{box-sizing:border-box}
@@ -54,6 +54,31 @@ a.card.sig .go{color:#fd6e6e}
 a.card.sig h2 em{font-style:italic;color:#fd6e6e}
 .card.soon{display:flex;flex-direction:column;gap:10px;padding:24px;border:1px dashed var(--rule);border-radius:6px;min-height:220px;color:var(--muted)}
 .card.soon h2{font-family:"DM Serif Display",Georgia,serif;font-weight:400;font-size:34px;line-height:1.05;margin:0;color:#5d656d}
+/* PadelHQ card: that site's own look (night court, ball green, Barlow Condensed) */
+a.hq{display:grid;grid-template-columns:1.15fr 1fr;margin-top:clamp(40px,8vh,84px);border:1px solid #272E33;border-radius:6px;overflow:hidden;color:#EEF2F0;text-decoration:none;background:radial-gradient(circle at 92% 0%,rgba(200,245,60,.16),rgba(200,245,60,0) 45%),#0D1012}
+a.hq:hover,a.hq:focus-visible{border-color:#C8F53C;outline:none}
+a.hq .txt{padding:clamp(22px,3.4vw,40px);display:flex;flex-direction:column;gap:14px}
+a.hq .mono{color:#C8F53C}
+a.hq h2{font-family:"Barlow Condensed","Arial Narrow",Impact,sans-serif;font-weight:700;font-size:clamp(60px,9vw,112px);line-height:.86;letter-spacing:.01em;margin:0}
+a.hq h2 em{font-style:normal;color:#C8F53C}
+a.hq .q{font-family:"Barlow",system-ui,sans-serif;font-weight:600;font-size:clamp(22px,2.6vw,28px);line-height:1.2;margin:0}
+a.hq p.lede2{font-family:"Barlow",system-ui,sans-serif;color:#C3CCCB;margin:0;max-width:44ch;font-size:17px}
+a.hq .chips{display:flex;flex-wrap:wrap;gap:8px}
+a.hq .chip{font-family:"DM Mono",monospace;font-size:11px;letter-spacing:.1em;text-transform:uppercase;padding:5px 10px;border-radius:99px;border:1px solid #272E33;color:#C3CCCB}
+a.hq .chip.on{background:#C8F53C;border-color:#C8F53C;color:#141A00;display:inline-flex;align-items:center;gap:6px}
+a.hq .chip.on::before{content:"";width:6px;height:6px;border-radius:50%;background:#141A00;animation:hqp 1.4s ease-in-out infinite}
+@keyframes hqp{50%{opacity:.25}}
+@media(prefers-reduced-motion:reduce){a.hq .chip.on::before{animation:none}}
+a.hq .go{margin-top:auto;padding-top:6px;color:#C8F53C}
+a.hq .side{background:#15191C;border-left:1px solid #272E33;padding:clamp(20px,3vw,32px);display:flex;flex-direction:column;gap:16px;font-family:"Barlow",system-ui,sans-serif}
+a.hq .side h3{margin:0;font-family:"DM Mono",monospace;font-weight:400;font-size:11px;letter-spacing:.1em;text-transform:uppercase;color:#8F9B9D}
+a.hq .lead{display:grid;gap:6px}
+a.hq .row{display:grid;grid-template-columns:22px 1fr auto;gap:10px;align-items:center;padding:8px 12px;border:1px solid #272E33;border-radius:6px;background:#0D1012;font-size:15px}
+a.hq .row b{font-family:"DM Mono",monospace;font-weight:500;color:#C8F53C}
+a.hq .row span{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+a.hq .row i{font-style:normal;font-family:"DM Mono",monospace;color:#C3CCCB}
+a.hq .small{color:#8F9B9D;font-size:13px;margin:0}
+@media(max-width:640px){a.hq{grid-template-columns:1fr}a.hq .side{border-left:0;border-top:1px solid #272E33}}
 </style>
 </head>
 <body>
@@ -94,7 +119,40 @@ a.card.sig h2 em{font-style:italic;color:#fd6e6e}
       <h2>Coming next.</h2>
     </div>
   </div>
+  <a class="hq" href="padelhq/">
+    <div class="txt">
+      <span class="mono">New · Live scores</span>
+      <h2>PADEL<em>HQ</em></h2>
+      <p class="q">Who's on court right now?</p>
+      <p class="lede2">Open-level padel across Indonesia in one place: live scores point by point, the order of play by court, every tournament and its entry deadline, and the Indonesian Padel League table.</p>
+      <div class="chips"><span class="chip on">Live scores</span><span class="chip">Order of play</span><span class="chip">Calendar</span><span class="chip">League table</span></div>
+      <span class="mono go">Open PadelHQ →</span>
+    </div>
+    <div class="side" id="hqSide">
+      <h3>Indonesian Padel League · top 3</h3>
+      <div class="lead" id="hqMen"><p class="small">Men's and women's tables, updated as results come in.</p></div>
+      <div class="lead" id="hqWomen"></div>
+      <p class="small" id="hqAsOf"></p>
+    </div>
+  </a>
 </main>
-<footer class="mono">Made by Vitto · <a href="https://instagram.com/padelwithvitto" rel="noopener">@padelwithvitto</a> · Last updated <time datetime="2026-11-16">16 Nov 2026</time></footer>
+<footer class="mono">Made by Vitto · <a href="https://instagram.com/padelwithvitto" rel="noopener">@padelwithvitto</a> · Last updated <time datetime="2026-11-17">17 Nov 2026</time></footer>
+<script src="padelhq/ipl.js"></script>
+<script>
+(function () {
+  var d = window.PADELHQ_IPL;
+  if (!d || !d.men || !d.women) return;
+  var esc = function (s) { return String(s).replace(/[&<>"']/g, function (c) { return { "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]; }); };
+  var top = function (label, rows) {
+    return '<h3 style="margin-bottom:2px">' + label + "</h3>" + rows.slice(0, 3).map(function (r, i) {
+      return '<div class="row"><b>' + (i + 1) + "</b><span>" + esc(r[0]) + "</span><i>" + esc(r[4]) + " pts</i></div>";
+    }).join("");
+  };
+  document.querySelector("#hqSide > h3").textContent = "Indonesian Padel League";
+  document.getElementById("hqMen").innerHTML = top("Men", d.men);
+  document.getElementById("hqWomen").innerHTML = top("Women", d.women);
+  document.getElementById("hqAsOf").textContent = "League table as of " + d.updated + ". Full tables and the next match days on PadelHQ.";
+})();
+</script>
 </body>
 </html>

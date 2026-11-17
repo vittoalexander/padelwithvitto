@@ -35,8 +35,9 @@ Updated 17 Nov 2026.
   - Points, men: win 2-0 or 2-1 = 3, lose 1-2 = 1, lose 0-3 (as printed; means losing without winning a set) = 0. Women: win = 3, loss = 0.
   - Standings 17 Nov, men (M W L Pts): Rosiade 7 6 1 19; Dewa United 9 4 5 16; Aubry 5 5 0 15; ASC 8 4 4 15; Yasika 7 4 3 14; Blacksteel 7 3 4 10; AAS 3 2 1 6; Exodia 6 1 5 5; Onic 5 1 4 4; Belio Midnight Borneo 3 0 3 3.
   - Standings 17 Nov, women: Blacksteel 7 7 0 21; Dewa United 9 7 2 21; Rosiade 7 5 2 15; Aubry 5 4 1 12; ASC 7 3 4 9; Yasika 6 2 4 6; Belio Midnight Borneo 3 1 2 3; AAS 3 0 3 0; Onic 5 0 5 0; Exodia 6 0 6 0.
-  - On the page: an IPL section with both standings tables (padelhq/ipl.js, typed in by hand: update the numbers and date when the league posts a new table) and the next 4 match days from the sheet.
-  - Not built yet: per-match results. Needs a place to type results (a Results tab in the sheet) so the tables can be worked out with the points rules above.
+  - On the page: an IPL section with both standings tables and the next 4 match days from the sheet. Standings = the last posted league table in padelhq/ipl.js (updatedDate) plus rows on the sheet's Results tab dated after it, scored in app.js (men: win 3, lose by one 1, else 0; women: win 3, lose 0). Sort: points, wins, fewer losses. When the league posts a new table, copy it into ipl.js and move updatedDate.
+  - Landing page: wide PadelHQ card under the guides (index.html, a.hq styles), showing the top 3 of each table from padelhq/ipl.js (the posted table, not the sheet results).
+  - Not built yet: results filled in automatically from live scores (SKOR has no public feed found).
 - Other follow-ups: PadelHQ card on the landing page (not added: landing page layout is Vitto's call), accept the PBPI page link as Scoring ID instead of the number, tournament pages with draws.
 
 ## Left

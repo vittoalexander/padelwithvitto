@@ -335,6 +335,53 @@
         return "<tr><td>" + (i + 1) + '</td><td class="club">' + esc(r[0]) + "</td><td>" + esc(r[1]) + "</td><td>" + esc(r[2]) + "</td><td>" + esc(r[3]) + '</td><td class="tp">' + esc(r[4]) + "</td></tr>";
       }).join("") + "</tbody></table></div>";
   }
+  /* Standings = the league's last posted table (ipl.js) plus results typed into the sheet's Results tab since then.
+     Points: men win 3, men lose by one (e.g. 1-2) 1, other men's loss 0; women win 3, women lose 0. */
+  var iplResults = null, iplResultsState = "none";
+  var clubKey = function (s) { return String(s || "").toLowerCase().replace(/\b(club|team)\b/g, "").replace(/\s+/g, " ").trim(); };
+  function readResults(text) {
+    var rows = csvRows(text), h = -1, col = {};
+    for (var r = 0; r < Math.min(rows.length, 10) && h < 0; r++) {
+      rows[r].forEach(function (c, i) { col[c.trim().toLowerCase()] = i; });
+      if (col["home club"] != null && col["away club"] != null) h = r; else col = {};
+    }
+    if (h < 0) throw new Error("No Results header");
+    var out = [];
+    for (r = h + 1; r < rows.length; r++) {
+      var x = rows[r], g = function (k) { return col[k] == null ? "" : String(x[col[k]] || "").trim(); };
+      var hw = parseInt(g("home won"), 10), aw = parseInt(g("away won"), 10), cat = g("category").toLowerCase();
+      if (!g("home club") || !g("away club") || isNaN(hw) || isNaN(aw) || hw === aw || hw < 0 || aw < 0 || hw > 5 || aw > 5) continue;
+      if (cat !== "men" && cat !== "women") continue;
+      out.push({ date: parse(g("date")), cat: cat, home: g("home club"), away: g("away club"), hw: hw, aw: aw });
+    }
+    return out;
+  }
+  function standings(base, results, cat, since) {
+    var table = {}, order = [];
+    (base || []).forEach(function (r) { var k = clubKey(r[0]); table[k] = { name: r[0], m: +r[1], w: +r[2], l: +r[3], p: +r[4] }; order.push(k); });
+    var used = 0;
+    (results || []).forEach(function (x) {
+      if (x.cat !== cat || (since != null && x.date != null && x.date <= since)) return;
+      [x.home, x.away].forEach(function (n) { var k = clubKey(n); if (!table[k]) { table[k] = { name: n, m: 0, w: 0, l: 0, p: 0 }; order.push(k); } });
+      var homeWon = x.hw > x.aw, win = table[clubKey(homeWon ? x.home : x.away)], lose = table[clubKey(homeWon ? x.away : x.home)];
+      var loserGot = homeWon ? x.aw : x.hw, winnerGot = homeWon ? x.hw : x.aw;
+      win.m++; win.w++; win.p += 3;
+      lose.m++; lose.l++; if (cat === "men" && loserGot > 0 && winnerGot - loserGot === 1) lose.p += 1;
+      used++;
+    });
+    var list = order.map(function (k) { return table[k]; });
+    list.sort(function (a, b) { return b.p - a.p || b.w - a.w || a.l - b.l || a.name.localeCompare(b.name); });
+    return { rows: list.map(function (t) { return [t.name, t.m, t.w, t.l, t.p]; }), used: used };
+  }
+  function loadIplResults() {
+    if (!CONFIG.iplResultsCsvUrl || !window.PADELHQ_IPL) return;
+    iplResultsState = "loading";
+    fetch(CONFIG.iplResultsCsvUrl, { cache: "no-store" })
+      .then(function (r) { if (!r.ok) throw new Error(r.status); return r.text(); })
+      .then(function (t) { iplResults = readResults(t); iplResultsState = "ok"; renderIpl(); })
+      .catch(function () { iplResultsState = "failed"; renderIpl(); });
+  }
+
   function renderIpl() {
     var d = window.PADELHQ_IPL, wrap = $("iplWrap");
     if (!wrap) return;
@@ -344,8 +391,12 @@
     if (wrap.hidden) return;
     var html = "";
     if (ok) {
-      html += '<div class="ipl">' + iplTable("Men", d.men) + iplTable("Women", d.women) + "</div>" +
-        '<p class="note">Standings as posted by the league on ' + esc(d.updated) + ". Men: a win is 3 points and a 1–2 loss is 1 point. Women: a win is 3 points. " +
+      var since = parse(d.updatedDate), men = standings(d.men, iplResults, "men", since), women = standings(d.women, iplResults, "women", since);
+      var added = men.used + women.used;
+      var basis = added ? "League table of " + esc(d.updated) + " plus " + added + " result" + (added === 1 ? "" : "s") + " entered since, scored by PadelHQ. " :
+        "Standings as posted by the league on " + esc(d.updated) + ". " + (iplResultsState === "failed" ? "Newer results could not be loaded. " : "");
+      html += '<div class="ipl">' + iplTable("Men", men.rows) + iplTable("Women", women.rows) + "</div>" +
+        '<p class="note">' + basis + "Men: a win is 3 points and a loss by one (1–2) is 1 point. Women: a win is 3 points. " +
         (safeUrl(d.source) ? '<a href="' + esc(d.source) + '" target="_blank" rel="noopener">League on Instagram ↗</a>' : "") + "</p>";
     }
     if (days.length) {
@@ -398,6 +449,7 @@
     window.PADELHQ = { events: events, today: today, DAY: DAY, state: state, range: range, rangeDow: rangeDow, fmtDow: fmtDow, jump: jump };
     render();
     document.dispatchEvent(new CustomEvent("padelhq:ready"));
+    loadIplResults();
     if (location.hash.length > 1) jump(decodeURIComponent(location.hash.slice(1)));
   }
 

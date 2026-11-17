@@ -7,5 +7,8 @@ window.PADELHQ_CONFIG = {
   // Google Sheet with the tournament list ("PadelHQ Events", tab "Events", table starting at B5), read as CSV.
   // Leave "" to use the built-in list in events.js. If the sheet cannot be read, the page falls back to
   // the last copy it saw, then to events.js.
+  // League results ("Results" tab of the same sheet). Added to the standings in ipl.js and scored with the league's points rules.
+  iplResultsCsvUrl: "https://docs.google.com/spreadsheets/d/1xUILyClgipeGOEVEWOLCm000M0gOBawmiSwXOFHrbYg/gviz/tq?tqx=out:csv&sheet=Results&range=B5:I&headers=1",
+
   sheetCsvUrl: "https://docs.google.com/spreadsheets/d/1xUILyClgipeGOEVEWOLCm000M0gOBawmiSwXOFHrbYg/gviz/tq?tqx=out:csv&sheet=Events&range=B5:T&headers=1"
 };
