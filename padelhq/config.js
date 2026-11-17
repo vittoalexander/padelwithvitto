@@ -10,5 +10,8 @@ window.PADELHQ_CONFIG = {
   // League results ("Results" tab of the same sheet). Added to the standings in ipl.js and scored with the league's points rules.
   iplResultsCsvUrl: "https://docs.google.com/spreadsheets/d/1xUILyClgipeGOEVEWOLCm000M0gOBawmiSwXOFHrbYg/gviz/tq?tqx=out:csv&sheet=Results&range=B5:I&headers=1",
 
+  // League standings and results read live from SKOR (the league's scoring partner) through the score API.
+  iplSkorId: "ipl",
+
   sheetCsvUrl: "https://docs.google.com/spreadsheets/d/1xUILyClgipeGOEVEWOLCm000M0gOBawmiSwXOFHrbYg/gviz/tq?tqx=out:csv&sheet=Events&range=B5:T&headers=1"
 };

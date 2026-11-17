@@ -272,3 +272,36 @@ test("API: many visitors at the same moment share one provider request", async (
     assert.equal(hits, 2);
   } finally { globalThis.fetch = realFetch; }
 });
+
+test("SKOR league: standings from the leaderboard, unplayed 'ongoing' fixtures are not live, club initials kept", async () => {
+  const { getLeague } = await import("../providers.js");
+  const sq = (name, t, w, l, p, d) => ({ squad_name: name, battle_total: t, battle_win: w, battle_lose: l, battle_points: p, match_score_diff: d });
+  const side = (club, a, b) => ({ p: [{ name: club }, { name: club }], l: [{ name: a }, { name: b }] });
+  const match = (id, round, court, game, st, A, B, sets, sa, sb) => ({ id, round_number: round, court_name: court, game_name: game, status: st, team_a_score: sa, team_b_score: sb,
+    team_a_participants: A.p, team_a_lineup: A.l, team_b_participants: B.p, team_b_lineup: B.l, sets: sets.map((s, i) => ({ set_number: i + 1, team_a: { score: s[0] }, team_b: { score: s[1] } })), total_count: 4 });
+  const asc = side("ASC PADEL TEAM", "ANDI SAPUTRA", "budi"), exo = side("EXODIA", "Carlos Perez", "Revan");
+  const f = async (url) => {
+    const ok = (b) => new Response(JSON.stringify(b), { status: 200 });
+    if (url.includes("/api/events/ipl")) return ok({ id: "ev1", name: "Indonesian Padel League" });
+    if (url.includes("/api/games?event_id=ev1")) return ok([{ id: 2, name: "IPL - Women", is_visible: true }, { id: 1, name: "IPL - Men", is_visible: true }]);
+    if (url.includes("/api/games/1/squad-battle-leaderboard")) return ok([sq("EXODIA", 6, 1, 5, 5, -9), sq("ASC PADEL TEAM", 8, 4, 4, 15, 3)]);
+    if (url.includes("/api/games/2/squad-battle-leaderboard")) return ok([sq("ASC PADEL TEAM", 7, 3, 4, 9, 1)]);
+    if (url.includes("/api/matches")) return ok([
+      match(10, 1, "Tie 1", "IPL - Men", "finished", asc, exo, [[6, 3], [6, 4]], 2, 0),
+      match(11, 2, "Tie 1", "IPL - Men", "ongoing", asc, exo, [], 0, 0),
+      match(12, 2, "Tie 2", "IPL - Men", "ongoing", asc, exo, [[3, 2]], 0, 0),
+      match(13, 1, "Women Double", "IPL - Women", "finished", asc, exo, [[4, 6]], 0, 1)]);
+    return new Response("no", { status: 404 });
+  };
+  const d = await getLeague("skor", "ipl", f);
+  assert.deepEqual(d.tables.map((t) => t.name), ["Men", "Women"]);
+  assert.deepEqual(d.tables[0].rows[0], ["ASC Padel Team", 8, 4, 4, 15]);      // sorted by points, initials kept
+  assert.equal(d.matchesPlayed, 2);
+  assert.equal(d.matchesTotal, 4);
+  assert.deepEqual(d.live.map((m) => m.id), ["skor-12"]);                    // only the scored one
+  assert.equal(d.recent[0].round, "Round 1 · Tie 1");
+  assert.deepEqual(d.recent[0].teams[0].full, ["Andi Saputra", "Budi"]);
+  assert.equal(d.recent[0].teams[0].winner, true);
+  assert.equal(d.recent.find((m) => m.category === "Women").teams[1].winner, true);
+  assert.equal((await worker.fetch(new Request("http://api.test/v1/league?provider=skor&id=../x"), {}, {})).status, 400);
+});

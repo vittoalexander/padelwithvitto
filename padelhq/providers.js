@@ -40,6 +40,14 @@ export const PROVIDERS = {
     home: "https://www.alfredforpadel.com/",
     browserOk: true // Alfred allows other sites to read its data straight from the browser
   },
+  skor: {
+    name: "SKOR",
+    live: false,
+    league: true,
+    leaguePattern: /^[a-z0-9][a-z0-9-]{0,40}$/,
+    idHelp: "the SKOR event id from event.skorapp.id/matches?id=..., e.g. ipl",
+    home: "https://event.skorapp.id/"
+  },
   demo: { name: "Demo data", live: true, schedule: false, idPattern: /^[a-z0-9-]{1,20}$/, idHelp: "anything", home: "" },
   // Link-only providers: no adapter yet, the page sends people to the provider's own live page.
   incourta: { name: "Incourta", live: false, home: "https://incourta.com/events" },
@@ -65,6 +73,13 @@ export function validateSchedule(provider, id, date) {
   if (bad) return bad;
   if (!PROVIDERS[provider].schedule) return PROVIDERS[provider].name + " has no order of play feed";
   if (date && !DATE.test(date)) return "Bad date. Expected YYYY-MM-DD";
+  return "";
+}
+
+export function validateLeague(provider, id) {
+  const p = PROVIDERS[provider];
+  if (!p || !p.league) return "Unknown league provider";
+  if (!p.leaguePattern.test(String(id || ""))) return "Bad id. Expected " + p.idHelp;
   return "";
 }
 
@@ -99,6 +114,18 @@ export async function getSchedule(provider, id, date, fetchFn) {
   const err = validateSchedule(provider, id, date);
   if (err) throw new Error(err);
   return stamp(await pbpiSchedule(String(id), date || "", fetchFn || fetch), provider, id);
+}
+
+/** League standings and latest results (SKOR). */
+export async function getLeague(provider, id, fetchFn) {
+  const err = validateLeague(provider, id);
+  if (err) throw new Error(err);
+  const out = await skorLeague(String(id), fetchFn || fetch);
+  out.provider = provider;
+  out.providerName = PROVIDERS[provider].name;
+  out.sourceUrl = "https://event.skorapp.id/rankings?id=" + id;
+  out.fetchedAt = new Date().toISOString();
+  return out;
 }
 
 async function getJson(f, url) {
@@ -313,6 +340,70 @@ async function alfred(slug, f) {
     live: live.slice(0, MAX_LIST).map((x) => alfredMatch(x, "live")),
     recent: recent.slice(0, MAX_LIST).map((x) => alfredMatch(x, "done")),
     next: next.slice(0, MAX_LIST).map((x) => alfredMatch(x, "next"))
+  };
+}
+
+// ---------- SKOR (event.skorapp.id): league standings and results ----------
+const SKOR = "https://event.skorapp.id/api/";
+/** "ASC PADEL TEAM" -> "ASC Padel Team": keep short all-caps words (club initials) as they are. */
+function clubName(s) {
+  s = tidy(s);
+  if (s !== s.toUpperCase()) return s;
+  return s.split(" ").map((w) => (w.length <= 3 && /^[A-Z]+$/.test(w) ? w : w.charAt(0) + w.slice(1).toLowerCase())).join(" ");
+}
+const shortGame = (n) => tidy(n).replace(/^[A-Z]{2,5}\s*-\s*/, "");            // "IPL - Men" -> "Men"
+function skorMatch(m) {
+  const fin = m.status === "finished";
+  const sets = (m.sets || []).slice().sort((p, q) => p.set_number - q.set_number);
+  const side = (k) => {
+    const club = clubName(((m["team_" + k + "_participants"] || [])[0] || {}).name || "To be decided");
+    const players = (m["team_" + k + "_lineup"] || []).map((p) => titleCase(p.name)).filter(Boolean);
+    return { club, players };
+  };
+  const a = side("a"), b = side("b");
+  const winner = fin ? (m.team_a_score > m.team_b_score ? "a" : m.team_b_score > m.team_a_score ? "b" : "") : "";
+  const mk = (s, k) => team([s.club], s.players.length ? s.players : [s.club], sets.map((x) => num(x["team_" + k] && x["team_" + k].score)), sets.map(() => null), null, false, winner === k);
+  return {
+    id: "skor-" + m.id,
+    // SKOR calls unplayed fixtures "ongoing" too, so a match is only live once it has a score.
+    status: fin ? "done" : sets.some((x) => num(x.team_a && x.team_a.score) || num(x.team_b && x.team_b.score)) ? "live" : "next",
+    court: "",
+    round: "Round " + m.round_number + (m.court_name ? " · " + tidy(m.court_name) : ""),
+    category: shortGame(m.game_name),
+    time: null, timeLabel: "", featured: false, note: "",
+    teams: [mk(a, "a"), mk(b, "b")]
+  };
+}
+async function skorLeague(slug, f) {
+  const ev = await getJson(f, SKOR + "events/" + encodeURIComponent(slug));
+  if (!ev || !ev.id) throw new Error("SKOR has no event called " + slug);
+  const games = (await getJson(f, SKOR + "games?event_id=" + encodeURIComponent(ev.id))).filter((g) => g && g.is_visible !== false);
+  const tables = [];
+  for (const g of games) {
+    const rows = await getJson(f, SKOR + "games/" + encodeURIComponent(g.id) + "/squad-battle-leaderboard");
+    if (!Array.isArray(rows) || !rows.length) continue;
+    rows.sort((p, q) => q.battle_points - p.battle_points || q.battle_win - p.battle_win || q.match_score_diff - p.match_score_diff);
+    tables.push({ name: shortGame(g.name), rows: rows.map((r) => [clubName(r.squad_name), r.battle_total, r.battle_win, r.battle_lose, r.battle_points]) });
+  }
+  tables.sort((p, q) => (/women/i.test(p.name) ? 1 : 0) - (/women/i.test(q.name) ? 1 : 0));
+  // The match list holds every fixture of the season (played and not yet played), 100 per page.
+  const base = SKOR + "matches?event_id=" + encodeURIComponent(ev.id);
+  let raw = [];
+  for (let off = 0; off < 1000; ) {
+    const page = await getJson(f, base + "&limit=100&offset=" + off);
+    if (!Array.isArray(page) || !page.length) break;
+    raw = raw.concat(page); off += page.length;
+    if (page.length < 100 || (page[0].total_count && raw.length >= page[0].total_count)) break;
+  }
+  raw.sort((p, q) => q.round_number - p.round_number || String(p.court_name).localeCompare(String(q.court_name), "en", { numeric: true }));
+  const ms = raw.map(skorMatch);
+  return {
+    title: tidy(ev.name),
+    tables,
+    live: ms.filter((m) => m.status === "live"),
+    recent: ms.filter((m) => m.status === "done").slice(0, 24),
+    matchesPlayed: raw.filter((m) => m.status === "finished").length,
+    matchesTotal: raw.length
   };
 }
 

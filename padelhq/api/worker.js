@@ -15,9 +15,9 @@
 
    It only ever calls the fixed provider addresses in ../providers.js with a checked id, so it cannot be
    used to fetch arbitrary web pages. */
-import { getLive, getSchedule, validate, validateSchedule, PROVIDERS } from "../providers.js";
+import { getLive, getSchedule, getLeague, validate, validateSchedule, validateLeague, PROVIDERS } from "../providers.js";
 
-const FRESH = { live: 12, schedule: 30, demo: 4 };   // seconds a remembered answer is served before asking the provider again
+const FRESH = { live: 12, schedule: 30, demo: 4, league: 60 };   // seconds a remembered answer is served before asking the provider again
 const STALE_SECONDS = 900;                           // if the provider is down, keep showing the last good answer for this long
 const DEFAULT_ORIGINS = "https://vittoalexander.github.io,http://localhost:8788,http://127.0.0.1:8788";
 
@@ -131,6 +131,14 @@ export default {
       try {
         const key = "https://padelhq.cache/v1/schedule/" + provider + "/" + id + "/" + (date || "auto");
         return ok(await remembered(key, FRESH.schedule, ctx, () => getSchedule(provider, id, date)));
+      } catch (err) { return failed(err); }
+    }
+    if (path === "/v1/league") {
+      const bad = validateLeague(provider, id);
+      if (bad) return json({ error: bad }, 400, cors);
+      try {
+        const key = "https://padelhq.cache/v1/league/" + provider + "/" + id;
+        return ok(await remembered(key, FRESH.league, ctx, () => getLeague(provider, id)));
       } catch (err) { return failed(err); }
     }
     return json({ error: "Not found" }, 404, cors);

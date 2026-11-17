@@ -373,6 +373,36 @@
     list.sort(function (a, b) { return b.p - a.p || b.w - a.w || a.l - b.l || a.name.localeCompare(b.name); });
     return { rows: list.map(function (t) { return [t.name, t.m, t.w, t.l, t.p]; }), used: used };
   }
+  // Live standings and results from SKOR through the PadelHQ score API. Used instead of the posted table when it loads.
+  var iplLive = null;
+  function loadIplLive() {
+    var base = String(CONFIG.apiBase || "").replace(/\/+$/, "");
+    if (!base || !CONFIG.iplSkorId) return;
+    fetch(base + "/v1/league?provider=skor&id=" + encodeURIComponent(CONFIG.iplSkorId), { cache: "no-store" })
+      .then(function (r) { if (!r.ok) throw new Error(r.status); return r.json(); })
+      .then(function (d) { if (d && Array.isArray(d.tables) && d.tables.length) { iplLive = d; renderIpl(); } })
+      .catch(function () { /* keep the posted table */ });
+  }
+  function resultsHtml(list) {
+    // Group matches into ties: same round and category.
+    var groups = [], by = {};
+    list.forEach(function (m) {
+      var key = m.round.replace(/ · .*$/, "") + "|" + m.category;
+      if (!by[key]) { by[key] = { round: m.round.replace(/ · .*$/, ""), cat: m.category, a: m.teams[0].names[0], b: m.teams[1].names[0], wa: 0, wb: 0, ms: [] }; groups.push(by[key]); }
+      var g = by[key];
+      if (m.teams[0].winner) g.wa++; else if (m.teams[1].winner) g.wb++;
+      g.ms.push(m);
+    });
+    return '<ul class="res">' + groups.slice(0, 6).map(function (g) {
+      var detail = g.ms.map(function (m) {
+        return "<li>" + m.teams.map(function (t) {
+          return '<span class="' + (t.winner ? "w" : "") + '">' + esc(t.full.join(" / ")) + ' <b>' + esc(t.sets.join(" ")) + "</b></span>";
+        }).join('<i>v</i>') + "</li>";
+      }).join("");
+      return '<li><details><summary><span class="rt">' + esc(g.cat) + " · " + esc(g.round) + '</span><span class="rs"><span class="' + (g.wa > g.wb ? "w" : "") + '">' + esc(g.a) + "</span> <b>" + g.wa + "–" + g.wb + '</b> <span class="' + (g.wb > g.wa ? "w" : "") + '">' + esc(g.b) + "</span></span></summary><ul>" + detail + "</ul></details></li>";
+    }).join("") + "</ul>";
+  }
+
   function loadIplResults() {
     if (!CONFIG.iplResultsCsvUrl || !window.PADELHQ_IPL) return;
     iplResultsState = "loading";
@@ -391,13 +421,27 @@
     if (wrap.hidden) return;
     var html = "";
     if (ok) {
-      var since = parse(d.updatedDate), men = standings(d.men, iplResults, "men", since), women = standings(d.women, iplResults, "women", since);
-      var added = men.used + women.used;
-      var basis = added ? "League table of " + esc(d.updated) + " plus " + added + " result" + (added === 1 ? "" : "s") + " entered since, scored by PadelHQ. " :
-        "Standings as posted by the league on " + esc(d.updated) + ". " + (iplResultsState === "failed" ? "Newer results could not be loaded. " : "");
-      html += '<div class="ipl">' + iplTable("Men", men.rows) + iplTable("Women", women.rows) + "</div>" +
+      var basis, tables;
+      if (iplLive) {
+        tables = iplLive.tables.map(function (t) { return iplTable(esc(t.name), t.rows); }).join("");
+        var at = new Date(iplLive.fetchedAt);
+        basis = 'Live from <a href="' + esc(safeUrl(iplLive.sourceUrl)) + '" target="_blank" rel="noopener">SKOR</a>, the league\'s scoring partner' +
+          (isNaN(at) ? "" : ", checked " + at.toLocaleTimeString("en-GB", { timeZone: "Asia/Jakarta", hour: "2-digit", minute: "2-digit" }) + " WIB") +
+          (iplLive.stale ? " (SKOR is not answering, so these may be out of date)" : "") + ". ";
+      } else {
+        var since = parse(d.updatedDate), men = standings(d.men, iplResults, "men", since), women = standings(d.women, iplResults, "women", since);
+        var added = men.used + women.used;
+        tables = iplTable("Men", men.rows) + iplTable("Women", women.rows);
+        basis = added ? "League table of " + esc(d.updated) + " plus " + added + " result" + (added === 1 ? "" : "s") + " entered since, scored by PadelHQ. " :
+          "Standings as posted by the league on " + esc(d.updated) + ". " + (iplResultsState === "failed" ? "Newer results could not be loaded. " : "");
+      }
+      html += '<div class="ipl">' + tables + "</div>" +
         '<p class="note">' + basis + "Men: a win is 3 points and a loss by one (1–2) is 1 point. Women: a win is 3 points. " +
         (safeUrl(d.source) ? '<a href="' + esc(d.source) + '" target="_blank" rel="noopener">League on Instagram ↗</a>' : "") + "</p>";
+    }
+    if (iplLive && iplLive.recent && iplLive.recent.length) {
+      html += '<h3 class="sub">Latest results <span class="cnt">' + iplLive.matchesPlayed + " of " + iplLive.matchesTotal + " matches played</span></h3>" + resultsHtml(iplLive.recent) +
+        '<p class="note">Tap a tie to see each match, the players and the set scores.</p>';
     }
     if (days.length) {
       html += '<h3 class="sub">Next match days</h3><ul class="fix">' + days.map(function (e) {
@@ -450,6 +494,7 @@
     render();
     document.dispatchEvent(new CustomEvent("padelhq:ready"));
     loadIplResults();
+    loadIplLive();
     if (location.hash.length > 1) jump(decodeURIComponent(location.hash.slice(1)));
   }
 

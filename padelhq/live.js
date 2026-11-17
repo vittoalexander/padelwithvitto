@@ -12,7 +12,7 @@
      ?scores=pbpi:43              a scoreboard for any tournament on a supported platform
      ?today=2026-11-19            show the page as it will look on that day
      ?api=http://localhost:8787   use a score API running on this computer */
-import { getLive, validate, PROVIDERS, demo } from "./providers.js?v=3";
+import { getLive, validate, PROVIDERS, demo } from "./providers.js?v=4";
 
 const cfg = window.PADELHQ_CONFIG || {};
 const params = new URLSearchParams(location.search);

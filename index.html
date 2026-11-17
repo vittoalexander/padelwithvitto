@@ -138,9 +138,10 @@ a.hq .small{color:#8F9B9D;font-size:13px;margin:0}
 </main>
 <footer class="mono">Made by Vitto · <a href="https://instagram.com/padelwithvitto" rel="noopener">@padelwithvitto</a> · Last updated <time datetime="2026-11-17">17 Nov 2026</time></footer>
 <script src="padelhq/ipl.js"></script>
+<script src="padelhq/config.js"></script>
 <script>
 (function () {
-  var d = window.PADELHQ_IPL;
+  var d = window.PADELHQ_IPL, cfg = window.PADELHQ_CONFIG || {};
   if (!d || !d.men || !d.women) return;
   var esc = function (s) { return String(s).replace(/[&<>"']/g, function (c) { return { "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]; }); };
   var top = function (label, rows) {
@@ -152,6 +153,17 @@ a.hq .small{color:#8F9B9D;font-size:13px;margin:0}
   document.getElementById("hqMen").innerHTML = top("Men", d.men);
   document.getElementById("hqWomen").innerHTML = top("Women", d.women);
   document.getElementById("hqAsOf").textContent = "League table as of " + d.updated + ". Full tables and the next match days on PadelHQ.";
+  // Swap in the live table from SKOR (through the PadelHQ score API) when it answers.
+  var api = String(cfg.apiBase || "").replace(/\/+$/, "");
+  if (!api || !cfg.iplSkorId || !window.fetch) return;
+  fetch(api + "/v1/league?provider=skor&id=" + encodeURIComponent(cfg.iplSkorId)).then(function (r) { return r.ok ? r.json() : null; }).then(function (x) {
+    if (!x || !x.tables) return;
+    var men = x.tables.filter(function (t) { return /^men/i.test(t.name); })[0], women = x.tables.filter(function (t) { return /women/i.test(t.name); })[0];
+    if (!men || !women) return;
+    document.getElementById("hqMen").innerHTML = top("Men", men.rows);
+    document.getElementById("hqWomen").innerHTML = top("Women", women.rows);
+    document.getElementById("hqAsOf").textContent = "Live league table from SKOR. Full tables, latest results and the next match days on PadelHQ.";
+  }).catch(function () {});
 })();
 </script>
 </body>

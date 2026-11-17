@@ -180,6 +180,21 @@ a.btn.ghost:hover{border-color:transparent;text-decoration:underline}
 .empty{grid-column:1 / -1;padding:22px;border:1px dashed var(--rule);border-radius:8px;color:var(--muted);margin:0}
 
 /* Indonesian Padel League */
+.sub .cnt{color:var(--soft);margin-left:8px;letter-spacing:.06em}
+.res{list-style:none;margin:0;padding:0;display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
+.res details{border:1px solid var(--rule);border-radius:8px;background:var(--panel)}
+.res summary{display:flex;flex-direction:column;gap:3px;padding:12px 14px;cursor:pointer;list-style:none}
+.res summary::-webkit-details-marker{display:none}
+.res .rt{font-family:"DM Mono",monospace;font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted)}
+.res .rs{font-size:16px;color:var(--soft)}
+.res .rs b{font-family:"DM Mono",monospace;color:var(--ball);margin:0 6px}
+.res .w{color:var(--text);font-weight:600}
+.res details ul{list-style:none;margin:0;padding:0 14px 12px;display:grid;gap:8px}
+.res details li{display:grid;gap:2px;padding-top:8px;border-top:1px solid var(--rule);font-size:14px;color:var(--soft)}
+.res details li i{font-style:normal;color:var(--muted);font-size:12px}
+.res details li span{display:flex;justify-content:space-between;align-items:baseline;gap:12px}
+.res details li b{font-family:"DM Mono",monospace;font-weight:500;white-space:nowrap;flex:none}
+
 .ipl{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px}
 .tbl{border:1px solid var(--rule);border-radius:8px;background:var(--panel);padding:14px 16px;min-width:0}
 .tbl h3{font-family:"Barlow Condensed",sans-serif;font-weight:700;font-size:26px;line-height:1;margin:0 0 8px}
@@ -208,7 +223,7 @@ footer .mono{font-size:11px;line-height:1.8}
   .match,.court summary::before{transition:none}
 }
 @media(max-width:720px){
-  .list,.ipl,.fix{grid-template-columns:1fr}
+  .list,.ipl,.fix,.res{grid-template-columns:1fr}
   .tbl{padding:12px}
   .tbl td,.tbl th{padding-left:3px;padding-right:3px}
   .day{min-height:70px;padding:4px 5px}
