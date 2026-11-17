@@ -179,6 +179,25 @@ a.btn.ghost{border-color:transparent;color:var(--tosca);font-weight:500;padding:
 a.btn.ghost:hover{border-color:transparent;text-decoration:underline}
 .empty{grid-column:1 / -1;padding:22px;border:1px dashed var(--rule);border-radius:8px;color:var(--muted);margin:0}
 
+/* Indonesian Padel League */
+.ipl{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px}
+.tbl{border:1px solid var(--rule);border-radius:8px;background:var(--panel);padding:14px 16px;min-width:0}
+.tbl h3{font-family:"Barlow Condensed",sans-serif;font-weight:700;font-size:26px;line-height:1;margin:0 0 8px}
+.tbl table{width:100%;border-collapse:collapse;font-size:15px}
+.tbl th{font-family:"DM Mono",monospace;font-weight:400;font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);text-align:center;padding:4px 6px;border-bottom:1px solid var(--rule)}
+.tbl td{padding:7px 6px;text-align:center;border-bottom:1px solid var(--rule);font-family:"DM Mono",monospace;color:var(--soft);font-variant-numeric:tabular-nums}
+.tbl tr:last-child td{border-bottom:0}
+.tbl .club{text-align:left;font-family:"Barlow",sans-serif;color:var(--text)}
+.tbl td.tp{color:var(--ball);font-weight:500}
+.tbl tbody tr:nth-child(-n+3) td:first-child{color:var(--ball)}
+#ipl .note{margin:10px 0 0}
+.sub{font-family:"DM Mono",monospace;font-weight:400;font-size:11px;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);margin:22px 0 8px}
+.fix{list-style:none;margin:0;padding:0;display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
+.fix a{display:flex;flex-direction:column;gap:2px;height:100%;padding:12px 14px;border:1px solid var(--rule);border-left:3px solid var(--tosca);border-radius:8px;background:var(--panel);color:var(--soft);text-decoration:none;font-size:15px}
+.fix a:hover{border-color:var(--rule2);border-left-color:var(--tosca)}
+.fix b{color:var(--text);font-weight:600}
+.fix .vis{color:var(--muted);font-size:14px}
+
 footer{padding-top:20px;padding-bottom:44px;border-top:1px solid var(--rule);color:var(--muted);font-size:14px}
 footer p{margin:0 0 8px;max-width:72ch}
 footer .mono{font-size:11px;line-height:1.8}
@@ -189,7 +208,9 @@ footer .mono{font-size:11px;line-height:1.8}
   .match,.court summary::before{transition:none}
 }
 @media(max-width:720px){
-  .list{grid-template-columns:1fr}
+  .list,.ipl,.fix{grid-template-columns:1fr}
+  .tbl{padding:12px}
+  .tbl td,.tbl th{padding-left:3px;padding-right:3px}
   .day{min-height:70px;padding:4px 5px}
   .day .n{font-size:12px}
   .dow span{padding-left:5px}

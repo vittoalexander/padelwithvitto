@@ -328,8 +328,39 @@
     $("tbc").innerHTML = tbc.map(card).join("");
   }
 
+  // ---------- Indonesian Padel League: standings and the next match days ----------
+  function iplTable(title, rows) {
+    return '<div class="tbl"><h3>' + title + '</h3><table><thead><tr><th>#</th><th class="club">Club</th><th title="Matches">M</th><th title="Wins">W</th><th title="Losses">L</th><th title="Points">Pts</th></tr></thead><tbody>' +
+      rows.map(function (r, i) {
+        return "<tr><td>" + (i + 1) + '</td><td class="club">' + esc(r[0]) + "</td><td>" + esc(r[1]) + "</td><td>" + esc(r[2]) + "</td><td>" + esc(r[3]) + '</td><td class="tp">' + esc(r[4]) + "</td></tr>";
+      }).join("") + "</tbody></table></div>";
+  }
+  function renderIpl() {
+    var d = window.PADELHQ_IPL, wrap = $("iplWrap");
+    if (!wrap) return;
+    var days = events.filter(function (e) { return /^IPL\b/i.test(e.name) && e.s != null && state(e) !== "done"; }).sort(function (a, b) { return a.s - b.s; }).slice(0, 4);
+    var ok = d && d.men && d.women;
+    wrap.hidden = !ok && !days.length;
+    if (wrap.hidden) return;
+    var html = "";
+    if (ok) {
+      html += '<div class="ipl">' + iplTable("Men", d.men) + iplTable("Women", d.women) + "</div>" +
+        '<p class="note">Standings as posted by the league on ' + esc(d.updated) + ". Men: a win is 3 points and a 1–2 loss is 1 point. Women: a win is 3 points. " +
+        (safeUrl(d.source) ? '<a href="' + esc(d.source) + '" target="_blank" rel="noopener">League on Instagram ↗</a>' : "") + "</p>";
+    }
+    if (days.length) {
+      html += '<h3 class="sub">Next match days</h3><ul class="fix">' + days.map(function (e) {
+        var where = [e.venue, e.city].filter(Boolean).join(", ");
+        return '<li><a href="#' + esc(e.id) + '" data-jump="' + esc(e.id) + '"><b>' + esc(rangeDow(e)) + (state(e) === "live" ? ' <span class="badge live">On now</span>' : "") + "</b>" +
+          "<span>" + esc(e.name.replace(/^IPL\s*/i, "")) + (where ? " · " + esc(where) : "") + "</span>" +
+          (e.fullName ? '<span class="vis">' + esc(e.fullName) + "</span>" : "") + "</a></li>";
+      }).join("") + "</ul>";
+    }
+    $("ipl").innerHTML = html;
+  }
+
   function render() {
-    renderNow(); renderGrid(); renderLists();
+    renderNow(); renderGrid(); renderLists(); renderIpl();
     document.dispatchEvent(new CustomEvent("padelhq:rendered"));   // live.js re-applies its links to the fresh cards
   }
 
