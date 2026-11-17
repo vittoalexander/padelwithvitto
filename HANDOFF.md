@@ -38,6 +38,8 @@ Updated 17 Nov 2026.
   - On the page: an IPL section with both standings tables and the next 4 match days from the sheet. Standings = the last posted league table in padelhq/ipl.js (updatedDate) plus rows on the sheet's Results tab dated after it, scored in app.js (men: win 3, lose by one 1, else 0; women: win 3, lose 0). Sort: points, wins, fewer losses. When the league posts a new table, copy it into ipl.js and move updatedDate.
   - Landing page: wide PadelHQ card under the guides (index.html, a.hq styles), showing the top 3 of each table from padelhq/ipl.js (the posted table, not the sheet results).
   - Not built yet: results filled in automatically from live scores (SKOR has no public feed found).
+- Which events to list (Vitto, 17 Nov): PBPI-tiered events first, then events that say they give national ranking points, then others. Only events with a Silver category or higher (Silver Open, Gold, Men's/Women's Open). Leave out events whose top category is Bronze or below, or whose levels are unknown. A name with "Open" in it is not enough. Same rule is on the sheet's Guide tab.
+- Event search sources: PBPI tournaments page, Incourta /events (allowed by its robots.txt; event pages list categories), Alfred upcoming (tRPC tournamentPublic.upcoming), balipadeltournaments.com, PADELGIGS. Do not read pbpisurabaya.id or recourt.id: their robots.txt disallow AI agents.
 - Other follow-ups: PadelHQ card on the landing page (not added: landing page layout is Vitto's call), accept the PBPI page link as Scoring ID instead of the number, tournament pages with draws.
 
 ## Left
