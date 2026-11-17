@@ -4,7 +4,8 @@ window.PADELHQ_CONFIG = {
   // Example: "https://padelhq-scores.your-name.workers.dev"
   apiBase: "",
 
-  // Google Sheet with the tournament list, as a CSV link. Leave "" to use the built-in list in events.js.
-  // Example: "https://docs.google.com/spreadsheets/d/<SHEET_ID>/gviz/tq?tqx=out:csv&sheet=Events"
-  sheetCsvUrl: ""
+  // Google Sheet with the tournament list ("PadelHQ Events", tab "Events", table starting at B5), read as CSV.
+  // Leave "" to use the built-in list in events.js. If the sheet cannot be read, the page falls back to
+  // the last copy it saw, then to events.js.
+  sheetCsvUrl: "https://docs.google.com/spreadsheets/d/1xUILyClgipeGOEVEWOLCm000M0gOBawmiSwXOFHrbYg/gviz/tq?tqx=out:csv&sheet=Events&range=B5:T&headers=1"
 };
