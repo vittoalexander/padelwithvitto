@@ -4,32 +4,45 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <meta property="article:modified_time" content="2026-11-17">
-<title>PadelHQ: open-level padel in Indonesia</title>
-<meta name="description" content="One calendar for open-level padel tournaments in Indonesia: dates, registration deadlines, live scores and livestream links.">
+<title>PadelHQ: live scores and calendar for padel in Indonesia</title>
+<meta name="description" content="One place for open-level padel tournaments in Indonesia: live scores, order of play, dates, registration deadlines and stream links.">
 <meta name="theme-color" content="#0D1012">
+<link rel="canonical" href="https://vittoalexander.github.io/padelwithvitto/padelhq/">
+<link rel="icon" href="favicon.svg" type="image/svg+xml">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="PadelHQ">
+<meta property="og:title" content="PadelHQ: live scores and calendar for padel in Indonesia">
+<meta property="og:description" content="Live scores, order of play, dates and registration deadlines for open-level padel tournaments in Indonesia.">
+<meta property="og:url" content="https://vittoalexander.github.io/padelwithvitto/padelhq/">
+<meta property="og:image" content="https://vittoalexander.github.io/padelwithvitto/padelhq/og.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta name="twitter:card" content="summary_large_image">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@600;700&family=Barlow:wght@400;500;600&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="style.css?v=2">
+<link rel="stylesheet" href="style.css?v=3">
 </head>
 <body>
 <header class="top">
   <a class="back" href="../">← padelwithvitto</a>
   <div class="brand">
-    <span class="word">PADEL<em>HQ</em></span>
-    <span class="beta">Test build</span>
+    <h1 class="word">PADEL<em>HQ</em></h1>
+    <span class="beta">Beta</span>
   </div>
   <p class="tag">Open-level padel in Indonesia. What's on, when to register, where to follow the score.</p>
 </header>
 
 <main>
-  <section id="now" class="now" aria-live="polite"></section>
+  <noscript><p class="empty">PadelHQ needs JavaScript switched on to show the calendar and live scores.</p></noscript>
 
-  <section id="live" class="livewrap" hidden aria-label="Live scores"></section>
+  <section id="now" class="now" aria-label="On now and next up" hidden></section>
+
+  <section id="live" class="livewrap" aria-label="Live scores" hidden></section>
 
   <section class="cal" aria-labelledby="monthTitle">
     <div class="calhead">
-      <h1 id="monthTitle">Calendar</h1>
+      <h2 id="monthTitle">Calendar</h2>
       <div class="nav">
         <button id="prev" type="button" aria-label="Previous month">‹</button>
         <button id="today" type="button">Today</button>
@@ -41,13 +54,14 @@
     <ul class="legend">
       <li><i class="k t1"></i>Tier 1</li>
       <li><i class="k other"></i>Other events</li>
+      <li><i class="k unc"></i>Unconfirmed</li>
       <li><i class="k reg"></i>Registration closes</li>
       <li><i class="k tod"></i>Today</li>
     </ul>
   </section>
 
   <section aria-labelledby="listTitle">
-    <h2 id="listTitle" class="sec">This month</h2>
+    <h2 id="listTitle" class="sec">Events this month</h2>
     <div id="list" class="list"></div>
   </section>
 
@@ -58,13 +72,13 @@
 </main>
 
 <footer>
-  <p>Scores are read from each tournament's own scoring platform (PBPI, Alfred for Padel) and can lag the court by a few seconds. Dates come from organisers' posts and the PBPI calendar. Events marked "Unconfirmed" have not been checked with the organiser, so confirm before you book travel.</p>
-  <p class="mono"><span id="src">Data: built-in list</span> · Know an event that's missing? <a href="https://instagram.com/padelwithvitto" rel="noopener">@padelwithvitto</a> · Last updated <time datetime="2026-11-17">17 Nov 2026</time></p>
+  <p>Scores come from each tournament's own scoring platform (PBPI, Alfred for Padel) and can run a few seconds behind the court. Dates come from organisers and the PBPI calendar. Events marked "Unconfirmed" have not been checked with the organiser, so confirm before you book travel.</p>
+  <p class="mono"><span id="src">Tournament list: loading</span> · Missing an event? <a href="https://instagram.com/padelwithvitto" rel="noopener">@padelwithvitto</a> · Last updated <time datetime="2026-11-17">17 Nov 2026</time></p>
 </footer>
 
-<script src="config.js?v=2"></script>
-<script src="events.js?v=2"></script>
-<script src="app.js?v=2"></script>
-<script type="module" src="live.js?v=2"></script>
+<script src="config.js?v=3"></script>
+<script src="events.js?v=3"></script>
+<script src="app.js?v=3"></script>
+<script type="module" src="live.js?v=3"></script>
 </body>
 </html>

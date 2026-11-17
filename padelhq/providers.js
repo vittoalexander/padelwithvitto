@@ -4,21 +4,29 @@
 
    This file runs in three places: the Cloudflare Worker (api/worker.js), Node (tests), and the browser.
 
-   Common shape returned by getLive():
+   getLive(provider, id) returns
    {
      provider, providerName, sourceUrl, fetchedAt,
      live:   [match],   // on court now
      recent: [match],   // just finished, newest first
      next:   [match]    // coming up
    }
-   match = { id, status: "live"|"done"|"next", court, round, category, time, timeLabel,
-             teams: [ { names:[...], sets:[...], tb:[...], points, serving, winner }, { ... } ] }
+   getSchedule(provider, id, date) returns the full order of play for one day
+   {
+     provider, providerName, fetchedAt,
+     days:   [{ date: "2026-11-19" }],          // days that have an order of play
+     date:   "2026-11-19" | null,                // the day returned
+     courts: [{ name, venue, matches: [match] }]
+   }
+   match = { id, status: "live"|"done"|"next", court, round, category, time, timeLabel, featured, note,
+             teams: [ { names:[...], full:[...], sets:[...], tb:[...], points, serving, winner }, { ... } ] }
 */
 
 export const PROVIDERS = {
   pbpi: {
     name: "PBPI",
     live: true,
+    schedule: true,
     idPattern: /^\d{1,6}$/,
     idHelp: "PBPI tournament number, e.g. 46",
     home: "https://www.pbpi.or.id/en/tournaments"
@@ -26,12 +34,13 @@ export const PROVIDERS = {
   alfred: {
     name: "Alfred for Padel",
     live: true,
+    schedule: false,
     idPattern: /^[a-z0-9][a-z0-9-]{0,80}$/,
     idHelp: "the last part of the Alfred tournament link, e.g. padel-gp500",
     home: "https://www.alfredforpadel.com/",
     browserOk: true // Alfred allows other sites to read its data straight from the browser
   },
-  demo: { name: "Demo data", live: true, idPattern: /^[a-z0-9-]{1,20}$/, idHelp: "anything", home: "" },
+  demo: { name: "Demo data", live: true, schedule: false, idPattern: /^[a-z0-9-]{1,20}$/, idHelp: "anything", home: "" },
   // Link-only providers: no adapter yet, the page sends people to the provider's own live page.
   incourta: { name: "Incourta", live: false, home: "https://incourta.com/events" },
   recourt: { name: "Recourt", live: false, home: "https://recourt.id/" },
@@ -43,11 +52,19 @@ const MAX_LIST = 12;
 // A plain, honest client label. Set a contact address here if a provider asks for one.
 const CLIENT = "Mozilla/5.0 (compatible; padel-score-reader/0.1)";
 const IN_BROWSER = typeof window !== "undefined" && typeof document !== "undefined";
+const DATE = /^\d{4}-\d{2}-\d{2}$/;
 
 export function validate(provider, id) {
   const p = PROVIDERS[provider];
   if (!p || !p.live) return "Unknown or link-only provider";
   if (!p.idPattern.test(String(id || ""))) return "Bad id. Expected " + p.idHelp;
+  return "";
+}
+export function validateSchedule(provider, id, date) {
+  const bad = validate(provider, id);
+  if (bad) return bad;
+  if (!PROVIDERS[provider].schedule) return PROVIDERS[provider].name + " has no order of play feed";
+  if (date && !DATE.test(date)) return "Bad date. Expected YYYY-MM-DD";
   return "";
 }
 
@@ -57,20 +74,31 @@ export function sourceUrl(provider, id) {
   return p ? p.home : "";
 }
 
-/** Fetch and normalise live scores. fetchFn defaults to the global fetch. */
-export async function getLive(provider, id, fetchFn) {
-  const err = validate(provider, id);
-  if (err) throw new Error(err);
-  const f = fetchFn || fetch;
-  let out;
-  if (provider === "pbpi") out = await pbpi(String(id), f);
-  else if (provider === "alfred") out = await alfred(String(id), f);
-  else out = demo(Date.now());
+function stamp(out, provider, id) {
   out.provider = provider;
   out.providerName = PROVIDERS[provider].name;
   out.sourceUrl = out.sourceUrl || sourceUrl(provider, id);
   out.fetchedAt = new Date().toISOString();
   return out;
+}
+
+/** Live, just-finished and next matches. fetchFn defaults to the global fetch. */
+export async function getLive(provider, id, fetchFn) {
+  const err = validate(provider, id);
+  if (err) throw new Error(err);
+  const f = fetchFn || fetch;
+  let out;
+  if (provider === "pbpi") out = await pbpiLive(String(id), f);
+  else if (provider === "alfred") out = await alfred(String(id), f);
+  else out = demo(Date.now());
+  return stamp(out, provider, id);
+}
+
+/** Full order of play for one day. date is YYYY-MM-DD; leave it out for today (or the nearest day that has one). */
+export async function getSchedule(provider, id, date, fetchFn) {
+  const err = validateSchedule(provider, id, date);
+  if (err) throw new Error(err);
+  return stamp(await pbpiSchedule(String(id), date || "", fetchFn || fetch), provider, id);
 }
 
 async function getJson(f, url) {
@@ -91,30 +119,42 @@ function titleCase(s) {
   return s;
 }
 function words(s) {
-  // "roundOf64" -> "Round of 64", "group_a" -> "Group A", "semifinals" -> "Semifinals"
+  // "roundOf64" -> "Round of 64", "group_a" -> "Group A", "youthU16" -> "Youth U16"
   s = tidy(String(s || "").replace(/_/g, " ").replace(/([a-z])([A-Z0-9])/g, "$1 $2").replace(/([0-9])([A-Za-z])/g, "$1 $2"));
   if (!s) return "";
   s = s.charAt(0).toUpperCase() + s.slice(1).toLowerCase();
   return s.replace(/\bu ?(\d+)\b/i, "U$1").replace(/^(Group|Pool) ([a-z])$/, (m, a, b) => a + " " + b.toUpperCase());
 }
 const num = (v) => (typeof v === "number" && isFinite(v) ? v : null);
-function team(names, sets, tb, points, serving, winner) {
-  return { names, sets, tb, points: points == null || points === "" ? null : String(points), serving: !!serving, winner: !!winner };
+function team(names, full, sets, tb, points, serving, winner) {
+  return { names, full, sets, tb, points: points == null || points === "" ? null : String(points), serving: !!serving, winner: !!winner };
+}
+/** Today's date in Indonesia (Jakarta) as YYYY-MM-DD. */
+export function todayJakarta(now) {
+  return new Intl.DateTimeFormat("en-CA", { timeZone: "Asia/Jakarta", year: "numeric", month: "2-digit", day: "2-digit" }).format(new Date(now == null ? Date.now() : now));
 }
 
 // ---------- PBPI (pbpi.or.id) ----------
+const PBPI = "https://www.pbpi.or.id/api/";
 const PBPI_TYPES = { doubleMen: "Men's doubles", doubleWomen: "Women's doubles", doubleMixed: "Mixed doubles", singleMen: "Men's singles", singleWomen: "Women's singles" };
 
-function pbpiNames(side) {
+function pbpiSide(side) {
   const ps = (side && side.players) || [];
-  if (!ps.length) return [tidy(side && side.alternativeText) || (side && side.bye ? "Bye" : "To be decided")];
-  return ps.map((p) => {
+  if (!ps.length) {
+    const label = tidy(side && side.alternativeText) || (side && side.bye ? "Bye" : "To be decided");
+    return { names: [label], full: [label] };
+  }
+  const names = [], full = [];
+  ps.forEach((p) => {
     const first = tidy(p.firstName), last = titleCase(p.lastName);
+    const whole = titleCase(p.name) || tidy([first, last].join(" ")) || "Player";
     // "Raihannisa R." style names: the family name is only an initial, so keep the name as written.
-    if (first && last.replace(/\./g, "").length > 1) return first.charAt(0).toUpperCase() + ". " + last;
-    return titleCase(p.name) || "Player";
+    names.push(first && last.replace(/\./g, "").length > 1 ? first.charAt(0).toUpperCase() + ". " + last : whole);
+    full.push(whole);
   });
+  return { names, full };
 }
+/** Turns one PBPI match into the common shape. Works for both the live feed and the order-of-play feed. */
 function pbpiMatch(m, status) {
   const liveSets = m.live && Array.isArray(m.live.sets) && m.live.sets.length ? m.live.sets : null;
   // The live feed uses {home, away}; the order-of-play feed uses {teamHomeScore, teamOpponentScore}.
@@ -125,10 +165,22 @@ function pbpiMatch(m, status) {
     ht: num(s.homeTieBreak != null ? s.homeTieBreak : s.tieBreakTeamHomeScore),
     at: num(s.awayTieBreak != null ? s.awayTieBreak : s.tieBreakTeamOpponentScore)
   })).filter((s) => s.h != null && s.a != null);
-  const lv = status === "live" && m.live ? m.live : null;
-  const cat = [words(m.level), PBPI_TYPES[m.category || m.type] || words(m.category || m.type)].filter(Boolean).join(" · ");
+
+  // Game points only exist while a match is being scored point by point.
+  const lv = status === "live" && m.live && (m.live.home != null || m.live.away != null) ? m.live : null;
+
+  // The live feed says who won. The order-of-play feed does not, so count sets for finished matches.
+  let winner = m.winner === "home" || m.winner === "away" ? m.winner : null;
+  if (!winner && status === "done" && sets.length) {
+    const h = sets.filter((s) => s.h > s.a).length, a = sets.filter((s) => s.a > s.h).length;
+    winner = h > a ? "home" : a > h ? "away" : null;
+  }
+
+  const type = m.category || m.type;
+  const cat = [words(m.level), PBPI_TYPES[type] || words(type)].filter(Boolean).join(" · ");
   let timeLabel = "";
-  if (status === "next" && !m.startTime) timeLabel = m.notBefore ? "Not before" : "Followed by";
+  if (!m.startTime) timeLabel = m.notBefore ? "Not before" : status === "next" ? "Followed by" : "";
+  const home = pbpiSide(m.home), away = pbpiSide(m.away);
   return {
     id: "pbpi-" + m.matchId,
     status,
@@ -137,16 +189,49 @@ function pbpiMatch(m, status) {
     category: cat,
     time: m.startTime || m.notBefore || null,
     timeLabel,
+    featured: !!m.featured,
+    note: tidy(m.featuredNote),
     teams: [
-      team(pbpiNames(m.home), sets.map((s) => s.h), sets.map((s) => s.ht), lv ? lv.home : null, lv && lv.server === "home", m.winner === "home"),
-      team(pbpiNames(m.away), sets.map((s) => s.a), sets.map((s) => s.at), lv ? lv.away : null, lv && lv.server === "away", m.winner === "away")
+      team(home.names, home.full, sets.map((s) => s.h), sets.map((s) => s.ht), lv ? lv.home : null, lv && lv.server === "home", winner === "home"),
+      team(away.names, away.full, sets.map((s) => s.a), sets.map((s) => s.at), lv ? lv.away : null, lv && lv.server === "away", winner === "away")
     ]
   };
 }
-async function pbpi(id, f) {
-  const d = await getJson(f, "https://www.pbpi.or.id/api/tournament-live?tournamentId=" + encodeURIComponent(id));
+async function pbpiLive(id, f) {
+  const d = await getJson(f, PBPI + "tournament-live?tournamentId=" + encodeURIComponent(id));
   const list = (a, st) => (Array.isArray(a) ? a : []).slice(0, MAX_LIST).map((m) => pbpiMatch(m, st));
   return { live: list(d.now, "live"), recent: list(d.recent, "done"), next: list(d.next, "next") };
+}
+function natural(a, b) { return String(a).localeCompare(String(b), "en", { numeric: true, sensitivity: "base" }); }
+async function pbpiSchedule(id, date, f) {
+  const opt = await getJson(f, PBPI + "order-of-play-date-options/" + encodeURIComponent(id));
+  const options = ((opt && opt.data && opt.data.dateOption) || []).filter((o) => o && typeof o.value === "string" && DATE.test(o.value.slice(0, 10)));
+  options.sort((p, q) => p.value.localeCompare(q.value));
+  const days = options.map((o) => ({ date: o.value.slice(0, 10) }));
+  if (!days.length) return { days: [], date: null, courts: [] };
+
+  // Pick the asked-for day, else today, else the next day with play, else the last day.
+  const today = todayJakarta();
+  let pick = options.find((o) => o.value.slice(0, 10) === date);
+  if (!pick) pick = options.find((o) => o.value.slice(0, 10) === today) || options.find((o) => o.value.slice(0, 10) > today) || options[options.length - 1];
+
+  const d = await getJson(f, PBPI + "order-of-play/" + encodeURIComponent(id) + "/" + encodeURIComponent(pick.value));
+  const rows = (d && d.data && d.data.orderOfPlay) || [];
+  const courts = new Map();
+  rows.forEach((m) => {
+    const key = (m.courtId != null ? m.courtId : tidy(m.court)) + "|" + tidy(m.courtVenue);
+    if (!courts.has(key)) courts.set(key, { name: tidy(m.court) || "Court", venue: tidy(m.courtVenue || m.venue), matches: [] });
+    const status = m.matchStatus === "ongoing" ? "live" : m.matchStatus === "completed" ? "done" : "next";
+    const x = pbpiMatch(m, status);
+    x.order = num(m.matchOrder) || 0;
+    x.court = "";                                   // the court is the group heading, no need to repeat it
+    if (!m.startTime && !m.notBefore) x.timeLabel = "Followed by";
+    courts.get(key).matches.push(x);
+  });
+  const list = Array.from(courts.values());
+  list.forEach((c) => c.matches.sort((p, q) => p.order - q.order));
+  list.sort((p, q) => natural(p.venue, q.venue) || natural(p.name, q.name));
+  return { days, date: pick.value.slice(0, 10), courts: list };
 }
 
 // ---------- Alfred for Padel (alfredforpadel.com) ----------
@@ -170,9 +255,8 @@ function alfredPoints(m, rules, side) {
   if ((rules && rules.deuceMode === "no-ad") || m.goldenDeciding) return "40"; // golden point
   return a > b ? "AD" : "40";
 }
-const utc = (s) => (s ? String(s).replace(" ", "T").replace(/(\.\d+)?$/, "") + "Z" : null);
 
-function alfredNames(players, teamObj, slot) {
+function alfredSide(players, teamObj, slot) {
   const ps = (players || []).map((p) => titleCase(p.displayName)).filter(Boolean);
   if (ps.length) return ps;
   if (teamObj && teamObj.isBye) return ["Bye"];
@@ -189,17 +273,20 @@ function alfredMatch(x, status) {
     sets.push({ h: m.gamesHome || 0, a: m.gamesAway || 0, ht: null, at: null });
   }
   const live = status === "live";
+  const home = alfredSide(x.homePlayers, x.homeTeam, x.homeSlot), away = alfredSide(x.awayPlayers, x.awayTeam, x.awaySlot);
   return {
     id: "alfred-" + m.id,
     status,
     court: tidy(m.court),
     round: tidy(m.customStageName) || (x.encounter && tidy(x.encounter.stageDisplayName)) || words(m.stage),
     category: tidy(x.category && x.category.name),
-    time: utc(status === "done" ? m.completedAt : m.scheduledAt),
+    time: null,                                      // Alfred does not say which time zone its schedule uses, so no clock time is shown
     timeLabel: "",
+    featured: false,
+    note: "",
     teams: [
-      team(alfredNames(x.homePlayers, x.homeTeam, x.homeSlot), sets.map((s) => s.h), sets.map((s) => s.ht), live ? alfredPoints(m, x.rules, "home") : null, live && m.servingTeam === "home", m.winnerSide === "home"),
-      team(alfredNames(x.awayPlayers, x.awayTeam, x.awaySlot), sets.map((s) => s.a), sets.map((s) => s.at), live ? alfredPoints(m, x.rules, "away") : null, live && m.servingTeam === "away", m.winnerSide === "away")
+      team(home, home, sets.map((s) => s.h), sets.map((s) => s.ht), live ? alfredPoints(m, x.rules, "home") : null, live && m.servingTeam === "home", m.winnerSide === "home"),
+      team(away, away, sets.map((s) => s.a), sets.map((s) => s.at), live ? alfredPoints(m, x.rules, "away") : null, live && m.servingTeam === "away", m.winnerSide === "away")
     ]
   };
 }
@@ -210,6 +297,7 @@ async function alfred(slug, f) {
     if (!info || !info.id) throw new Error("Alfred has no tournament called " + slug);
     t = { id: info.id, name: info.name, at: Date.now() };
     alfredIds.set(slug, t);
+    if (alfredIds.size > 50) alfredIds.delete(alfredIds.keys().next().value);
   }
   const all = await alfredCall(f, "tournament.getMatchesByTournamentId", { tournamentId: t.id, hideUnplayableInterclub: true });
   const ms = (Array.isArray(all) ? all : []).filter((x) => x && x.match && !(x.homeTeam && x.homeTeam.isBye) && !(x.awayTeam && x.awayTeam.isBye));
@@ -247,16 +335,16 @@ function demoMatch(seed, steps, names, court, round, keepGoing) {
       }
     }
   }
-  const t = (i) => team(names[i], sets.map((s) => s[i]), sets.map(() => null), over ? null : POINTS[pts[i]], !over && serve === i, over && won[i] === 2);
-  return { id: "demo-" + court.replace(/\W/g, "").toLowerCase(), status: over ? "done" : "live", court, round, category: "Demo · Men's doubles", time: null, timeLabel: "", teams: [t(0), t(1)] };
+  const t = (i) => team(names[i], names[i], sets.map((s) => s[i]), sets.map(() => null), over ? null : POINTS[pts[i]], !over && serve === i, over && won[i] === 2);
+  return { id: "demo-" + court.replace(/\W/g, "").toLowerCase(), status: over ? "done" : "live", court, round, category: "Demo · Men's doubles", time: null, timeLabel: "", featured: false, note: "", teams: [t(0), t(1)] };
 }
 export function demo(now) {
   const hour = Math.floor(now / 3600000), step = Math.floor((now % 3600000) / 8000); // one point every 8 seconds
   const a = demoMatch(hour * 1000 + 1, step, [["A. Santoso", "B. Wijaya"], ["C. Pratama", "D. Hartono"]], "Centre court", "Semifinals", true);
   const b = demoMatch(hour * 1000 + 500, Math.floor(step * 0.8) + 40, [["E. Garcia", "F. Nugroho"], ["G. Lim", "H. Siregar"]], "Court 2", "Semifinals", true);
   const c = demoMatch(hour * 1000 + 900, 9999, [["I. Kusuma", "J. Tan"], ["K. Halim", "L. Setiawan"]], "Court 3", "Quarterfinals", false);
-  const n = { id: "demo-next", status: "next", court: "Centre court", round: "Final", category: "Demo · Men's doubles", time: null, timeLabel: "Followed by",
-    teams: [team(["Winner SF 1"], [], [], null, false, false), team(["Winner SF 2"], [], [], null, false, false)] };
+  const tbd = (label) => team([label], [label], [], [], null, false, false);
+  const n = { id: "demo-next", status: "next", court: "Centre court", round: "Final", category: "Demo · Men's doubles", time: null, timeLabel: "Followed by", featured: false, note: "", teams: [tbd("Winner SF 1"), tbd("Winner SF 2")] };
   const all = [a, b, c];
   return { demo: true, live: all.filter((m) => m.status === "live"), recent: all.filter((m) => m.status === "done"), next: [n] };
 }
