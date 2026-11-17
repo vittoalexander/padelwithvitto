@@ -39,6 +39,7 @@ Updated 17 Nov 2026.
   - Landing page: wide PadelHQ card under the guides (index.html, a.hq styles), showing the top 3 of each table from padelhq/ipl.js (the posted table, not the sheet results).
   - Not built yet: results filled in automatically from live scores (SKOR has no public feed found).
 - Which events to list (Vitto, 17 Nov): PBPI-tiered events first, then events that say they give national ranking points, then others. Only events with a Silver category or higher (Silver Open, Gold, Men's/Women's Open). Leave out events whose top category is Bronze or below, or whose levels are unknown. A name with "Open" in it is not enough. Same rule is on the sheet's Guide tab.
+- IPL fixtures: the league site lists every week by day, home v away and venue at https://www.indonesianpadelleague.com/indonesian-padel-league/jadwal (Firebase single-page app: open it in a browser and pick each week from the "Pekan" menu). It still shows week 4 on 25-27 Oct; the official announcement moved it to 3-5 Jan 2027. Its results and live scores link out to SKOR.
 - Event search sources: PBPI tournaments page, Incourta /events (allowed by its robots.txt; event pages list categories), Alfred upcoming (tRPC tournamentPublic.upcoming), balipadeltournaments.com, PADELGIGS. Do not read pbpisurabaya.id or recourt.id: their robots.txt disallow AI agents.
 - Other follow-ups: PadelHQ card on the landing page (not added: landing page layout is Vitto's call), accept the PBPI page link as Scoring ID instead of the number, tournament pages with draws.
 
