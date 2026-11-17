@@ -1,0 +1,16 @@
+// Cloudflare settings for the PadelHQ score API.
+// Cloudflare builds this repo on every push to main and runs "npx wrangler deploy" here.
+// This file tells it to run the API in padelhq/api/worker.js (not to upload the repo as a website).
+{
+  "$schema": "node_modules/wrangler/config-schema.json",
+  "name": "padelhq-scores",
+  "main": "padelhq/api/worker.js",
+  "compatibility_date": "2026-10-01",
+  "workers_dev": true,
+  "preview_urls": false,
+  "observability": { "enabled": true },
+  "vars": {
+    // Websites allowed to read the API from a browser, comma separated.
+    "ALLOWED_ORIGINS": "https://vittoalexander.github.io,http://localhost:8788,http://127.0.0.1:8788"
+  }
+}

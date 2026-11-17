@@ -2,7 +2,7 @@
 window.PADELHQ_CONFIG = {
   // Address of the PadelHQ score API (the Cloudflare Worker in api/). Leave "" until it is deployed.
   // Example: "https://padelhq-scores.your-name.workers.dev"
-  apiBase: "",
+  apiBase: "https://padelhq-scores.vittoalexander13.workers.dev",
 
   // Google Sheet with the tournament list ("PadelHQ Events", tab "Events", table starting at B5), read as CSV.
   // Leave "" to use the built-in list in events.js. If the sheet cannot be read, the page falls back to
