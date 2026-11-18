@@ -7,8 +7,42 @@ Saved 16 Nov 2026. Nothing here is built yet. Source of the ideas: Vitto's notes
 | Slot | Theme | Status |
 |---|---|---|
 | Guide 04 | Another "numbers" / data-nerd guide, same vibe as Guide 03 | Topic not chosen yet |
-| Guide 05 | Showing up: the front door and the system | Idea saved (below) |
-| Guide 06 | Comparison: thief of joy or teacher of skill | Idea saved (below) |
+| Guide 05 | 7 Habits of Highly Effective Padel Players | Plan saved (below), not built |
+| Guide 06 | Open. Could be a deep dive on one habit (comparison has the most material) | Not chosen |
+
+## Guide 05 plan: 7 Habits of Highly Effective Padel Players (18 Nov 2026)
+
+Uses the older notes further down (front door, systems, athlete types, comparison) as source material.
+
+Title note: the title riffs on Stephen Covey's book. Don't copy his seven habits or his structure.
+
+### Writing rules
+- 5-minute read at most: about 1,000 words in total. Intro under 80 words, each habit under 120, close under 60.
+- Same shape for every habit: name, the idea in one sentence, one picture from everyday life, one "try this week". Nothing else.
+- At most one number per habit.
+- Short sentences and plain words, explained like to a 5-year-old (but not literally). Define any jargon the first time it appears.
+- Keep any caveat to one line where it matters, rather than dropping it.
+
+### The seven (order follows a week: turn up, practise, plan, play, reset, learn, recover)
+
+| # | Habit | What it covers | Animation (scroll-driven, drawn in code) |
+|---|---|---|---|
+| 1 | Walk through the door | Getting there: fixed slot, packed bag, trigger, friction | A heavy door with a "100 kg" plate on it. Scroll pushes it open; inside, the court lights come on and a counter reads "hardest rep: done". |
+| 2 | Train like it's the final | Practice with score and a cost per miss (first half of "berlatih seperti bertanding") | Two scoreboards, "Tuesday practice" and "Final". As the practice board gains pressure (score, cost per miss), the two heart-rate lines end up at the same height. |
+| 3 | Know your athlete type | How much and what kind of training: Spartan vs Engineer (Phelps vs McEvoy) | Two hour bars fill with dots, one per rep: Spartan's long bar is mostly grey, Engineer's short bar mostly bright. The good-rep counts end up close. Then a third bar for "you, 4 hours a week". |
+| 4 | Lose less, and count it | Safe choices in matches, proven by charting (Guide 3) | Two pairs' error tallies drop in as you scroll (11.6 vs 17.9 from Guide 3); the bar with fewer errors gets the set. Links to Guide 3. |
+| 5 | Reset in 20 seconds | 3 seconds to name the miss (Guide 2 Round 07, link shot-breaks/#r7), then let it go (second half: "bertanding seperti berlatih") | A 20-second ring timer: the first 3 s fill coral ("name it"), the other 17 s fade to blue ("drop it"), and the ball returns to the server. |
+| 6 | Compare small things | Learn one shot from others, never their rating | A camera lens: the wide shot of a player with a rating badge blurs out, then the lens zooms in sharp on their feet during a bandeja, with one label. |
+| 7 | Recover like it's training | Sleep, rest days, no hard day after a hard day | A 7-day strip of tiles: two hard days side by side flash, then slide apart with an easy day between them; a battery bar refills. |
+
+### Cross-links
+- Habit 5 to Habit 6: if your head goes to "they're just better" between points, shrink it to "what exactly did that ball do?"
+- Habit 4 links to Guide 3; Habit 5 links to Guide 2 Round 07.
+
+### Still to decide or check
+- Design palette (Guide 3 used PadelIQ "Signature").
+- Test that the shot-breaks/#r7 link lands correctly on a phone, since that page is scroll-driven.
+- Bench idea: "small gains add up" was folded into Habits 1 and 7 rather than given its own habit. If used, say "1% a day" is arithmetic, not a measured result.
 
 ## Guide 04: numbers guide (topic open)
 
@@ -18,7 +52,7 @@ Candidates already hinted at in HANDOFF.md:
 - Re-test Guide 03 findings 3-5 (volley, overhead) with a second batch of charted sets.
 - Re-run the "would break finding 1" check on new data.
 
-## Guide 05: showing up (front door + goals vs systems)
+## Source notes: showing up (front door + goals vs systems)
 
 Two of the three original ideas merged, because they are the same argument in two steps: getting started is the hard part, and a routine is what gets you started every time.
 
@@ -80,7 +114,7 @@ To verify before publishing
 Caveat to state in the guide
 - "1% better every day" (about 37x in a year) is arithmetic used as a picture, not a measured result. Skill does not compound that cleanly.
 
-## Guide 06: comparison (thief of joy vs teacher of skill)
+## Source notes: comparison (thief of joy vs teacher of skill)
 
 Core line
 - Comparison is the thief of joy when applied broadly, and the teacher of skill when applied narrowly. (James Clear: "to improve, compare little things".)
