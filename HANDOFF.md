@@ -1,6 +1,6 @@
 # Handoff: padelwithvitto
 
-Updated 17 Nov 2026.
+Updated 21 Nov 2026.
 
 ## Goal
 - Keep the padelwithvitto sites (landing, Padel 101, Why a padel shot breaks, Road to Pro, Guide 3) correct and live.
@@ -28,7 +28,7 @@ Updated 17 Nov 2026.
 - How it deploys: Cloudflare is connected to this GitHub repo (Workers Builds) and runs "npx wrangler deploy" at the repo root on every push to main. wrangler.jsonc at the root points it at padelhq/api/worker.js. Do not delete that file: without it Cloudflare uploads the whole repo as a website instead. No API token is needed (the one saved in the cloud environment is invalid and unused).
 - Verified on 17 Nov: PBPI answers requests from Cloudflare, the short memory works on workers.dev, Alfred's large answers are fine. Free plan allows 100,000 requests a day (about 550 viewer-hours of live watching).
 - Not yet seen with a real match in progress: PBPI's live fields (points, server) and Alfred's in-progress set were taken from each platform's page code. Check on the first live day (19 Nov for PBPI, 21 Nov for Alfred).
-- Testing: node --test padelhq/api/test.mjs (11 checks). node padelhq/api/dev-server.mjs, then http://localhost:8788/?api=http://localhost:8787 plus &demo=1, &scores=pbpi:43 or &today=2026-11-19. ?builtin=1 skips the sheet.
+- Testing: node --test padelhq/api/test.mjs (14 checks). node padelhq/api/dev-server.mjs, then http://localhost:8788/?api=http://localhost:8787 plus &demo=1, &scores=pbpi:43 or &today=2026-11-19. ?builtin=1 skips the sheet.
 - Cloud environment "padelwithvitto" allows the provider sites, pbpi.or.id, instagram.com, docs.google.com and vittoalexander.github.io.
 - Design: charcoal #0D1012, ball green #C8F53C (Tier 1, live, main action), tosca #2FD6C3 (secondary), amber #FFB454 (deadlines, unconfirmed). Barlow Condensed headings, Barlow body, DM Mono labels and scores.
 - Indonesian Padel League (IPL 2026, presented by bale): match weeks 7-15, the moved week 4 (3-5 Jan 2027, clubs and venues not yet known to us) and the play-offs are in the sheet as calendar rows (22 rows, names start with "IPL"). Source: instagram.com/p/Dd0jhzJE9m7 (screenshots from Vitto). Each week has 2 venues; the home club hosts 3 visiting clubs on 3 days, 10:00-21:00. Line-ups are submitted on match day. Scoring partner is SKOR (no public web score page found yet, so no live scores).
@@ -42,6 +42,8 @@ Updated 17 Nov 2026.
 - Which events to list (Vitto, 17 Nov): PBPI-tiered events first, then events that say they give national ranking points, then others. Only events with a Silver category or higher (Silver Open, Gold, Men's/Women's Open). Leave out events whose top category is Bronze or below, or whose levels are unknown. A name with "Open" in it is not enough. Same rule is on the sheet's Guide tab.
 - IPL fixtures: the league site lists every week by day, home v away and venue at https://www.indonesianpadelleague.com/indonesian-padel-league/jadwal (Firebase single-page app: open it in a browser and pick each week from the "Pekan" menu). It still shows week 4 on 25-27 Oct; the official announcement moved it to 3-5 Jan 2027. Its results and live scores link out to SKOR.
 - Event search sources: PBPI tournaments page, Incourta /events (allowed by its robots.txt; event pages list categories), Alfred upcoming (tRPC tournamentPublic.upcoming), balipadeltournaments.com, PADELGIGS. Do not read pbpisurabaya.id or recourt.id: their robots.txt disallow AI agents.
+- Matches tab (21 Nov): Sirkuit Nasional Bali 2026 (PBPI 46) got no data on pbpi.or.id at all: live feed, order of play, draws, results and the page's own stream slots are all empty (the code and the API are fine; Medan 43 still reads). The order of play went out only on PBPI Bali's Instagram, which the cloud session cannot read (login wall), and pbpibali.org and youtube.com are blocked from the cloud environment. Fix: a "Matches" tab on the PadelHQ Events sheet (Event = the event's Name from the Events tab, Date, Time, Court, Category, Round, Team 1, Team 2, Score, Status, YouTube), read by padelhq/sheet.js through config.js -> matchesCsvUrl, once a minute. When the platform has nothing for an event (or is down), the board's Live and Order of play tabs use these rows and say they were typed in by hand. A row with only Event, Court and YouTube is a court stream: every match on that court gets a Watch button, including PBPI's own matches. Guide tab section E explains the columns. Tests: 14 checks.
+- PBPI's page code also has /api/courts-live?tournamentId= and a "streams" list (courtName, date, url) baked into the tournament page. Both empty for Bali. Could feed Watch buttons automatically for future PBPI events.
 - Other follow-ups: PadelHQ card on the landing page (not added: landing page layout is Vitto's call), accept the PBPI page link as Scoring ID instead of the number, tournament pages with draws.
 
 ## Left
@@ -64,7 +66,7 @@ Updated 17 Nov 2026.
 - Usage guard: state phase and size, wait for "go", one phase per run, update this file, commit. Merge to main only when Vitto says so.
 
 ## Files
-- Repo: vittoalexander/padelwithvitto. Work on branch claude/determined-dirac-p8emgx, fast-forward main to publish. GitHub Pages serves main.
+- Repo: vittoalexander/padelwithvitto. Work on a claude/ branch, fast-forward main to publish. GitHub Pages serves main.
 - Guide 3 and the landing page exist only in this repo. Padel 101, shot-breaks and Road to Pro also have local source folders on the Mac (~/padel-101, ~/padel-shot-breaks, ~/padel-athlete-site) that publish.sh copies over the repo.
 - Sheets: Padel Benchmark Lab (findings), Padel Match Charting, Vitto's Padel Match Charting.
 

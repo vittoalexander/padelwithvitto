@@ -305,3 +305,65 @@ test("SKOR league: standings from the leaderboard, unplayed 'ongoing' fixtures a
   assert.equal(d.recent.find((m) => m.category === "Women").teams[1].winner, true);
   assert.equal((await worker.fetch(new Request("http://api.test/v1/league?provider=skor&id=../x"), {}, {})).status, 400);
 });
+
+// ---------- the sheet's Matches tab (sheet.js) ----------
+import { parseMatches, sheetLive, sheetSchedule, addStreams, parseScore, toYmd } from "../sheet.js";
+
+const MATCHES_CSV = [
+  '"Event","Date","Time","Court","Category","Round","Team 1","Team 2","Score","Status","YouTube"',
+  '"Sirkuit Nasional Bali","21 Nov 2026","09:00","Court 1","Men\'s Open","Round of 16","Andi S. / Budi H.","Citra R. & Dewa L.","6-4 3-6 10-8","",""',
+  '"Sirkuit Nasional Bali","21 Nov 2026","","Court 1","Men\'s Open","Round of 16","Eko P. / Fajar M.","Gilang A. / Hadi K.","4-2","Live",""',
+  '"Sirkuit Nasional Bali","21/11/2026","Not before 14:00","Court 2","Women\'s Open","Round of 16","Ika W. / Jeni A.","Kiki S. / Lia D.","","","https://youtu.be/abc"',
+  '"Sirkuit Nasional Bali","","","Court 1","","","","","","","https://www.youtube.com/watch?v=court1"',
+  '"Sirkuit Nasional Bali","2026-11-22","10:00","Court 1","Men\'s Open","Quarter-final","Winner R16-1","","","",""',
+  '"","21 Nov 2026","09:00","Court 1","","","A / B","C / D","","",""',
+  '"Sirkuit Nasional Bali","21 Nov 2026","09:00","Court 3","","","A / B","C / D","","","javascript:alert(1)"'
+].join("\n");
+
+test("sheet: dates, scores and rows", () => {
+  assert.equal(toYmd("21 Nov 2026"), "2026-11-21");
+  assert.equal(toYmd("Sat 21 Nov 2026"), "2026-11-21");
+  assert.equal(toYmd("21/11/2026"), "2026-11-21");
+  assert.deepEqual(parseScore("6-4, 7-6(5) 10–8"), [[6, 4], [7, 6], [10, 8]]);
+  const d = parseMatches(MATCHES_CSV);
+  assert.deepEqual(Object.keys(d), ["sirkuit-nasional-bali"]);           // the row with no event is skipped
+  const ev = d["sirkuit-nasional-bali"];
+  assert.deepEqual(ev.days, ["2026-11-21", "2026-11-22"]);
+  assert.equal(ev.matches.length, 5);
+  assert.equal(ev.streams.length, 1);
+  const [m1, m2, m3] = ev.matches;
+  assert.equal(m1.status, "done");                                  // a score with no status counts as finished
+  assert.equal(m1.teams[0].winner, true);
+  assert.deepEqual(m1.teams[1].names, ["Citra R.", "Dewa L."]);
+  assert.equal(m1.time, "2026-11-21T09:00:00+07:00");
+  assert.equal(m2.status, "live");
+  assert.equal(m2.timeLabel, "Followed by");
+  assert.equal(m3.timeLabel, "Not before");
+  assert.equal(m3.stream, "https://youtu.be/abc");
+  assert.equal(ev.matches[4].stream, "");                           // only https links are kept
+  assert.throws(() => parseMatches("a,b\n1,2"), /header/);
+});
+
+test("sheet: live board, order of play and court streams", () => {
+  const ev = parseMatches(MATCHES_CSV)["sirkuit-nasional-bali"];
+  const live = sheetLive(ev, "2026-11-21");
+  assert.equal(live.manual, true);
+  assert.equal(live.live.length, 1);
+  assert.equal(live.recent.length, 1);
+  assert.equal(live.next.length, 2);
+  assert.equal(live.live[0].stream, "https://www.youtube.com/watch?v=court1");   // the court stream fills in
+  assert.equal(live.next[0].stream, "https://youtu.be/abc");                    // a match's own link wins
+
+  const s = sheetSchedule(ev, "", "2026-11-21");
+  assert.equal(s.date, "2026-11-21");
+  assert.deepEqual(s.courts.map((c) => c.name), ["Court 1", "Court 2", "Court 3"]);
+  assert.equal(s.courts[0].stream, "https://www.youtube.com/watch?v=court1");
+  assert.equal(s.courts[0].matches.length, 2);
+  assert.equal(sheetSchedule(ev, "2026-11-22", "2026-11-21").courts[0].matches[0].round, "Quarter-final");
+  assert.equal(sheetSchedule(ev, "", "2026-11-23").date, "2026-11-22");        // after the event: the last day
+
+  const fromPbpi = [{ id: "pbpi-1", court: "Court 1", teams: [] }, { id: "pbpi-2", court: "Centre", teams: [] }];
+  const withLinks = addStreams(ev, fromPbpi, "2026-11-21");
+  assert.equal(withLinks[0].stream, "https://www.youtube.com/watch?v=court1");
+  assert.equal(withLinks[1].stream, "");
+});

@@ -13,5 +13,8 @@ window.PADELHQ_CONFIG = {
   // League standings and results read live from SKOR (the league's scoring partner) through the score API.
   iplSkorId: "ipl",
 
+  // Order of play typed in by hand ("Matches" tab), used when a scoring platform publishes nothing, plus YouTube links per court.
+  matchesCsvUrl: "https://docs.google.com/spreadsheets/d/1xUILyClgipeGOEVEWOLCm000M0gOBawmiSwXOFHrbYg/gviz/tq?tqx=out:csv&sheet=Matches&range=B5:L&headers=1",
+
   sheetCsvUrl: "https://docs.google.com/spreadsheets/d/1xUILyClgipeGOEVEWOLCm000M0gOBawmiSwXOFHrbYg/gviz/tq?tqx=out:csv&sheet=Events&range=B5:T&headers=1"
 };

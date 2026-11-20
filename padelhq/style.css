@@ -94,6 +94,11 @@ a.by:hover{text-decoration:underline}
 .match.chg{border-color:var(--ball);box-shadow:0 0 0 1px var(--ball)}
 .mhead{display:flex;justify-content:space-between;align-items:baseline;gap:10px;margin:0 0 6px;font-family:"DM Mono",monospace;font-size:11px;letter-spacing:.05em;text-transform:uppercase;color:var(--muted)}
 .mhead .when{color:var(--tosca);white-space:nowrap}
+.mright{display:inline-flex;align-items:baseline;gap:8px;flex:none}
+.watch{display:inline-block;padding:2px 8px;border:1px solid var(--tosca-line);border-radius:99px;background:var(--tosca-dim);color:var(--tosca);font-family:"DM Mono",monospace;font-size:11px;letter-spacing:.05em;text-transform:uppercase;text-decoration:none;white-space:nowrap}
+.watch:hover{border-color:var(--tosca)}
+.court summary .watch{margin-left:auto}
+.court summary .watch + .ccount{margin-left:0}
 .mhead .star{color:var(--warn);font-weight:500}
 .st{white-space:nowrap}
 .st.on{color:var(--ball-ink);background:var(--ball);border-radius:99px;padding:1px 7px;font-weight:500}

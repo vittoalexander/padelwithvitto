@@ -11,8 +11,12 @@
      ?demo=1                      a scoreboard with made-up matches that move every few seconds
      ?scores=pbpi:43              a scoreboard for any tournament on a supported platform
      ?today=2026-11-19            show the page as it will look on that day
-     ?api=http://localhost:8787   use a score API running on this computer */
+     ?api=http://localhost:8787   use a score API running on this computer
+
+   The sheet's Matches tab (config.js -> matchesCsvUrl) fills in when a platform publishes nothing: an order of play
+   typed in by hand, plus YouTube links per court that are added to the platform's matches too. See sheet.js. */
 import { getLive, validate, PROVIDERS, demo } from "./providers.js?v=4";
+import { parseMatches, sheetLive, sheetSchedule, addStreams, courtStream } from "./sheet.js?v=1";
 
 const cfg = window.PADELHQ_CONFIG || {};
 const params = new URLSearchParams(location.search);
@@ -25,6 +29,27 @@ const OLD_AFTER = 90000;              // scores older than this get an "out of d
 const wrap = document.getElementById("live");
 const boards = [];
 let started = false;
+
+// ---------- the sheet's Matches tab ----------
+const SHEET_EVERY = 60000;            // read the Matches tab at most once a minute
+const sheet = { data: {}, at: 0, busy: null };
+function loadSheet(force) {
+  if (!cfg.matchesCsvUrl || params.get("builtin")) return Promise.resolve(sheet.data);
+  if (sheet.busy) return sheet.busy;
+  if (!force && Date.now() - sheet.at < SHEET_EVERY) return Promise.resolve(sheet.data);
+  const ctl = new AbortController();
+  const timer = setTimeout(() => ctl.abort(), 8000);
+  sheet.busy = fetch(cfg.matchesCsvUrl, { cache: "no-store", signal: ctl.signal })
+    .then((r) => { if (!r.ok) throw new Error("Sheet answered " + r.status); return r.text(); })
+    .then((t) => { sheet.data = parseMatches(t); sheet.at = Date.now(); })
+    .catch(() => { sheet.at = Date.now() - SHEET_EVERY / 2; })   // keep the last good copy, try again in half a minute
+    .finally(() => { clearTimeout(timer); sheet.busy = null; })
+    .then(() => sheet.data);
+  return sheet.busy;
+}
+const sheetFor = (b) => (b.eventId && sheet.data[b.eventId]) || null;
+const hasSheet = (b) => { const ev = sheetFor(b); return !!(ev && ev.matches.length); };
+const todayYmd = (b) => new Date(b.today).toISOString().slice(0, 10);
 
 // ---------- small helpers ----------
 const esc = (s) => String(s == null ? "" : s).replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
@@ -63,6 +88,7 @@ function matchHtml(m, changed, inSchedule) {
   } else if (inSchedule) {
     right = live ? '<span class="st on">Live</span>' : '<span class="st">Finished</span>';
   }
+  if (m.stream) right += '<a class="watch" href="' + esc(m.stream) + '" target="_blank" rel="noopener" aria-label="Watch this match on YouTube">▶ Watch</a>';
 
   const rows = m.teams.map((t, i) => {
     const o = m.teams[1 - i];
@@ -85,7 +111,7 @@ function matchHtml(m, changed, inSchedule) {
     n ? "sets " + score(a) + " to " + score(b) : ""].filter(Boolean).join(". ");
 
   return '<article class="match ' + m.status + (changed ? " chg" : "") + (m.featured ? " feat" : "") + '" style="--sets:' + n + '" aria-label="' + esc(label) + '">' +
-    '<p class="mhead"><span>' + (m.featured ? '<b class="star">★ Featured</b> · ' : "") + head + "</span>" + right + "</p>" + rows +
+    '<p class="mhead"><span>' + (m.featured ? '<b class="star">★ Featured</b> · ' : "") + head + "</span>" + (right ? '<span class="mright">' + right + "</span>" : "") + "</p>" + rows +
     (m.featured && m.note ? '<p class="mnote">' + esc(m.note) + "</p>" : "") + "</article>";
 }
 
@@ -155,7 +181,9 @@ function scheduleHtml(b) {
     const key = courtKey(x.c);
     const open = filtered || !b.closed.has(key);
     return '<details class="court" data-court="' + esc(key) + '"' + (open ? " open" : "") + "><summary><span class=\"cname\">" + esc(x.c.name) + "</span>" +
-      (x.c.venue ? '<span class="cvenue">' + esc(x.c.venue) + "</span>" : "") + '<span class="ccount">' + x.ms.length + "</span></summary>" +
+      (x.c.venue ? '<span class="cvenue">' + esc(x.c.venue) + "</span>" : "") +
+      (x.c.stream ? '<a class="watch" href="' + esc(x.c.stream) + '" target="_blank" rel="noopener">▶ Court stream</a>' : "") +
+      '<span class="ccount">' + x.ms.length + "</span></summary>" +
       x.ms.map((m) => matchHtml(m, v.changed.has(m.id), true)).join("") + "</details>";
   }).join("") + "</div>";
 }
@@ -183,7 +211,9 @@ function drawHead(b) {
   let html = "";
   if (v.data) {
     const old = v.data.stale || (v.error && Date.now() - v.at > OLD_AFTER);
-    html = old
+    html = v.data.manual
+      ? '<span data-at="' + v.at + '">Typed in by PadelHQ from the organiser\'s posts, so scores can run behind · checked ' + ago(v.at) + "</span>"
+      : old
       ? '<span class="warn">' + esc(p.name) + " is not answering. Showing what we had at " + esc(hhmm(v.data.fetchedAt)) + ".</span>"
       : '<span data-at="' + v.at + '">' + (b.phase === "on" ? "Updated " : "Checked ") + ago(v.at) + "</span>";
   }
@@ -255,17 +285,30 @@ async function loadLive(b) {
   v.busy = true;
   try {
     let d;
+    const today = todayYmd(b);
     if (b.provider === "demo") d = Object.assign(demo(Date.now()), { fetchedAt: new Date().toISOString() });
-    else if (b.mode === "api") {
+    else if (b.mode === "sheet") d = sheetLive(sheetFor(b) || { matches: [], streams: [] }, today);
+    else {
       try {
-        d = await apiGet("/v1/live", b);
-        b.apiFails = 0;
+        if (b.mode === "api") {
+          try {
+            d = await apiGet("/v1/live", b);
+            b.apiFails = 0;
+          } catch (e) {
+            if (!PROVIDERS[b.provider].browserOk) throw e;
+            d = await getLive(b.provider, b.id);           // our API is having trouble: read the platform directly instead
+            if (++b.apiFails >= 3) b.mode = "direct";
+          }
+        } else d = await getLive(b.provider, b.id);
       } catch (e) {
-        if (!PROVIDERS[b.provider].browserOk) throw e;
-        d = await getLive(b.provider, b.id);           // our API is having trouble: read the platform directly instead
-        if (++b.apiFails >= 3) b.mode = "direct";
+        if (!hasSheet(b)) throw e;
+        d = null;                                          // the platform is down: the sheet's order of play stands in
       }
-    } else d = await getLive(b.provider, b.id);
+      const ev = sheetFor(b);
+      const empty = !d || !d.live.length && !d.recent.length && !d.next.length;
+      if (empty && hasSheet(b)) d = sheetLive(ev, today);  // the platform has nothing for this event: use the sheet
+      else if (d && ev) d = Object.assign({}, d, { live: addStreams(ev, d.live, today), recent: addStreams(ev, d.recent, today), next: addStreams(ev, d.next, today) });
+    }
     if (!d || !Array.isArray(d.live) || !Array.isArray(d.recent) || !Array.isArray(d.next)) throw new Error("Unexpected answer");
     accept(v, d, [].concat(d.live, d.recent, d.next));
   } catch (e) {
@@ -280,7 +323,20 @@ async function loadSchedule(b) {
   v.busy = true;
   const want = b.day;
   try {
-    const d = await apiGet("/v1/schedule", b, want ? "&date=" + encodeURIComponent(want) : "");
+    const ev = sheetFor(b), today = todayYmd(b);
+    const fromPlatform = b.mode === "api" && PROVIDERS[b.provider].schedule;
+    let d = null;
+    if (fromPlatform) {
+      try { d = await apiGet("/v1/schedule", b, want ? "&date=" + encodeURIComponent(want) : ""); }
+      catch (e) { if (!hasSheet(b)) throw e; }
+    }
+    if ((!d || !d.days || !d.days.length) && hasSheet(b)) d = sheetSchedule(ev, want, today);
+    else if (d && ev && Array.isArray(d.courts)) {
+      d = Object.assign({}, d, { courts: d.courts.map((c) => {
+        const stream = courtStream(ev, c.name, d.date);
+        return Object.assign({}, c, { stream, matches: c.matches.map((m) => (m.stream || !stream ? m : Object.assign({}, m, { stream }))) });
+      }) });
+    }
     if (!d || !Array.isArray(d.days) || !Array.isArray(d.courts)) throw new Error("Unexpected answer");
     if (b.day === want) { accept(v, d, d.courts.flatMap((c) => c.matches)); v.pending = false; }
   } catch (e) {
@@ -292,11 +348,13 @@ async function loadSchedule(b) {
 
 function delay(b) {
   if (b.provider === "demo") return 4000;
+  if (b.mode === "sheet") return SHEET_EVERY;
   const base = b.mode === "api" ? 15000 : 30000;
   if (b.phase !== "on") return 60000;                                    // nothing is being played: a slow check is enough
   return b.live.data && b.live.data.live.length ? base : base * 2;      // faster while a match is on court
 }
 async function refresh(b, force) {
+  if (b.provider !== "demo") await loadSheet(false);
   const jobs = [loadLive(b)];
   if (b.hasTabs && b.tab === "schedule" && (force || Date.now() - b.sched.at > 45000)) jobs.push(loadSchedule(b));
   await Promise.all(jobs);
@@ -323,6 +381,7 @@ function addBoard(spec) {
   if (spec.provider === "demo") mode = "direct";
   else if (readable && API) mode = "api";
   else if (readable && p.browserOk) mode = "direct";
+  if (mode === "link" && spec.eventId && sheet.data[spec.eventId] && sheet.data[spec.eventId].matches.length) mode = "sheet";
   if (mode === "link" && spec.phase !== "on") return null;       // nothing useful to show before or after play
 
   const b = Object.assign({
@@ -331,7 +390,7 @@ function addBoard(spec) {
     sched: { data: null, error: "", at: 0, changed: new Set(), pending: false },
     day: "", q: "", cat: "", closed: new Set(), apiFails: 0, today: Date.now()
   }, spec);
-  b.hasTabs = mode === "api" && !!p.schedule;
+  b.hasTabs = mode === "api" && !!p.schedule || hasSheet(b);
   b.tab = "live";
   if (b.hasTabs) {
     const saved = recall("tab." + b.key);
@@ -349,7 +408,7 @@ function addBoard(spec) {
   if (draws) links.push('<a href="' + esc(draws) + '" target="_blank" rel="noopener">Draws on ' + esc(p.name) + " ↗</a>");
   if (b.stream) links.push('<a href="' + esc(b.stream) + '" target="_blank" rel="noopener">Watch the stream ↗</a>');
   if (b.eventId) links.push('<a href="#' + esc(b.eventId) + '" data-jump="' + esc(b.eventId) + '">Event details ↓</a>');
-  const footNote = b.hasTabs ? "Match times are shown as listed on " + esc(p.name) + ". " : "";
+  const footNote = b.hasTabs ? "Match times are Indonesia time (WIB), as the organiser lists them. " : "";
 
   b.el.className = "board";
   b.el.id = "board-" + b.key;
@@ -432,10 +491,11 @@ function phaseOf(e, today) {
   return "on";
 }
 
-function start() {
+async function start() {
   const hq = window.PADELHQ;
   if (!hq || started || !wrap) return;
   started = true;
+  await Promise.race([loadSheet(true), new Promise((r) => setTimeout(r, 5000))]);   // a slow sheet must not hold up the scores
 
   if (params.get("demo")) addBoard({ key: "demo", title: "Demo tournament", provider: "demo", id: "demo", phase: "on", demo: true, today: hq.today });
   const test = /^([a-z]+):([A-Za-z0-9-]+)$/.exec(params.get("scores") || "");
